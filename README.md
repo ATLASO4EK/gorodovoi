@@ -1,5 +1,5 @@
 # Городовёнок
-![](https://img.shields.io/badge/Team-НКЭиВТ-yellow) ![](https://img.shields.io/badge/Forum-Smolathon-green)
+![](https://img.shields.io/badge/Team-НКЭиВТ-blue) ![](https://img.shields.io/badge/Forum-Smolathon-green)
 > краткое описание проекта
 ## О проекте
 Текст
