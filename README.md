@@ -10,8 +10,8 @@
 Мы команда энтузиастов и специалистов в области искусственного интеллекта и разработки ПО:
 | Имя | GitHub | Роль | Задачи |
 |-----|----|------|-------------------------|
-| Серикова Анастасия | [123](https://github.com/hao-pc "Серикова Анастасия") | Project Manager, Developer | Оформление проекта, SQL-разработка |
-| Христофорова Алёна | [Hao_pc](https://github.com/hao-pc "Христофорова Алёна") | Data Scientist, Developer | Docker, Data-аналитика, SQL-разработка |
-| Кравченко Алексей | [atlaso4ek](https://github.com/ATLASO4EK "Кравченко Алексей") | sr. Developer | Обучение моделей, Telegram-боты, Flask API |
-| Чайкин Арсений | [Bittjs](https://github.com/Bittjs "Чайкин Арсений") | sr. Developer | Telegram-боты, Flask API |
-| Ведерников Артём | [1Evgesha1](https://github.com/1Evgesha1 "Ведерников Артём") | jr. Developer | Тестирование моделей |
+| Серикова Анастасия | [123](https://github.com/hao-pc "Серикова Анастасия") | 123 | 123 |
+| Христофорова Алёна | [Hao_pc](https://github.com/hao-pc "Христофорова Алёна") | 123 | 123 |
+| Кравченко Алексей | [atlaso4ek](https://github.com/ATLASO4EK "Кравченко Алексей") | 123 | 123 |
+| Чайкин Арсений | [Bittjs](https://github.com/Bittjs "Чайкин Арсений") | 123 | 123 |
+| Ведерников Артём | [1Evgesha1](https://github.com/1Evgesha1 "Ведерников Артём") | 123 | 123 |
