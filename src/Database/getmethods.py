@@ -1,8 +1,8 @@
 import logging
 import datetime
-from connection import *
+from src.Database.connection import *
 
-def getEvacuationStats(date:datetime.date,
+def getEvacuationStats(date:datetime.date = None,
                        date_end=None,
                        lower_num:int=None,
                        max_num:int=None):
@@ -17,14 +17,19 @@ def getEvacuationStats(date:datetime.date,
     # В РАЗРАБОТКЕ
     conn, cur = connect()
 
-    query = f"SELECT * FROM city_ops.evacuation_daily WHERE event_date = '{date.isoformat()}'"
-
-    if date_end is not None:
+    if date_end is not None and date is not None:
         query = (f"SELECT * FROM city_ops.evacuation_daily WHERE event_date >= '{date.isoformat()}' "
                  f"AND event_date <= '{date_end}'")
+    elif date:
+        query = f"SELECT * FROM city_ops.evacuation_daily WHERE event_date = '{date.isoformat()}'"
+    else:
+        query = f"SELECT * FROM city_ops.evacuation_daily WHERE event_date != '1-1-1'"
 
     cur.execute(query)
     data = cur.fetchall()
+
+    cur.close()
+    conn.close()
 
     return data
 
@@ -40,6 +45,9 @@ def getMVDStats():
 
     cur.execute(query)
     data = cur.fetchall()
+
+    cur.close()
+    conn.close()
 
     return data
 
@@ -114,4 +122,9 @@ def getFinesStats(date:datetime.date=None,
     cur.execute(query)
     data = cur.fetchall()
 
+    cur.close()
+    conn.close()
+
     return data
+
+print('a')
