@@ -1,4 +1,3 @@
-import logging
 import datetime
 from src.Database.connection import *
 
@@ -36,7 +35,6 @@ def getEvacuationStats(date:datetime.date = None,
 def getMVDStats():
     """
     Возвращает отфильтрованные (опционально) данные из таблицы БД о штрафах
-    :return:
     """
     # В РАЗРАБОТКЕ
     conn, cur = connect()
@@ -126,5 +124,3 @@ def getFinesStats(date:datetime.date=None,
     conn.close()
 
     return data
-
-print('a')
