@@ -16,7 +16,3 @@ def getEvacuationStats(date, date_end=None):
 
         return data
 
-
-print('a')
-
-
