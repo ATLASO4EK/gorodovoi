@@ -165,7 +165,7 @@ def postFines_api():
         return ans, 400
 
     try:
-        postMVD(
+        postFines(
             date = date,
             cam_vial = cam_vial,
             decisions = decisions,
