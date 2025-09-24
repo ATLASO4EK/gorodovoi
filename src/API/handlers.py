@@ -132,7 +132,7 @@ def postMVD_api():
     if period_text is None:
         period_text = f'{date_start.month} - {date_end.month}.{date_end.year}'
     try:
-        postEvacute(
+        postMVD(
             date_start = date_start,
             date_end = date_end,
             period_text = period_text,
@@ -140,6 +140,37 @@ def postMVD_api():
             deaths = int(deaths),
             injuries = int(injuries),
             death_stat = (deaths/crashes)*100
+        )
+
+        ans = jsonify(True)
+        return ans, 200
+    except:
+        ans = jsonify("Internal server error, can't post data")
+        return ans, 500
+
+@app.route('/api/v1/FinesStats', methods=['POST'])
+def postFines_api():
+    """
+    Запрос, при помощи которого можно добавить в БД данные о штрафах
+    :return: True если удачно
+    """
+    try:
+        date = datetime.datetime.strptime(request.args.get('date'), "%Y-%m-%d")   # date in format YYYY-MM-DD
+        cam_vial = int(request.args.get('cam_vial'))      # int
+        decisions = int(request.args.get('decisions'))        # int
+        fines_sum = float(request.args.get('fines_sum'))        # float
+        collected_sum = float(request.args.get('collected_sum'))        # float
+    except:
+        ans = jsonify('Incorrect type of incoming args')
+        return ans, 400
+
+    try:
+        postMVD(
+            date = date,
+            cam_vial = cam_vial,
+            decisions = decisions,
+            fines_sum = fines_sum,
+            collected_sum = collected_sum
         )
 
         ans = jsonify(True)
