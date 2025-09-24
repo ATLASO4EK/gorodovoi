@@ -82,7 +82,7 @@ def getEvacuationStats_api():
 
 # POST - methods
 @app.route('/api/v1/EvacuationStats', methods=['POST'])
-def postEvacute_api():
+def postEvacuate_api():
     """
     Запрос, при помощи которого можно добавить в БД данные о дневной эвакуации
     :return: True если удачно
@@ -98,16 +98,19 @@ def postEvacute_api():
         return ans, 400
 
     try:
-        postEvacute(
+        suc, _ = postEvacute(
             date = date,
             trucks_num = trucks_num,
             trips_num = trips_num,
             evac_num = evac_num,
             rev_rub = rev_rub
         )
-
-        ans = jsonify(True)
-        return ans, 200
+        if suc:
+            ans = jsonify(True)
+            return ans, 200
+        else:
+            ans = jsonify("Internal SQL-server error, can't post data")
+            return ans, 500
     except:
         ans = jsonify("Internal server error, can't post data")
         return ans, 500
