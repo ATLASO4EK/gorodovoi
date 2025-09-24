@@ -18,12 +18,13 @@ def postEvacuate(date:datetime.date,
 
     conn, cur = connect()
 
-    query = (f"INSERT INTO city_ops.evacuation_daily"
-             f"VALUES ('{date.isoformat()}', '{trucks_num}', '{trips_num}', '{evac_num}', '{rev_rub}')")
+    query = (f"INSERT INTO city_ops.evacuation_daily "
+             f"VALUES ('{date.strftime('%Y-%m-%d')}', '{trucks_num}', '{trips_num}', '{evac_num}', '{rev_rub}')")
 
     try:
         cur.execute(query)
     except Exception as e:
+        print(e)
         return False, e
 
     cur.close()
