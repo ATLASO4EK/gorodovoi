@@ -1,4 +1,4 @@
-function Banner() {
+function Usluga() {
   return (
     <div>
       <h1>Баннеры</h1>
@@ -7,4 +7,4 @@ function Banner() {
   );
 }
 
-export default Banner;
+export default Usluga;

@@ -1,5 +1,5 @@
-import Docs from "./objects/Docs/Docs"
-import "./DocsCategory.css"
+import Docs from "./Docs.jsx"
+import "./../styles/DocsCategory.css"
 
 function DocsCategory({ category, docs }) {
   return (

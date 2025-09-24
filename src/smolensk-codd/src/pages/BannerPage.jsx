@@ -1,12 +1,10 @@
-import News from './../objects/NewsTemp'
+import Banner from './../objects/Banner'
 
-function NewsPage() {
+function BannerPage() {
   return (
-    <div>
-      <h1>Новости</h1>
-      <p>СЕГОДНЯ ПИНГВИНЫ МНОГА КУШАЛИ И БЫЛИ СЧАСТЛИВЫ!</p>
-    </div>
+    <>
+    </>
   );
 }
 
-export default NewsPage;
+export default BannerPage;

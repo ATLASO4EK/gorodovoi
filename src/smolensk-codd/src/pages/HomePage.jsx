@@ -1,7 +1,6 @@
-import React from 'react';
-import Info from './objects/info/info.jsx';
-import Team from './objects/team/team.jsx';
-import DocsCategory from './DocsCategory.jsx';
+import Info from './../objects/Info.jsx';
+import Team from './../objects/Team.jsx';
+import DocsCategory from './../objects/DocsCategory.jsx';
 import placeholder from '/placeholder.pdf';
 
 function HomePage() {

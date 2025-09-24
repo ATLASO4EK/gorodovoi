@@ -1,5 +1,4 @@
-// тута мвп сервисы
-function ServicesPage() {
+function Service() {
   return (
     <div>
       <h1>МВП Сервисы</h1>
@@ -8,4 +7,4 @@ function ServicesPage() {
   );
 }
 
-export default ServicesPage;
+export default Service;

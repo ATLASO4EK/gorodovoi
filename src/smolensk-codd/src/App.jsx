@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import Header from "./Header";
 import './App.css';
 
-import HomePage from './HomePage';
-import Info from './objects/info/info.jsx';
-import Team from './objects/team/team.jsx';
-import MonitoringPage from './objects/MonitoringPage/MonitoringPage.jsx';
-import ServicesPage from './objects/ServicesPage/ServicesPage.jsx';
-import ProjectsPage from './objects/ProjectsPage/ProjectsPage.jsx';
-import NewsPage from './objects/NewsPage/NewsPage.jsx';
-import DocumentsPage from './DocsCategory.jsx';
-import VacanciesPage from './objects/VacanciesPage/VacanciesPage.jsx';
-import ContactsPage from './objects/ContactsPage/ContactsPage.jsx';
-import BannersPage from './objects/BannersPage/BannersPage.jsx';
-import ServicesListPage from './objects/ServicesListPage/ServicesListPage.jsx';
+import HomePage from './pages/HomePage.jsx';
+import InfoPage from './pages/InfoPage.jsx';
+import TeamPage from './pages/TeamPage.jsx';
+import MonitoringPage from './pages/MonitoringPage.jsx';
+import ServicesPage from './pages/ServicesPage.jsx';
+import ProjectsPage from './pages/ProjectsPage.jsx';
+import NewsPage from './pages/NewsPage.jsx';
+import DocumentsPage from './pages/DocsPage.jsx';
+import JobPage from './pages/JobPage.jsx';
+import ContactsPage from './pages/ContactPage.jsx';
+import BannersPage from './pages/BannerPage.jsx';
+import UslugiPage from './pages/UslugiPage'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -22,14 +22,14 @@ function App() {
     switch (currentPage) {
       case 'home':
         return <HomePage />;
-      case 'about':
-        return <Info />;
-      case 'team':
-        return <Team />;
       case 'monitoring':
         return <MonitoringPage />;
       case 'services':
         return <ServicesPage />;
+      case 'about':
+        return <InfoPage />;
+      case 'team':
+        return <TeamPage />;
       case 'projects':
         return <ProjectsPage />;
       case 'news':
@@ -37,13 +37,13 @@ function App() {
       case 'documents':
         return <DocumentsPage />;
       case 'vacancies':
-        return <VacanciesPage />;
+        return <JobPage />;
       case 'contacts':
         return <ContactsPage />;
       case 'banners':
         return <BannersPage />;
       case 'services-list':
-        return <ServicesListPage />;
+        return <UslugiPage />;
       default:
         return <HomePage />;
     }

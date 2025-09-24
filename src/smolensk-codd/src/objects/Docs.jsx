@@ -1,4 +1,4 @@
-import './Docs.css'
+import './../styles/Docs.css'
 import Icon from '/vite.svg'
 
 function Docs({title, file}) {

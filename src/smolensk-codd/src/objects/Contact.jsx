@@ -1,5 +1,4 @@
-// тута контакты
-function ContactsPage() {
+function Contact() {
   return (
     <div>
       <h1>Контакты</h1>
@@ -69,4 +68,4 @@ function ContactsPage() {
   );
 }
 
-export default ContactsPage;
+export default Contact;

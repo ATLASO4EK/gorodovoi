@@ -1,5 +1,4 @@
-// тута вакансии
-function VacanciesPage() {
+function Job() {
   return (
     <div>
       <h1>Вакансии</h1>
@@ -8,4 +7,4 @@ function VacanciesPage() {
   );
 }
 
-export default VacanciesPage;
+export default Job;

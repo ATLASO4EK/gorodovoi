@@ -1,5 +1,4 @@
 import Smolensk from '/smolensk.svg'
-import './info.css'
 
 function Info() {  
   return (

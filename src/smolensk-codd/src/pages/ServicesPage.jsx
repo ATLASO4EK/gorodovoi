@@ -1,5 +1,4 @@
-// тута услуги................
-function ServicesListPage() {
+function ServicesPage() {
   return (
     <div>
       <h1>Услуги</h1>
@@ -8,4 +7,4 @@ function ServicesListPage() {
   );
 }
 
-export default ServicesListPage;
+export default ServicesPage;

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import Person1 from '/person1.jpg'
-import './team.css'
 
 function Team() {  
   const [count, setCount] = useState(0)
