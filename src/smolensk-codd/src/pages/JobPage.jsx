@@ -1,13 +1,39 @@
 import Job from './../objects/Job'
-import placeholder from '/vite.svg'
 
 function JobPage() {
   const jobs = [
-    { title: "Frontend Developer", image: placeholder, description: "React, Tailwind, JS" },
-    { title: "Backend Developer", image: placeholder, description: "Node.js, Express, MongoDB" },
-    { title: "Designer", image: placeholder, description: "Figma, UI/UX" },
-    { title: "QA Engineer", image: placeholder, description: "Автотесты, Selenium" },
-    { title: "QA Engineer", image: placeholder, description: "Автотесты, Selenium" },
+    {
+      date: "Сегодня в 16:22",
+      title: "Frontend Developer",
+      salary: "от 120 000 ₽",
+      company: "ООО АйТи",
+      location: "Москва • Площадь Ильича",
+      description: "Разработка клиентских интерфейсов на React. Поддержка существующих проектов.",
+    },
+    {
+      date: "Сегодня в 15:10",
+      title: "Backend Developer",
+      salary: "от 150 000 ₽",
+      company: "Tech Corp",
+      location: "Санкт-Петербург • м. Петроградская",
+      description: "Проектирование и разработка API на Node.js. Работа с базами данных.",
+    },
+    {
+      date: "Вчера",
+      title: "Designer",
+      salary: "По договорённости",
+      company: "Design Studio",
+      location: "Казань",
+      description: "Создание UI/UX макетов в Figma. Взаимодействие с разработчиками.",
+    },
+    {
+      date: "Сегодня",
+      title: "QA Engineer",
+      salary: "от 90 000 ₽",
+      company: "QA Systems",
+      location: "Екатеринбург",
+      description: "Написание автотестов, ручное тестирование, работа с CI/CD.",
+    },
   ];
 
   return (

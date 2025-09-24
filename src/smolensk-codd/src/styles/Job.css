@@ -1,47 +1,138 @@
-.jobs-grid {
+.job-card {
+  --radius: 12px;
+  
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  padding: 1rem 1.2rem;
+  max-width: 600px;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.info-card {
-  --size: 22vh; /* 🔑 базовый размер — регулируй его */
-
-  flex: 1 1 calc(33.333% - 2rem); /* до 3 в строку */
-  max-width: calc(33.333% - 2rem);
-
-  aspect-ratio: 3 / 2;
-  border: 2px solid #000;
-  border-radius: calc(var(--size) * 0.05);
-  background: gray;
-
-  display: flex;
-  align-items: center;
-  gap: calc(var(--size) * 0.08);
-  padding: calc(var(--size) * 0.08);
+  flex-direction: column;
+  gap: 0.6rem;
 
   box-sizing: border-box;
-  overflow: hidden;
 }
 
-.info-card-image {
-  flex-shrink: 0;
-  width: calc(var(--size) * 0.8);
-  height: auto;
-  object-fit: cover;
-  border-radius: calc(var(--size) * 0.03);
+/* Верх */
+.job-header {
+  font-size: 0.9rem;
+  color: #777;
 }
 
-.info-card-title {
+/* Заголовок и зарплата */
+.job-title {
+  color:#107510;
+  font-size: 1.2rem;
   margin: 0;
-  font-size: calc(var(--size) * 0.18);
-  line-height: 1.2;
+  font-weight: 600;
 }
 
-.info-card-description {
-  margin: 0.3em 0 0;
-  font-size: calc(var(--size) * 0.12);
-  line-height: 1.2;
+.job-salary {
+  color: #005e5d;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+/* Компания и локация */
+.job-company {
+  margin: 0.2rem 0 0;
+  color: #008000;
+  font-weight: 500;
+}
+
+.job-location {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Описание */
+.job-description {
+  margin: 0.4rem 0 0;
+  color: #333;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Низ карточки */
+.job-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.job-apply {
+  background: #009e60;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.job-apply:hover {
+  background: #007a48;
+}
+
+.job-actions {
+  display: flex;
+  gap: 1rem;
+  font-size: 1.2rem;
+  color: #555;
+  cursor: pointer;
+}
+
+.jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 1200px; /* чтобы не растягивалось на всю ширину */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.job-card {
+  height: 100%; /* карточки растягиваются одинаково */
+}
+
+.center-card {
+  justify-self: center;
+}
+
+.job-footer {
+  display: flex;
+  flex-direction: column; /* вертикально */
+  align-items: center; /* по центру */
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.job-salary {
+  font-weight: 500;
+  color: #005e5d;
+  text-align: center;
+}
+
+.job-apply {
+  width: calc(100% - 2rem); /* растягиваем с отступами */
+  max-width: 300px;
+  padding: 0.5rem 1rem;
+  background: #009e60;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.job-apply:hover {
+  background: #007a48;
 }
