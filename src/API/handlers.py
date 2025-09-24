@@ -153,7 +153,7 @@ def postMVD_api():
         ans = jsonify(True)
         return ans, 200
     except:
-        ans = jsonify("Internal server error, can't post data")
+        ans = jsonify("Internal SQL-server error, can't post data")
         return ans, 500
 
 @app.route('/api/v1/FinesStats', methods=['POST'])

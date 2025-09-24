@@ -28,8 +28,41 @@ def postEvacuate(date:datetime.date,
 
     return True, None
 
-def postMVD():
-    pass
+def postMVD(date_start:datetime.date,
+            date_end:datetime.date,
+            period_text:str,
+            crashes:int,
+            deaths:int,
+            injuries:int,
+            death_stat:float):
 
-def postFines():
-    pass
+    conn, cur = connect()
+
+    data = (date_start.strftime('%Y-%m-%d'), date_end.strftime('%Y-%m-%d'), period_text, crashes, deaths, injuries, death_stat)
+    query = "INSERT INTO city_ops.mvd (event_date, tow_trucks_on_line, trips_count, evacuations_count, impound_revenue_rub) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+
+    cur.execute(query, data)
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return True, None
+
+def postFines(date:datetime.date,
+              cam_vial:int,
+              decisions:int,
+              fines_sum:float,
+              collected_sum:float):
+    conn, cur = connect()
+
+    data = (date.strftime('%Y-%m-%d'), cam_vial, decisions, fines_sum, collected_sum)
+    query = "INSERT INTO city_ops.evacuation_daily (event_date, tow_trucks_on_line, trips_count, evacuations_count, impound_revenue_rub) VALUES (%s, %s, %s, %s, %s);"
+
+    cur.execute(query, data)
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return True, None
