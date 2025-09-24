@@ -54,3 +54,5 @@ def getFullNews():
         return False, e
 
     return True, news
+
+print('a')
