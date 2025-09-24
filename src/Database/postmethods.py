@@ -15,17 +15,12 @@ def postEvacuate(date:datetime.date,
     :param rev_rub: прибыль штраф-стоянки
     :return: True если успешно
     """
-
     conn, cur = connect()
-    print()
-    query = (f"INSERT INTO city_ops.evacuation_daily "
+
+    query = (f"INSERT INTO city_ops.evacuation_daily (event_date, tow_trucks_on_line, trips_count, evacuations_count, impound_revenue_rub)"
              f"VALUES (TO_DATE('{date.strftime('%Y-%m-%d')}', 'YYYY-MM-DD'), '{trucks_num}', '{trips_num}', '{evac_num}', '{rev_rub}')")
 
-    try:
-        cur.execute(query)
-    except Exception as e:
-        print(e)
-        return False, e
+    cur.execute(query)
 
     cur.close()
     conn.close()
@@ -37,3 +32,5 @@ def postMVD():
 
 def postFines():
     pass
+
+status, _ = postEvacuate(datetime.date(1914, 1, 1), 0, 0, 0, 0.0)
