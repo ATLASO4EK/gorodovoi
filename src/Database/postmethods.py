@@ -17,10 +17,11 @@ def postEvacuate(date:datetime.date,
     """
     conn, cur = connect()
 
-    query = (f"INSERT INTO city_ops.evacuation_daily (event_date, tow_trucks_on_line, trips_count, evacuations_count, impound_revenue_rub)"
-             f"VALUES (TO_DATE('{date.strftime('%Y-%m-%d')}', 'YYYY-MM-DD'), '{trucks_num}', '{trips_num}', '{evac_num}', '{rev_rub}')")
+    data = (date.strftime('%Y-%m-%d'), trucks_num, trips_num, evac_num, rev_rub)
+    query = ("INSERT INTO city_ops.evacuation_daily (event_date, tow_trucks_on_line, trips_count, evacuations_count, impound_revenue_rub) VALUES (%s, %s, %s, %s, %s);")
 
-    cur.execute(query)
+    cur.execute(query, data)
+    conn.commit()
 
     cur.close()
     conn.close()
@@ -32,5 +33,3 @@ def postMVD():
 
 def postFines():
     pass
-
-status, _ = postEvacuate(datetime.date(1914, 1, 1), 0, 0, 0, 0.0)

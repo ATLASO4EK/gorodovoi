@@ -19,11 +19,12 @@ def getEvacuationStats(date:datetime.date = None,
     if date_end is not None and date is not None:
         query = (f"SELECT * FROM city_ops.evacuation_daily WHERE event_date >= '{date.isoformat()}' "
                  f"AND event_date <= '{date_end}'")
-    elif date:
+    elif date is not None:
         query = f"SELECT * FROM city_ops.evacuation_daily WHERE event_date = '{date.isoformat()}'"
     else:
         query = f"SELECT * FROM city_ops.evacuation_daily WHERE event_date != '1-1-1'"
-
+    print(date)
+    print(query)
     cur.execute(query)
     data = cur.fetchall()
 

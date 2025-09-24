@@ -75,7 +75,10 @@ def getEvacuationStats_api():
     except:
         date_end = None
 
-    data = getEvacuationStats()
+    data = getEvacuationStats(
+        date,
+        date_end
+    )
     ans = jsonify(list(map(list, data)))
 
     return ans, 200
