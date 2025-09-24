@@ -31,6 +31,7 @@ def postEvacuate(date:datetime.date,
 def postMVD(date_start:datetime.date,
             date_end:datetime.date,
             period_text:str,
+            region:str,
             crashes:int,
             deaths:int,
             injuries:int,
@@ -38,11 +39,14 @@ def postMVD(date_start:datetime.date,
 
     conn, cur = connect()
 
-    data = (date_start.strftime('%Y-%m-%d'), date_end.strftime('%Y-%m-%d'), period_text, crashes, deaths, injuries, death_stat)
-    query = "INSERT INTO city_ops.mvd (event_date, tow_trucks_on_line, trips_count, evacuations_count, impound_revenue_rub) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+    data = (region, period_text, date_start.strftime('%Y-%m-%d'), date_end.strftime('%Y-%m-%d'), crashes, deaths, injuries, death_stat)
+    query = "INSERT INTO city_ops.mvd (region, period_label, period_start, period_end, crashes_with_victims, deaths, injuries, deaths_per_100_victims) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"
 
-    cur.execute(query, data)
-    conn.commit()
+    try:
+        cur.execute(query, data)
+        conn.commit()
+    except Exception as e:
+        print(e)
 
     cur.close()
     conn.close()
@@ -57,10 +61,12 @@ def postFines(date:datetime.date,
     conn, cur = connect()
 
     data = (date.strftime('%Y-%m-%d'), cam_vial, decisions, fines_sum, collected_sum)
-    query = "INSERT INTO city_ops.evacuation_daily (event_date, tow_trucks_on_line, trips_count, evacuations_count, impound_revenue_rub) VALUES (%s, %s, %s, %s, %s);"
-
-    cur.execute(query, data)
-    conn.commit()
+    query = "INSERT INTO city_ops.fines (report_date, cams_violations_cum, decisions_cum, fines_sum_cum, collected_sum_cum) VALUES (%s, %s, %s, %s, %s);"
+    try:
+        cur.execute(query, data)
+        conn.commit()
+    except Exception as e:
+        print(e)
 
     cur.close()
     conn.close()

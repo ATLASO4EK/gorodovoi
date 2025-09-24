@@ -130,6 +130,7 @@ def postMVD_api():
         date_start = datetime.datetime.strptime(request.args.get('date_start'), "%Y-%m-%d")   # date in format YYYY-MM-DD
         date_end = datetime.datetime.strptime(request.args.get('date_end'), "%Y-%m-%d")   # date in format YYYY-MM-DD
         period_text = request.args.get('period_text')    # текстовое описание периода (необязательное), str
+        region = request.args.get('region')    # текстовое описание региона (необязательное), str
         crashes = float(request.args.get('crashes'))      # int
         deaths = float(request.args.get('deaths'))        # int
         injuries = float(request.args.get('injuries'))        # int
@@ -138,12 +139,13 @@ def postMVD_api():
         return ans, 400
 
     if period_text is None:
-        period_text = f'{date_start.month} - {date_end.month}.{date_end.year}'
+        period_text = f'{date_start.month}.{date_start.year} - {date_end.month}.{date_end.year}'
     try:
         postMVD(
             date_start = date_start,
             date_end = date_end,
             period_text = period_text,
+            region = region,
             crashes = int(crashes),
             deaths = int(deaths),
             injuries = int(injuries),
