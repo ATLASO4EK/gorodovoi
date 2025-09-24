@@ -98,7 +98,7 @@ def postEvacuate_api():
         return ans, 400
 
     try:
-        suc, _ = postEvacute(
+        suc, _ = postEvacuate(
             date = date,
             trucks_num = trucks_num,
             trips_num = trips_num,
