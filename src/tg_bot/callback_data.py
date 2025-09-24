@@ -1,4 +1,6 @@
-from message_handler import *
+from bot import bot
+from telebot import types
+from message_handler import main_page
 
 @bot.callback_query_handler(func= lambda callback: callback.data == 'reg')
 async def check_callback(callback):

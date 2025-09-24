@@ -1,4 +1,5 @@
 from bot import *
+from telebot import types
 
 @bot.message_handler(commands=['start'])
 async def welcome_page(message):
