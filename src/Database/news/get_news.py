@@ -7,7 +7,7 @@ def getLastNews():
     """
     conn, cur = connect()
 
-    query = 'SELECT * FROM public.news ORDER BY datetime DESC LIMIT 4'
+    query = 'SELECT datetime, author, header, short_text, full_text, image FROM public.news ORDER BY id DESC LIMIT 4'
 
     try:
         cur.execute(query)
@@ -25,7 +25,7 @@ def getLastNews_tg():
     """
     conn, cur = connect()
 
-    query = 'SELECT author, header, short_text FROM public.news ORDER BY datetime DESC LIMIT 2'
+    query = 'SELECT author, header, short_text FROM public.news ORDER BY id DESC LIMIT 2'
 
     try:
         cur.execute(query)
@@ -43,7 +43,7 @@ def getFullNews():
     """
     conn, cur = connect()
 
-    query = 'SELECT * FROM public.news'
+    query = 'SELECT datetime, author, header, short_text, full_text, image FROM public.news'
 
     try:
         cur.execute(query)
@@ -53,5 +53,3 @@ def getFullNews():
         return False, e
 
     return True, news
-
-print('a')
