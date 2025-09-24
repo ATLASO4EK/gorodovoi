@@ -1,0 +1,22 @@
+.info {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.info-title {
+  text-align: center;
+  font-size: 2rem;
+  margin: 20px 0;
+}
+
+.info-p {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+  font-size: 1.2rem;
+  line-height: 1.6;
+}

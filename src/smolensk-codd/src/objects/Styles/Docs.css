@@ -1,0 +1,43 @@
+.square-container {
+  /* ← здесь задаём "источник правды" — размер квадрата */
+  --size: 20vh;                 
+  width: var(--size);
+  aspect-ratio: 1 / 1;
+
+  /* скругление, привязанное к размеру квадрата */
+  border-radius: calc(var(--size) * 0.06);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* gap и padding тоже завязаны на --size, чтобы всё масштабировалось вместе */
+  gap: calc(var(--size) * 0.04);
+  padding: calc(var(--size) * 0.06);
+
+  box-sizing: border-box;
+  text-align: center;
+  background: white;
+
+  /* если текст всё же станет слишком большим — обрежем и не дадим "выползти" */
+  overflow: hidden;
+}
+
+/* иконка масштабируется относительно квадрата */
+.square-container img {
+  /* ширина иконки = 35% от стороны квадрата */
+  width: calc(var(--size) * 0.35);
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+
+/* заголовок внутри квадрата — размер шрифта прямо от --size */
+.doc-title {
+  margin: 0;
+  /* font-size завязан на --size: будет расти/уменьшаться вместе с квадратиком */
+  font-size: calc(var(--size) * 0.10);
+  line-height: 1.05;
+  text-align: center;
+}

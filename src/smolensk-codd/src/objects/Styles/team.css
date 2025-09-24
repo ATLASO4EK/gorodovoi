@@ -1,0 +1,30 @@
+.info-title {
+  text-align: center;
+  font-size: 2rem;
+  margin: 20px 0;
+}
+
+.person-1, .person-2, .person-3, 
+.person-4, .person-5, .person-6 {
+  display: inline-block;
+  width: 30%;
+  margin: 10px;
+  text-align: center;
+  vertical-align: top;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.Person-1, .Person-2, .Person-3,
+.Person-4, .Person-5, .Person-6 {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.person {
+  margin: 10px 0;
+  font-size: 1.2rem;
+}
