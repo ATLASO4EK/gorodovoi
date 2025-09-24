@@ -1,3 +1,4 @@
+import pandas as pd
 from flask import request, jsonify
 
 from src.API.app import app
