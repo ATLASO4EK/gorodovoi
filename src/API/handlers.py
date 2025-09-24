@@ -63,11 +63,12 @@ def getEvacuationStats_api():
     Возвращает данные из БД с указанными в запросе фильтрами
     """
     date = request.args.get('date')         # date in format YYYY-MM-DD
+    print(date)
     try:
         date = datetime.datetime.strptime(date, "%Y-%m-%d")
     except:
         date = None
-
+    print(date)
     date_end = request.args.get('date_end')         # date in format YYYY-MM-DD
     try:
         date_end = datetime.datetime.strptime(date_end, "%Y-%m-%d")
@@ -93,26 +94,27 @@ def postEvacuate_api():
         trips_num = int(request.args.get('trips_num'))      # int
         evac_num = int(request.args.get('evac_num'))        # int
         rev_rub = float(request.args.get('revenue_rub'))    # float or decimal
-    except:
+    except Exception as e:
         ans = jsonify('Incorrect type of incoming args')
         return ans, 400
 
     try:
-        suc, _ = postEvacuate(
+        status, e = postEvacuate(
             date = date,
             trucks_num = trucks_num,
             trips_num = trips_num,
             evac_num = evac_num,
             rev_rub = rev_rub
         )
-        if suc:
+        if status:
             ans = jsonify(True)
             return ans, 200
         else:
-            ans = jsonify("Internal SQL-server error, can't post data")
+            ans = jsonify(["Internal SQL-server error, can't post data", e])
             return ans, 500
-    except:
-        ans = jsonify("Internal server error, can't post data")
+
+    except Exception as e:
+        ans = jsonify(["Internal server error, can't post data", e])
         return ans, 500
 
 @app.route('/api/v1/MVDStats', methods=['POST'])
