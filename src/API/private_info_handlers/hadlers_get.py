@@ -1,7 +1,7 @@
 from flask import request, jsonify
 
-from src.Database.getmethods import *
-from src.Database.postmethods import *
+from src.Database.get_cityops import *
+from src.Database.post_cityops import *
 from src.API.app import app
 
 @app.route('/api/v1/FinesStats', methods=['GET'])
