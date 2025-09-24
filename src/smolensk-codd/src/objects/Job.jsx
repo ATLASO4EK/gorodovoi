@@ -1,8 +1,13 @@
-function Job() {
+import "./../styles/Job.css"
+
+function Job({image, title, description }) {
   return (
-    <div>
-      <h1>Вакансии</h1>
-      <p>балбалабалааб</p>
+    <div className="info-card">
+      <img src={image} alt={title} className="info-card-image" />
+      <div className="info-card-content">
+        <h3 className="info-card-title">{title}</h3>
+        <p className="info-card-description">{description}</p>
+      </div>
     </div>
   );
 }
