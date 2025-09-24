@@ -16,6 +16,9 @@ def getLastNews():
         print(e)
         return False, e
 
+    cur.close()
+    conn.close()
+
     return True, news
 
 def getLastNews_tg():
@@ -34,6 +37,9 @@ def getLastNews_tg():
         print(e)
         return False, e
 
+    cur.close()
+    conn.close()
+
     return True, news
 
 def getFullNews():
@@ -51,5 +57,8 @@ def getFullNews():
     except Exception as e:
         print(e)
         return False, e
+
+    cur.close()
+    conn.close()
 
     return True, news
