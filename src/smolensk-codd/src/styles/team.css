@@ -1,30 +1,715 @@
-.info-title {
-  text-align: center;
-  font-size: 2rem;
-  margin: 20px 0;
+@import url('https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+.team-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 16px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.person-1, .person-2, .person-3, 
-.person-4, .person-5, .person-6 {
-  display: inline-block;
-  width: 30%;
-  margin: 10px;
-  text-align: center;
-  vertical-align: top;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
+.team-container.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.Person-1, .Person-2, .Person-3,
-.Person-4, .Person-5, .Person-6 {
-  width: 100px;
-  height: 100px;
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 30px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.breadcrumb a {
+  color: #62A744;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.breadcrumb a:hover {
+  color: #fff;
+  background: #62A744;
+}
+
+.breadcrumb-divider {
+  color: #999;
+}
+
+.breadcrumb-current {
+  color: #333;
+  font-weight: 600;
+}
+
+.team-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.team-header h1 {
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 2.5rem;
+  color: #62A744;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.team-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+
+.mission-section {
+  background: linear-gradient(135deg, #f8fff8 0%, #f0f7f0 100%);
+  border-radius: 20px;
+  padding: 30px;
+  margin: 40px 0;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  border-left: 4px solid #62A744;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.mission-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(98, 167, 68, 0.15);
+}
+
+.mission-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  color: #62A744;
+}
+
+.mission-section:hover .mission-icon {
+  transform: rotate(15deg) scale(1.1);
+  color: #62A744;
+}
+
+.mission-icon svg {
+  width: 100%;
+  height: 100%;
+  transition: all 0.4s ease;
+}
+
+.mission-section:hover .mission-icon svg {
+  filter: drop-shadow(0 4px 8px #3250265e);
+}
+
+.mission-content h2 {
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 1.8rem;
+  color: #62A744;
+  margin-bottom: 16px;
+  transition: color 0.3s ease;
+}
+
+.mission-section:hover .mission-content h2 {
+  color: #62A744; 
+}
+
+.mission-content p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #444;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.mission-section:hover .mission-content p {
+  color: #666;
+}
+
+
+.team-members {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin: 60px 0;
+}
+
+.member-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(98, 167, 68, 0.1);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border: 1px solid #e8f5e8;
+  position: relative;
+  overflow: hidden;
+}
+
+.member-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(98, 167, 68, 0.05), transparent);
+  transition: left 0.6s ease;
+}
+
+.member-card:hover::before {
+  left: 100%;
+}
+
+.member-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(98, 167, 68, 0.15);
+}
+
+.director {
+  position: relative;
+  border: 2px solid #62A744;
+}
+
+.member-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #62A744;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+
+.member-card.director:hover .member-badge {
+  background: #8B00FF;
+}
+
+.member-photo {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 20px;
   border-radius: 50%;
-  object-fit: cover;
+  overflow: hidden;
+  border: 3px solid #62A744;
+  transition: all 0.3s ease;
+  background: #f8f8f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
-.person {
-  margin: 10px 0;
+.director .member-photo {
+  width: 160px;
+  height: 160px;
+  border-width: 4px;
+}
+
+
+.member-card.placeholder:hover .member-photo {
+  border-color: #8B00FF;
+}
+
+
+.member-card.director:hover .member-photo {
+  border-color: #8B00FF;
+}
+
+.member-card:hover .member-photo {
+  transform: scale(1.05);
+}
+
+.member-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.member-card:hover .member-photo img {
+  transform: scale(1.1);
+}
+
+.photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(98, 167, 68, 0.1);
+  border-radius: 50%;
+  color: #62A744;
+  transition: all 0.3s ease;
+}
+
+.member-card.placeholder:hover .photo-placeholder {
+  color: #8B00FF;
+  background: rgba(139, 0, 255, 0.1);
+}
+
+.photo-placeholder svg {
+  width: 60px;
+  height: 60px;
+  transition: all 0.3s ease;
+}
+
+.member-card:hover .photo-placeholder svg {
+  transform: scale(1.2) rotate(5deg);
+}
+
+.photo-fallback {
+  display: none;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  color: #62A744;
+  transition: color 0.3s ease;
+}
+
+.member-card.director:hover .photo-fallback {
+  color: #8B00FF;
+}
+
+.user-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.position-badge {
+  display: inline-block;
+  background: #62A744;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.member-card:hover .position-badge {
+  background: #8B00FF;
+}
+
+.member-info h3 {
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.member-description {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 15px 0;
+}
+
+.achievements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.achievement-tag {
+  background: rgba(98, 167, 68, 0.1);
+  color: #62A744;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.member-card:hover .achievement-tag {
+  background: rgba(139, 0, 255, 0.1);
+  color: #8B00FF;
+}
+
+.placeholder-text {
+  font-family: 'Tenor Sans', sans-serif;
   font-size: 1.2rem;
+  color: #62A744;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 10px;
+  transition: color 0.3s ease;
+}
+
+.member-card.placeholder:hover .placeholder-text {
+  color: #8B00FF;
+}
+
+.placeholder-description {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.join-button {
+  background: transparent;
+  border: 2px solid #62A744;
+  color: #62A744;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.join-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(98, 167, 68, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.join-button:hover::before {
+  left: 100%;
+}
+
+.join-button:hover {
+  background: #62A744;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(98, 167, 68, 0.3);
+}
+
+/* Фиолетовый при нажатии на кнопки */
+.join-button:active {
+  background: #8B00FF;
+  border-color: #8B00FF;
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(139, 0, 255, 0.4);
+}
+
+/* Статистика */
+.team-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin: 60px 0;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 30px;
+  background: #f8fff8;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #62A744;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.stat-item:hover::before {
+  transform: scaleX(1);
+}
+
+.stat-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(98, 167, 68, 0.1);
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  transition: transform 0.3s ease;
+}
+
+.stat-item:hover .stat-icon {
+  transform: scale(1.2) rotate(5deg);
+}
+
+.stat-number {
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 2.5rem;
+  color: #62A744;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+
+.team-cta {
+  background: linear-gradient(135deg, #62A744 0%, #325026 100%);
+  border-radius: 20px;
+  padding: 40px 30px;
+  text-align: center;
+  color: white;
+  margin-top: 60px;
+}
+
+.cta-content h2 {
+  font-family: 'Tenor Sans', sans-serif;
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.cta-content p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  opacity: 0.9;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-button {
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid white;
+}
+
+.cta-button.primary {
+  background: white;
+  color: #62A744;
+}
+
+.cta-button.secondary {
+  background: transparent;
+  color: white;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.cta-button.primary:hover {
+  background: #f8f8f8;
+}
+
+.cta-button.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+
+.cta-button:active {
+  background: #8B00FF;
+  border-color: #8B00FF;
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(139, 0, 255, 0.4);
+}
+
+.cta-button.primary:active {
+  color: white;
+}
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.member-card {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.member-card:nth-child(1) { animation-delay: 0.1s; }
+.member-card:nth-child(2) { animation-delay: 0.2s; }
+.member-card:nth-child(3) { animation-delay: 0.3s; }
+
+.stat-item {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.stat-item:nth-child(1) { animation-delay: 0.4s; }
+.stat-item:nth-child(2) { animation-delay: 0.5s; }
+.stat-item:nth-child(3) { animation-delay: 0.6s; }
+
+.team-cta {
+  animation: fadeInUp 0.6s ease forwards;
+  animation-delay: 0.7s;
+}
+
+
+@media (min-width: 768px) {
+  .team-container {
+    padding: 40px 32px;
+  }
+  
+  .team-header h1 {
+    font-size: 3rem;
+  }
+  
+  .team-members {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+  }
+  
+  .member-card {
+    flex: 1;
+    min-width: 280px;
+    max-width: 320px;
+  }
+  
+  .director {
+    order: 2;
+    flex: 1.2;
+    min-width: 320px;
+    max-width: 380px;
+  }
+  
+  .placeholder:first-child {
+    order: 1;
+  }
+  
+  .placeholder:last-child {
+    order: 3;
+  }
+  
+  .team-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .mission-section {
+    padding: 40px;
+  }
+}
+
+
+@media (min-width: 1280px) {
+  .team-container {
+    padding: 60px 20px;
+  }
+  
+  .team-header h1 {
+    font-size: 4rem;
+  }
+  
+  .team-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .mission-content h2 {
+    font-size: 2.2rem;
+  }
+  
+  .mission-content p {
+    font-size: 1.1rem;
+  }
+  
+  .team-members {
+    gap: 40px;
+  }
+  
+  .member-photo {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .director .member-photo {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .team-cta {
+    padding: 60px 40px;
+  }
+  
+  .cta-content h2 {
+    font-size: 2.5rem;
+  }
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .team-container,
+  .member-card,
+  .join-button,
+  .stat-item,
+  .cta-button,
+  .mission-section,
+  .mission-icon,
+  .photo-placeholder svg {
+    transition: none;
+    animation: none;
+  }
+  
+  .member-card::before,
+  .join-button::before,
+  .stat-item::before {
+    display: none;
+  }
+  
+  .mission-section:hover .mission-icon,
+  .stat-item:hover .stat-icon,
+  .member-card:hover .photo-placeholder svg {
+    transform: none;
+  }
+}
+
+.join-button:focus,
+.cta-button:focus {
+  outline: 3px solid #8B00FF;
+  outline-offset: 2px;
 }

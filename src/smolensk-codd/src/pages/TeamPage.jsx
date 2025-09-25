@@ -1,8 +1,9 @@
-import Team from './../objects/Team'
+import Team from './../objects/Team.jsx';
 
 function TeamPage() {
   return (
     <>
+    <Team/>
     </>
   );
 }
