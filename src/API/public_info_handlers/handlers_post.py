@@ -5,14 +5,14 @@ import datetime
 from src.Database.news.post_news import  postNews
 
 @app.route('/api/v1/News',methods=['POST'])
-def postNews():
+def postNews_api():
     try:
         date = datetime.datetime.now()
         author = request.args.get('author')
         header = request.args.get('header')
         short_text = request.args.get('short_text')
         full_text = request.args.get('full_text')
-        img = request.files.get('img')
+        image = request.files.get('image')
     except Exception as e:
         return jsonify(e), 400
 
@@ -23,7 +23,7 @@ def postNews():
             header = header,
             short_text = short_text,
             full_text = full_text,
-            img = img
+            image = image
         )
         return jsonify(True), 200
 
