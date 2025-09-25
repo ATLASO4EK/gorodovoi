@@ -3,7 +3,7 @@ from flask import request, jsonify
 from src.Database.cityops.post_cityops import *
 from src.API.app import app
 
-# POST - methods
+# Пост скрытых данных об эвакуации
 @app.route('/api/v1/EvacuationStats', methods=['POST'])
 def postEvacuate_api():
     """
@@ -39,6 +39,7 @@ def postEvacuate_api():
         ans = jsonify(["Internal server error, can't post data", e])
         return ans, 500
 
+# Пост скрытых данных от МВД
 @app.route('/api/v1/MVDStats', methods=['POST'])
 def postMVD_api():
     """
@@ -77,6 +78,7 @@ def postMVD_api():
         ans = jsonify("Internal SQL-server error, can't post data")
         return ans, 500
 
+# Пост скрытых данных о штрафах
 @app.route('/api/v1/FinesStats', methods=['POST'])
 def postFines_api():
     """
