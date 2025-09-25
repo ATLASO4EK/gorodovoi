@@ -1,6 +1,7 @@
 from src.Database.connection import *
 
-def delNews(header:str):
+def delNews(id_int:int=None,
+            header:str=None):
     """
     Удаляет новость из БД по заголовку
     :param header:
@@ -9,7 +10,15 @@ def delNews(header:str):
 
     conn, cur = connect()
 
-    query = f"DELETE FROM public.news WHERE header = '{header}';"
+    if id_int is not None and header is not None:
+        query = f"DELETE FROM public.news WHERE id = '{id_int}' AND header = {header};"
+    elif id_int is not None:
+        query = f"DELETE FROM public.news WHERE id = '{id_int}';"
+    elif id_int is None and header is not None:
+        query = f"DELETE FROM public.news WHERE header = '{header}';"
+    else:
+        return 'Not enough argss'
+
 
     try:
         cur.execute(query)
@@ -18,9 +27,9 @@ def delNews(header:str):
         print(e)
         cur.close()
         conn.close()
-        return False, e
+        return e
 
     cur.close()
     conn.close()
 
-    return True, None
+    return True
