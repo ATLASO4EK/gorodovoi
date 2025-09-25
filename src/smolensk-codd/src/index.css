@@ -10,6 +10,14 @@
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.container p {
+  color: #fff;
+  padding: 20px;
 }
 
 body {
