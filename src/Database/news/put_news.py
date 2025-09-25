@@ -2,7 +2,7 @@ import datetime
 
 from src.Database.connection import *
 
-def putNews(id:int,
+def putNews(id_int:int,
             date:datetime.datetime,
             author:str,
             header:str,
@@ -16,7 +16,7 @@ def putNews(id:int,
 
     conn, cur = connect()
 
-    data = (date, author, header, short_text, full_text, image, id)
+    data = (date, author, header, short_text, full_text, image, id_int)
     query = ("UPDATE public.news "
              "SET "
              "datetime = %s, "
