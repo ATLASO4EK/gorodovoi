@@ -4,7 +4,7 @@ from flask import  request, jsonify
 from src.Database.news.get_news import getFullNews, getLastNews, getLastNews_tg
 
 @app.route('/api/v1/News', methods=['GET'])
-def getNews():
+def getNews_api():
     try:
         filters = request.args.get('filters')
     except:
