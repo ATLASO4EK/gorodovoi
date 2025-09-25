@@ -31,6 +31,9 @@ def putNews(id_int:int,
     try:
         cur.execute(query, data)
         conn.commit()
+
+        cur.close()
+        conn.close()
         return True
 
     except Exception as e:
