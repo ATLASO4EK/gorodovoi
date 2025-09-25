@@ -14,12 +14,12 @@ def getLastNews():
         news = cur.fetchall()
     except Exception as e:
         print(e)
-        return False, e
+        return e
 
     cur.close()
     conn.close()
 
-    return True, news
+    return news
 
 def getLastNews_tg():
     """
@@ -35,12 +35,12 @@ def getLastNews_tg():
         news = cur.fetchall()
     except Exception as e:
         print(e)
-        return False, e
+        return e
 
     cur.close()
     conn.close()
 
-    return True, news
+    return news
 
 def getFullNews():
     """
@@ -56,9 +56,9 @@ def getFullNews():
         news = cur.fetchall()
     except Exception as e:
         print(e)
-        return False, e
+        return e
 
     cur.close()
     conn.close()
 
-    return True, news
+    return news
