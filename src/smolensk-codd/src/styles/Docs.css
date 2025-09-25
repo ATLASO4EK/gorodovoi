@@ -1,6 +1,6 @@
 .square-container {
   /* ← здесь задаём "источник правды" — размер квадрата */
-  --size: 20vh;                 
+  --size: 40vh;                 
   width: var(--size);
   aspect-ratio: 1 / 1;
 
@@ -37,7 +37,7 @@
 .doc-title {
   margin: 0;
   /* font-size завязан на --size: будет расти/уменьшаться вместе с квадратиком */
-  font-size: calc(var(--size) * 0.10);
+  font-size: calc(var(--size) * 0.075);
   line-height: 1.05;
   text-align: center;
 }

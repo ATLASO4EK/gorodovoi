@@ -1,6 +1,6 @@
 import Info from './../objects/Info.jsx';
 import Team from './../objects/Team.jsx';
-import DocsCategory from './../objects/DocsCategory.jsx';
+import DocsCategory from './../objects/Docs.jsx';
 import placeholder from '/placeholder.pdf';
 
 function HomePage() {
