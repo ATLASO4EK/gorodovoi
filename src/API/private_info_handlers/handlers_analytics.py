@@ -28,11 +28,21 @@ def getAnalytics():
         data = getFinesStats(date=date_start, date_end=date_end)
         df = pd.DataFrame(columns=['date', 'cam_vial', 'decisions', 'fines_sum', 'collected_sum'], data = data)
         del data
+        # sum
+        sum_cam = df['cam_vial'].sum().item()
+        sum_des = df['decisions'].sum().item()
+        sum_fin = df['finec_sum'].sum().item()
+        sum_col = df['collected_sum'].sum().item()
+
+        # percents
+        per_col = (sum_col/sum_fin)*100
+        per_cam_right = (sum_cam/sum_des)*100
+        avg_fin_des = (sum_fin/sum_des)
+
+        return jsonify((sum_cam, sum_des, sum_fin, sum_col, per_col, per_cam_right, avg_fin_des)), 200
 
 
 
 
-
-    ans = None
-
-    return ans, 200
+    else:
+        return jsonify('Incorrect table name'), 400
