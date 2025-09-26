@@ -1,13 +1,32 @@
+from telebot.states.sync import StateContext
+from Requests import regs
 from bot import bot
+import json
 from Requests import respons
+import requests
 from telebot import types
 from message_handler import main_page
 from datetime import datetime as dt
+from src.API.private_info_handlers.handlers_tg import *
+from states import MyStates
+
+
 
 @bot.callback_query_handler(func= lambda callback: callback.data == 'reg')
-async def check_callback(callback):
-    #я так полагаю, что ты тут будешь писать регистрацию
-    await bot.send_message(callback.message.chat.id, "successful authorized")
+async def check_callback(callback, state: StateContext):
+    #регистрация
+    params= {}
+    responce={}
+    url = 'http://127.0.0.1:8000/api/v1/tg'
+    responce= request.get(url, responce)
+    regs=json.loads(responce.content.decode('utf-8'))
+    async with state.data() as data:
+        params['tg_id'] = data.get('userid')
+    if callback.message.from_user.id not in regs:
+        responc = requests.post(url, params)
+        await bot.send_message(callback.message.chat.id,'New authorized')
+    else:
+        await bot.send_message(callback.message.chat.id, "successful authorized")
     await main_page(callback.message)
 
 @bot.callback_query_handler(func=lambda callback: callback.data == 'News')
@@ -38,6 +57,9 @@ async def check_callback(callback):
     markup = types.InlineKeyboardMarkup()
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
     button3 = types.InlineKeyboardButton(text="Включить оповещение о пробках", callback_data='NewsAboutCity')
+
+
+
 
     markup.add(button3,button4)
 
