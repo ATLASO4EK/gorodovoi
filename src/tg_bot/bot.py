@@ -1,5 +1,6 @@
 from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_storage import StateMemoryStorage
+from src.config import getBotToken
 
-token = ""
+token = getBotToken()
 bot = AsyncTeleBot(token, state_storage=StateMemoryStorage())
