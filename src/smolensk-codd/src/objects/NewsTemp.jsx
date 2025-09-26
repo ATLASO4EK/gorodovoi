@@ -1,6 +1,6 @@
 import './../styles/NewsPage.css'
 
-function NewsTemp({ title, author, time, onOpen }) {
+function NewsTemp({ id, date, author, title, desc, onOpen, image }) {
   return (
     <div 
       className="news-card"
@@ -10,9 +10,20 @@ function NewsTemp({ title, author, time, onOpen }) {
       onKeyPress={(e) => e.key === 'Enter' && onOpen()}
     >
       <div className="news-image-container">
-        <div className="news-image-placeholder">
-          <span className="news-emoji">🚗</span>
-          <span className="news-category">Дорожная безопасность</span>
+        {image && image !== '#' ? (
+          <img 
+            src={image} 
+            alt={imageAlt} 
+            className="news-image"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        <div className="news-image-placeholder" style={{ display: image && image !== '#' ? 'none' : 'flex' }}>
+          <span className="news-emoji">📰</span>
+          <span className="news-category">Новость ЦОДД</span>
         </div>
       </div>
       <div className="news-card-content">
@@ -32,7 +43,7 @@ function NewsTemp({ title, author, time, onOpen }) {
   )
 }
 
-function NewsCategory({ category, NewsTemp, onNewsOpen }) {
+function NewsCategory({ category, NewsTemps, onNewsOpen }) {
   return (
     <div className="news-category">
       <h2 className="category-title">{category}</h2>
@@ -43,6 +54,8 @@ function NewsCategory({ category, NewsTemp, onNewsOpen }) {
             title={news.title}
             author={news.author}
             time={news.time}
+            image={news.image}
+            imageAlt={news.imageAlt}
             onOpen={() => onNewsOpen(news)}
           />
         ))}
