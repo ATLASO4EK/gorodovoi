@@ -15,10 +15,24 @@ function NewsPage() {
 useEffect(() => {
   const fetchData = async () => {
     try {
-      const response = await fetch(URL+'News');
+      const response = await fetch(URL + 'News');
       const data = await response.json();
-      setNewsList(data); // здесь предполагаем, что бэкенд возвращает массив объектов новостей
-      console.log(data)
+
+      // допустим сервер вернул массив массивов:
+      // [ [0, "Wed...", "Иван...", "Заголовок", "Короткий текст", "Полный текст", "img1"], ... ]
+
+      const mappedNews = data.map(item => ({
+        id: item[0],
+        time: item[1],
+        author: item[2],
+        title: item[3],
+        shortText: item[4],
+        fullText: item[5],
+        image: item[6],
+        imageAlt: item[3], // можно использовать заголовок как alt
+      }));
+
+      setNewsList(mappedNews);      console.log(data)
     } catch (error) {
       console.error("Ошибка загрузки новостей:", error);
     }
