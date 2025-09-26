@@ -1,0 +1,263 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.nav {
+  background-color: #62A744;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  padding: 15px 40px;
+  height: 60px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1440px;
+  margin: 0 auto;
+  height: 100%;
+  position: relative;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.nav-content .logo .logo-img,
+.logo .logo-img,
+.logo-img {
+  height: 50px !important; 
+  width: auto !important;
+  max-height: 50px !important;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 200px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.nav-button {
+  color: white;
+  text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  color: #8B00FF;
+}
+
+.burger-menu {
+  position: relative;
+}
+
+.burger-button {
+  display: flex;
+  flex-direction: column;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  gap: 6px;
+  transition: all 0.3s ease;
+  z-index: 1001;
+}
+
+.burger-button span {
+  width: 30px;
+  height: 3px;
+  background-color: white;
+  transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  transform-origin: center;
+}
+
+.burger-button.active span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+  background-color: #8B00FF;
+}
+
+.burger-button.active span:nth-child(2) {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.burger-button.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+  background-color: #8B00FF;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  min-width: 300px;
+  padding: 20px 0;
+  margin-top: 15px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.dropdown-menu.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.mobile-nav-buttons {
+  display: none;
+}
+
+.menu-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 15px 0;
+  display: none;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 12px 25px;
+  color: #333;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+  position: relative;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  color: #8B00FF;
+  padding-left: 25px;
+}
+
+.dropdown-item.main-item {
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.nav-button:focus,
+.burger-button:focus,
+.dropdown-item:focus,
+.nav-button:active,
+.burger-button:active,
+.dropdown-item:active {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+
+@media (max-width: 1024px) {
+  .nav {
+    padding: 15px 20px;
+    height: 50px;
+  }
+  
+  .nav-buttons {
+    gap: 50px;
+  }
+  
+  .nav-button {
+    font-size: 16px;
+    padding: 8px 15px;
+  }
+  
+  .nav-content .logo .logo-img,
+  .logo .logo-img,
+  .logo-img {
+    height: 45px !important;
+    max-height: 45px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav {
+    height: 50px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+  
+  .nav-buttons {
+    display: none;
+  }
+  
+  .nav-content .logo .logo-img,
+  .logo .logo-img,
+  .logo-img {
+    height: 40px !important;
+    max-height: 40px !important;
+  }
+  
+  .mobile-nav-buttons {
+    display: block;
+  }
+  
+  .menu-divider {
+    display: block;
+  }
+  
+  .dropdown-menu {
+    min-width: 280px;
+    right: -10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav {
+    padding: 12px 15px;
+    height: 50px;
+  }
+  
+  .nav-content .logo .logo-img,
+  .logo .logo-img,
+  .logo-img {
+    height: 35px !important;
+    max-height: 35px !important;
+  }
+  
+  .dropdown-menu {
+    position: fixed;
+    top: 80px;
+    left: 15px;
+    right: 15px;
+    min-width: auto;
+  }
+  
+  .burger-button {
+    gap: 5px;
+  }
+  
+  .burger-button span {
+    width: 25px;
+    height: 2px;
+  }
+}
