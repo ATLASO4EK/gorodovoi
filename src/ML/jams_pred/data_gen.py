@@ -1,6 +1,7 @@
 import pandas as pd
 import datetime
 import faker
+import numpy as np
 from random import randint
 
 fake = faker.Faker()
@@ -15,6 +16,7 @@ for i in range(2500):
     k = 1.0
     date = fake.date_time_ad(start_datetime=datetime.date(2025, 1,1), end_datetime=datetime.date(2025,12,31))
     weekday = date.weekday()
+    weekday_out = np.eye(7)[weekday]
     rest_day = 0
     m_d = f'{date.month}-{date.day}'
     holiday = 0
@@ -39,8 +41,11 @@ for i in range(2500):
 
     label = round(randint(1, 7)*k)/10
 
-    data.append([date.hour, weekday, holiday, label])
+    data.append([date.hour/23, weekday_out[0], weekday_out[1], weekday_out[2],
+                weekday_out[3], weekday_out[4], weekday_out[5], weekday_out[6], holiday, label])
 
-df = pd.DataFrame(columns=['hour', 'weekday', 'holiday', 'label'], data=data)
+df = pd.DataFrame(columns=['hour', 'isMonday', 'isTuesday', 'isWednesday',
+                           'isThursday', 'isFriday', 'isSaturday', 'isSunday',
+                           'holiday', 'label'], data=data)
 
 df.to_csv('jams_data.csv', index = False)
