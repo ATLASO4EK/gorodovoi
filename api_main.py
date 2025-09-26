@@ -5,6 +5,7 @@ from src.API.public_info_handlers.handlers_get import *
 from src.API.public_info_handlers.handlers_post import *
 from src.API.public_info_handlers.handlers_put import *
 from src.API.private_info_handlers.handlers_tg import *
+from src.API.ML_handlers.ML_handlers import *
 from src.API.import_export_api import *
 
 
