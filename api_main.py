@@ -10,7 +10,7 @@ from src.API.import_export_api import *
 
 
 def main():
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=False)
 
 if __name__ == "__main__":
     main()
