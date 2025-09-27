@@ -4,7 +4,7 @@ from flask import  request, jsonify
 from src.config import getAdm, getEditor
 
 # Функция входа
-@app.route('/api/v1/Auth', methods=['GET'])
+@app.route('/api/v1/auth', methods=['GET'])
 def getAuth_api():
     try:
         site = request.args.get('site')
@@ -15,13 +15,13 @@ def getAuth_api():
     if site is None or code is None:
         return jsonify('Invalid or missing args'), 400
 
-    if site == 'News':
+    if site.lower() == 'news':
         if getAdm() == code or getEditor() == code:
             return jsonify(True), 200
         else:
             return jsonify(False), 200
 
-    if site == 'analytics':
+    if site.lower() == 'analytics':
         if getAdm() == code:
             return jsonify(True), 200
         else:
