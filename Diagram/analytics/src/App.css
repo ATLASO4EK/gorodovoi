@@ -40,3 +40,55 @@
 .read-the-docs {
   color: #888;
 }
+
+/* контейнер страницы */
+.codd-wrap {
+  padding: 16px;
+  margin: 0 auto;
+  max-width: 1280px;
+  color: #111827;
+  background: #f9fafb;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* грид-контейнер секций */
+.codd-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+/* карточка */
+.codd-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  overflow: visible;
+}
+
+/* шапка карточки */
+.codd-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  padding-right: 4px;
+  margin-bottom: 8px;
+}
+
+/* адаптив: планшет/мобилка */
+@media (max-width: 1024px) {
+  .lg-span-12 { grid-column: span 12; }
+  .lg-span-6  { grid-column: span 12; } /* 6 → 12 */
+  .lg-span-3  { grid-column: span 12; } /* 3 → 12 */
+}
+
+@media (max-width: 640px) {
+  .codd-wrap { padding: 12px; }
+  .codd-btn { width: 100%; }
+  .codd-input { width: 100%; }
+  .codd-toolbar { gap: 8px; }
+}
