@@ -60,5 +60,3 @@ def putTg(tg_id: int = None,
     conn.close()
 
     return True
-
-print('a')
