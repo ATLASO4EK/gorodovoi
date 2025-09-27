@@ -31,6 +31,7 @@
 ![](https://img.shields.io/badge/flask-moccasin)
 ![](https://img.shields.io/badge/pytelebot-moccasin) \
 ![](https://img.shields.io/badge/React-firebrick)
+![](https://img.shields.io/badge/Vite-khaki)
 ![](https://img.shields.io/badge/JavaScript-khaki)
 ![](https://img.shields.io/badge/CSS-khaki)
 ![](https://img.shields.io/badge/ReCharts-khaki)\
