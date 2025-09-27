@@ -3,11 +3,12 @@ import './../styles/HomePage.css';
 
 const URL = import.meta.env.VITE_API_BASE || "";
 
-function HomePage({ setCurrentPage }) {
+function HomePage({ setCurrentPage, forceNewsUpdate }) { 
   const [selectedNews, setSelectedNews] = useState(null);
   const [latestNews, setLatestNews] = useState([]);
+  const [updateCounter, setUpdateCounter] = useState(0); 
 
-  // Загружаем последние 3 новости
+
   useEffect(() => {
     const fetchLatestNews = async () => {
       try {
@@ -25,7 +26,7 @@ function HomePage({ setCurrentPage }) {
           imageAlt: item[3],
         }));
 
-        // сортируем по дате и берём 3 последние
+    
         const sortedNews = mappedNews.sort((a, b) => new Date(b.time) - new Date(a.time));
         setLatestNews(sortedNews.slice(0, 3));
       } catch (error) {
@@ -34,7 +35,7 @@ function HomePage({ setCurrentPage }) {
     };
 
     fetchLatestNews();
-  }, []);
+  }, [updateCounter]);
 
   const openNews = (news) => {
     setSelectedNews(news);
@@ -64,7 +65,11 @@ function HomePage({ setCurrentPage }) {
       <p key={index}>{paragraph}</p>
     ));
   };
-
+  useEffect(() => {
+    if (forceNewsUpdate) {
+      setUpdateCounter(prev => prev + 1);
+    }
+  }, [forceNewsUpdate]);
   const scrollToServices = () => {
     const servicesSection = document.getElementById('services-section');
     if (servicesSection) {
@@ -80,13 +85,18 @@ function HomePage({ setCurrentPage }) {
   }, []);
 
   const openTelegramBot = () => {
-    window.open('https://t.me/moreiwi', '_blank', 'noopener,noreferrer');
+    window.open('https://t.me/CODD_roads_bot', '_blank', 'noopener,noreferrer');
   };
 
+useEffect(() => {
+  if (forceNewsUpdate) {
+    setUpdateCounter(prev => prev + 1);
+  }
+}, [forceNewsUpdate]);
   return (
     <>
       <div className="home-page">
-        {/* HERO */}
+
         <div className="hero-section">
           <div className="hero-background">
             <img 
@@ -106,7 +116,7 @@ function HomePage({ setCurrentPage }) {
           </div>
         </div>
 
-        {/* Последние новости */}
+   
         <section className="news-section-home">
           <div className="news-header">
             <h2 className="news-title-home">Последние новости</h2>
@@ -164,7 +174,6 @@ function HomePage({ setCurrentPage }) {
           </div>
         </section>
 
-        {/* Сервис */}
         <section id="services-section" className="services-section-home">
           <div className="services-header">
             <h2 className="services-title-home">Сервис</h2>
@@ -201,7 +210,7 @@ function HomePage({ setCurrentPage }) {
         </section>
       </div>
 
-      {/* Модальное окно новости */}
+     
       {selectedNews && (
         <div className="news-modal-overlay-home" onClick={closeNews}>
           <div className="news-modal-home" onClick={(e) => e.stopPropagation()}>
@@ -249,6 +258,7 @@ function HomePage({ setCurrentPage }) {
         </div>
       )}
     </>
+    
   );
 }
 

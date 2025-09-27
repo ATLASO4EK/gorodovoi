@@ -730,3 +730,28 @@
     font-size: 24px;
   }
 }
+
+.news-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.all-news-button {
+  background: #62a744;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.all-news-button:hover {
+  background: #8B00FF;
+  transform: translateY(-2px);
+}

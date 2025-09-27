@@ -1,67 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import NewsCategory from './../objects/NewsTemp';
+import NewsCategory from './../objects/NewsTemp.jsx';
+import NewsEditor from './../objects/NewsEditor.jsx';
+import LoginModal from './../objects/LoginModal.jsx';
 import './../styles/newsPage.css';
 
-const URL = import.meta.env.VITE_API_BASE || "";
-
-
-function NewsPage() {
+function NewsPage({ onNewsUpdate, news }) { 
   const [isVisible, setIsVisible] = useState(false);
   const [selectedNews, setSelectedNews] = useState(null);
-  
-  const [newsList, setNewsList] = useState([]);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(() => {
+    return localStorage.getItem('isAdmin') === 'true';
+  });
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await fetch(URL + 'api/v1/News');
-      const data = await response.json();
 
-      const mappedNews = data.map(item => ({
-        id: item[0],
-        time: item[1],
-        author: item[2],
-        title: item[3],
-        shortText: item[4],
-        fullText: item[5],
-        image: item[6],
-        imageAlt: item[3], // можно использовать заголовок как alt
-      }));
+  useEffect(() => {
+    localStorage.setItem('isAdmin', isAdmin.toString());
+  }, [isAdmin]);
 
-      setNewsList(mappedNews);
-    } catch (error) {
-      console.error("Ошибка загрузки новостей:", error);
-    }
-  };
-  fetchData();
-}, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
     setTimeout(() => {
       setIsVisible(true);
     }, 100);
   }, []);
 
-  const openNews = (NewsTemp) => {
-    setSelectedNews(NewsTemp);
+
+  const openNews = (newsItem) => {
+    setSelectedNews(newsItem);
     document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
     document.documentElement.classList.add('modal-open');
   };
 
   const closeNews = () => {
     setSelectedNews(null);
     document.body.style.overflow = 'auto';
-    document.documentElement.style.overflow = 'auto';
     document.documentElement.classList.remove('modal-open');
   };
 
   const handleEscapeKey = (e) => {
-    if (e.keyCode === 27) {
-      closeNews();
-    }
+    if (e.keyCode === 27) closeNews();
   };
 
   useEffect(() => {
@@ -77,17 +56,80 @@ useEffect(() => {
     ));
   };
 
+
+  const handleOpenLogin = () => {
+    setIsLoginModalOpen(true);
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoginModalOpen(false);
+    setIsAdmin(true);
+    setIsEditorOpen(true);
+  };
+
+  const handleLogout = () => {
+    setIsAdmin(false);
+    setIsEditorOpen(false);
+    localStorage.setItem('isAdmin', 'false');
+  };
+
+  const handleOpenEditor = () => {
+    setIsEditorOpen(true);
+  };
+
+  const handleCloseEditor = () => {
+    setIsEditorOpen(false);
+ 
+    if (onNewsUpdate) {
+      onNewsUpdate();
+    }
+  };
+
+const handleNewsUpdate = () => {
+  console.log('NewsPage: handleNewsUpdate вызван');
+  if (onNewsUpdate) {
+    onNewsUpdate();
+  }
+};
+
   return (
     <>
       <div className={`news-container ${isVisible ? 'visible' : ''}`}>
         <section className="news-section">
           <div className="news-content">
-            <h1 className="news-title">Новости ЦОДД Смоленска</h1>
+            <div className="news-header">
+              <h1 className="news-title">Новости ЦОДД Смоленска</h1>
+              <div className="news-header-controls">
+                {isAdmin ? (
+                  <>
+                    <button 
+                      className="editor-open-button"
+                      onClick={handleOpenEditor}
+                    >
+                      Редактор
+                    </button>
+                    <button 
+                      className="logout-button"
+                      onClick={handleLogout}
+                    >
+                      Выход
+                    </button>
+                  </>
+                ) : (
+                  <button 
+                    className="editor-access-button"
+                    onClick={handleOpenLogin}
+                  >
+                    Вход
+                  </button>
+                )}
+              </div>
+            </div>
             <p className="news-subtitle">Актуальная информация о работе Центра организации дорожного движения</p>
             
             <NewsCategory
               category="Последние новости"
-              NewsTemps={newsList}
+              NewsTemps={news}
               onNewsOpen={openNews}
             />
           </div>
@@ -140,6 +182,22 @@ useEffect(() => {
           </div>
         </div>
       )}
+
+      <LoginModal 
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+
+{isEditorOpen && (
+  <NewsEditor 
+    news={news}
+    onSave={handleCloseEditor}
+    onClose={handleCloseEditor}
+    isAdmin={isAdmin}
+    onNewsUpdate={handleNewsUpdate} 
+  />
+)}
     </>
   );
 }

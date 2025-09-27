@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import './Header.css'
 
 const Header = ({ setCurrentPage }) => {
@@ -8,7 +8,7 @@ const Header = ({ setCurrentPage }) => {
     setIsMenuOpen(!isMenuOpen)
   }
 
-const handleNavigation = (page) => {
+  const handleNavigation = (page) => {
     if (page === 'services') {
       
       setCurrentPage('home');
@@ -22,10 +22,7 @@ const handleNavigation = (page) => {
           });
         }
       }, 100);
-    } else if (page === 'monitoring') {
-      //if admin setCurrentPage('home')
-    }
-      else {
+    } else {
       setCurrentPage(page);
     }
     setIsMenuOpen(false);
@@ -34,7 +31,7 @@ const handleNavigation = (page) => {
   const mainMenuItems = [
     { name: 'Главная', page: 'home' },
     { name: 'Мониторинг и аналитика', page: 'monitoring' },
-    { name: 'Сервисы', page: 'services' }
+    { name: 'Сервис', page: 'services' }
   ]
 
   const additionalMenuItems = [
