@@ -58,7 +58,7 @@
 - Сбор отзывов о платформе ЦОДД Смоленской области
 
 Пример дизайна бота и работы с ботом:
-![image.png](https://postimg.cc/QFM63txs)
+[![image.png](https://postimg.cc/QFM63txs)](https://postimg.cc/QFM63txs)
 ![image.png](https://postimg.cc/QFWftz1M)
 ![image.png](https://postimg.cc/nsJGLhnm)
 ![image.png](https://postimg.cc/grTyZDYk)
