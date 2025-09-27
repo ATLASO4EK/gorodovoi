@@ -18,23 +18,10 @@ import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 
 /**
- * Запуск:
- *  1) npm create vite@latest codd-charts -- --template react
- *  2) cd codd-charts && npm i recharts html2canvas xlsx
- *  3) замените src/App.jsx на этот файл
- *  4а) Vite proxy (рекомендуется), vite.config.js:
- *      import { defineConfig } from 'vite'
- *      import react from '@vitejs/plugin-react'
- *      export default defineConfig({
- *        plugins: [react()],
- *        server: { proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } } },
- *      })
- *      => оставьте API_BASE пустым ниже
- *  4б) ИЛИ .env: VITE_API_BASE=http://localhost:8000 и включите CORS во Flask
- *  5) npm run dev
+ * Если используешь Vite proxy, оставь API_BASE пустым.
+ * Иначе положи в .env: VITE_API_BASE=http://localhost:8000
  */
-
-const API_BASE = import.meta.env.VITE_API_BASE || ""; // при Vite proxy — пусто
+const API_BASE = import.meta.env.VITE_API_BASE || "";
 
 // ---------- форматтеры ----------
 const numFmt = new Intl.NumberFormat("ru-RU");
@@ -100,7 +87,6 @@ async function fetchFines(dateStart, dateEnd) {
   if (dateEnd) p.set("date_end", fmtISO(dateEnd));
   const url = `${API_BASE}/api/v1/FinesStats${p.toString() ? `?${p.toString()}` : ""}`;
   const raw = await fetchJson(url);
-  // [id, report_date, cams_violations_cum, decisions_cum, fines_sum_cum, collected_sum_cum]
   return raw
     .map((row) => {
       const hasId = row.length >= 6;
@@ -126,7 +112,6 @@ async function fetchEvac(dateStart, dateEnd) {
   if (dateEnd) p.set("date_end", fmtISO(dateEnd));
   const url = `${API_BASE}/api/v1/EvacuationStats${p.toString() ? `?${p.toString()}` : ""}`;
   const raw = await fetchJson(url);
-  // [id, event_date, tow_trucks_on_line, trips_count, evacuations_count, impound_revenue_rub]
   return raw
     .map((row) => {
       const hasId = row.length >= 6;
@@ -159,12 +144,7 @@ async function fetchAnalytics(table, dateStart, dateEnd) {
 // ---------- экспорт ----------
 async function exportPNG(node, filename = "chart.png") {
   if (!node) return;
-
-  // приоритет: реальный график внутри
-  const target =
-    node.querySelector?.(".recharts-wrapper") ||
-    node;
-
+  const target = node.querySelector?.(".recharts-wrapper") || node;
   const canvas = await html2canvas(target, {
     backgroundColor: "#ffffff",
     scale: window.devicePixelRatio || 2,
@@ -405,6 +385,36 @@ const headerRowStyle = {
   marginBottom: 8,
 };
 
+// ---------- Импорт/Экспорт (API-клиент, одном файлом) ----------
+async function importDB(file, { allowCustomIds = false } = {}) {
+  const qs = new URLSearchParams();
+  if (allowCustomIds) qs.set("allow_custom_ids", "1");
+  const url = `${API_BASE}/api/v1/admin/import-xlsx${qs.toString() ? "?" + qs.toString() : ""}`;
+  const fd = new FormData();
+  fd.append("file", file);
+  const res = await fetch(url, { method: "POST", body: fd });
+  const text = await res.text();
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+  return JSON.parse(text);
+}
+
+async function exportDB({ sheets } = {}) {
+  const qs = new URLSearchParams();
+  if (sheets && sheets.length > 0) qs.set("sheets", sheets.join(","));
+  const url = `${API_BASE}/api/v1/admin/export-xlsx${qs.toString() ? "?" + qs.toString() : ""}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`HTTP ${res.status}: ${errText.slice(0, 200)}`);
+  }
+  const blob = await res.blob();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "export.xlsx";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 // ---------- UI ----------
 export default function App() {
   const [tab, setTab] = useState("fines"); // fines | evac
@@ -423,6 +433,13 @@ export default function App() {
   const countsRef = useRef(null);
   const moneyRef = useRef(null);
   const analyticsRef = useRef(null);
+
+  // Состояние панели импорта/экспорта
+  const [impExpBusy, setImpExpBusy] = useState(false);
+  const [impFile, setImpFile] = useState(null);
+  const [allowIds, setAllowIds] = useState(false);
+  const [selSheets, setSelSheets] = useState({ fines: true, evac: true, routes: true, lights: true });
+  const [impExpMsg, setImpExpMsg] = useState("");
 
   useEffect(() => {
     void reload();
@@ -455,6 +472,43 @@ export default function App() {
 
   const agg = useMemo(() => (tab === "fines" ? aggregateFines(rows) : aggregateEvac(rows)), [tab, rows]);
 
+  async function handleImport() {
+    setImpExpMsg("");
+    if (!impFile) {
+      setImpExpMsg("Выберите .xlsx файл для импорта.");
+      return;
+    }
+    setImpExpBusy(true);
+    try {
+      const result = await importDB(impFile, { allowCustomIds: allowIds });
+      setImpExpMsg(
+        `Импорт: ${result.ok ? "успешно" : "ошибка"}\n` +
+          JSON.stringify(result.summary || result.error, null, 2)
+      );
+      await reload();
+    } catch (e) {
+      setImpExpMsg(`Ошибка импорта: ${e.message}`);
+    } finally {
+      setImpExpBusy(false);
+    }
+  }
+
+  async function handleExport() {
+    setImpExpMsg("");
+    setImpExpBusy(true);
+    try {
+      const selected = Object.entries(selSheets)
+        .filter(([, v]) => v)
+        .map(([k]) => k);
+      await exportDB({ sheets: selected.length ? selected : undefined });
+      setImpExpMsg("Экспорт: файл export.xlsx скачан.");
+    } catch (e) {
+      setImpExpMsg(`Ошибка экспорта: ${e.message}`);
+    } finally {
+      setImpExpBusy(false);
+    }
+  }
+
   return (
     <div
       style={{
@@ -467,7 +521,7 @@ export default function App() {
       }}
     >
       <h1 style={{ fontSize: 28, marginBottom: 12 }}>
-        ЦОДД — диаграммы (build v6){" "}
+        ЦОДД — диаграммы (build v7){" "}
         <span style={{ color: "#62a744", fontSize: 14, fontWeight: 600 }}>KPI из /api/v1/analytics</span>
       </h1>
 
@@ -477,7 +531,7 @@ export default function App() {
           <select
             value={tab}
             onChange={(e) => setTab(e.target.value)}
-            style={{ padding: 8, borderRadius: 8, border: "1px solid " + "#d1d5db", minWidth: 180 }}
+            style={{ padding: 8, borderRadius: 8, border: "1px solid #d1d5db", minWidth: 180 }}
           >
             <option value="fines">Штрафы</option>
             <option value="evac">Эвакуация</option>
@@ -489,7 +543,7 @@ export default function App() {
             type="date"
             value={dateStart}
             onChange={(e) => setDateStart(e.target.value)}
-            style={{ padding: 8, borderRadius: 8, border: "1px solid " + "#d1d5db" }}
+            style={{ padding: 8, borderRadius: 8, border: "1px solid #d1d5db" }}
           />
         </div>
         <div>
@@ -498,7 +552,7 @@ export default function App() {
             type="date"
             value={dateEnd}
             onChange={(e) => setDateEnd(e.target.value)}
-            style={{ padding: 8, borderRadius: 8, border: "1px solid " + "#d1d5db" }}
+            style={{ padding: 8, borderRadius: 8, border: "1px solid #d1d5db" }}
           />
         </div>
         <button
@@ -525,12 +579,10 @@ export default function App() {
 
       {rows.length > 0 && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16, marginTop: 20 }}>
-          {/* KPI из analytics */}
           <div style={{ gridColumn: "span 12" }}>
             <KPIFromAnalytics table={tab} analytics={analytics} />
           </div>
 
-          {/* Линии + экспорт */}
           <div
             style={{
               gridColumn: "span 12",
@@ -596,7 +648,6 @@ export default function App() {
             </ResponsiveContainer>
           </div>
 
-          {/* Донат + экспорт */}
           <div
             style={{
               gridColumn: "span 6",
@@ -674,7 +725,6 @@ export default function App() {
             </ul>
           </div>
 
-          {/* Бар: счётчики + экспорт */}
           <div
             style={{
               gridColumn: "span 3",
@@ -706,7 +756,6 @@ export default function App() {
             </ResponsiveContainer>
           </div>
 
-          {/* Бар: деньги + экспорт */}
           <div
             style={{
               gridColumn: "span 3",
@@ -738,7 +787,6 @@ export default function App() {
             </ResponsiveContainer>
           </div>
 
-          {/* Таблица аналитики + экспорт */}
           <div style={{ gridColumn: "span 12" }} ref={analyticsRef}>
             <div style={headerRowStyle}>
               <h3 style={{ margin: 0, color: "#0f172a" }}>
@@ -800,6 +848,63 @@ export default function App() {
             </div>
             <AnalyticsSummaryTable table={tab} analytics={analytics} />
           </div>
+
+          {/* --- НИЖЕ: ПАНЕЛЬ ИМПОРТ/ЭКСПОРТ --- */}
+          <div style={{ gridColumn: "span 12" }}>
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 12,
+                padding: 16,
+                boxShadow: "0 1px 3px rgba(0,0,0,.08)",
+                marginTop: 4,
+              }}
+            >
+              <h3 style={{ marginTop: 0, color: "#0f172a" }}>Импорт / Экспорт базы</h3>
+
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+                <label><input type="checkbox" checked={selSheets.fines} onChange={e => setSelSheets(s => ({ ...s, fines: e.target.checked }))} /> Штрафы</label>
+                <label><input type="checkbox" checked={selSheets.evac} onChange={e => setSelSheets(s => ({ ...s, evac: e.target.checked }))} /> Эвакуация</label>
+                <label><input type="checkbox" checked={selSheets.routes} onChange={e => setSelSheets(s => ({ ...s, routes: e.target.checked }))} /> Эвакуация маршрут</label>
+                <label><input type="checkbox" checked={selSheets.lights} onChange={e => setSelSheets(s => ({ ...s, lights: e.target.checked }))} /> Реестр светофоров</label>
+              </div>
+
+              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 12 }}>
+                <input type="file" accept=".xlsx,.xls" onChange={(e) => setImpFile(e.target.files?.[0] || null)} />
+                <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <input type="checkbox" checked={allowIds} onChange={(e) => setAllowIds(e.target.checked)} />
+                  Разрешить собственные ID при импорте
+                </label>
+                <button
+                  onClick={handleImport}
+                  disabled={impExpBusy || !impFile}
+                  style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #111827", background: "#111827", color: "#fff" }}
+                >
+                  Загрузить в БД
+                </button>
+              </div>
+
+              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                <button
+                  onClick={handleExport}
+                  disabled={impExpBusy}
+                  style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #0f766e", background: "#0f766e", color: "#fff" }}
+                >
+                  Выгрузить в XLSX
+                </button>
+                <span style={{ color: "#6b7280", fontSize: 12 }}>
+                  Если не выбрать ничего — выгрузятся все листы.
+                </span>
+              </div>
+
+              {impExpMsg && (
+                <pre style={{ marginTop: 12, padding: 12, background: "#f3f4f6", borderRadius: 8, maxHeight: 260, overflow: "auto" }}>
+{impExpMsg}
+                </pre>
+              )}
+            </div>
+          </div>
+          {/* --- /ПАНЕЛЬ ИМПОРТ/ЭКСПОРТ --- */}
         </div>
       )}
     </div>
