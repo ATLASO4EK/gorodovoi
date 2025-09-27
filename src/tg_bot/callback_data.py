@@ -75,6 +75,7 @@ async def check_callback(callback):
     await bot.send_message(callback.message.chat.id, f"Сноска последних новостей.\n"
                                                      f"1) {news_data[0][3]}\n{news_data[0][4]}\n"+ f"<i>{news_data[0][2]}</i> \n<i>{dt.strptime(news_data[0][1],'%a, %d %b %Y %H:%M:%S GMT')}</i>\n"
                                                      f"2) {news_data[1][5]}\n{news_data[1][4]}\n"+f"<i>{news_data[1][2]}</i>\n<i>{ dt.strptime(news_data[1][1],'%a, %d %b %Y %H:%M:%S GMT')}</i>", parse_mode='HTML', reply_markup=markup)
+    return
 
 # Callback пробок
 @bot.callback_query_handler(func= lambda callback: callback.data == 'jams')
@@ -100,26 +101,27 @@ async def check_callback(callback):
                                                      f"{jams_data[2][0]}:00 - {jams_data[2][1]}\n"
                                                      f"{jams_data[3][0]}:00 - {jams_data[3][1]}",
                                                      reply_markup=markup)
+    return
 
 
 @bot.callback_query_handler(func= lambda callback: callback.data == 'profile')
 async def check_callback(callback):
     #profile
 
-    markup = types.InlineKeyboardMarkup()
+    markup = types.InlineKeyboardMarkup(row_width=2)
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
     button3 = types.InlineKeyboardButton(text="Включить оповещение о пробках", callback_data='NewsAboutCity')
+    button5 = types.InlineKeyboardButton(text="Оставить отзыв", callback_data='review')
 
-
-
-
-    markup.add(button3,button4)
+    markup.add(button3,button4,button5)
 
     await bot.delete_message(callback.message.chat.id, callback.message.message_id)
     await bot.send_message(callback.message.chat.id, f"Привет {callback.message.chat.first_name}!", reply_markup=markup)
+    return
 
 @bot.callback_query_handler(func= lambda callback: callback.data == 'back')
 async def check_callback(callback):
     #profile
     await bot.delete_message(callback.message.chat.id, callback.message.message_id)
     await main_page(callback.message)
+    return
