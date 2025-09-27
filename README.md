@@ -35,10 +35,10 @@
 | Имя | GitHub | Роль | Задачи |
 |-----|----|------|-------------------------|
 | Кравченко Алексей | [atlaso4ek](https://github.com/ATLASO4EK "Кравченко Алексей") | Тимлид, Backend | SQL, ML, API, TG-bot |
-| Христофорова Алёна | [Hao_pc](https://github.com/hao-pc "Христофорова Алёна") | Техлид, Fullstack | SQL, Data Science |
-| Чайкин Арсений | [Bittjs](https://github.com/Bittjs "Чайкин Арсений") | Frontend-разработчик | Design |
-| Серикова Анастасия | [moreiwi](https://github.com/moreiwi "Серикова Анастасия") | Frontend-разработчик | Design |
-| Ведерников Артём | [1Evgesha1](https://github.com/1Evgesha1 "Ведерников Артём") | Backend-разработчик | TG-bot |
+| Христофорова Алёна | [Hao_pc](https://github.com/hao-pc "Христофорова Алёна") | Техлид, Fullstack | SQL, Data Science, ML |
+| Чайкин Арсений | [Bittjs](https://github.com/Bittjs "Чайкин Арсений") | Frontend-разработчик | React, Figma |
+| Серикова Анастасия | [moreiwi](https://github.com/moreiwi "Серикова Анастасия") | Frontend-разработчик | 	Figma, Photoshop |
+| Ведерников Артём | [1Evgesha1](https://github.com/1Evgesha1 "Ведерников Артём") | Backend-разработчик | TG-bot, ML |
 ---
 ## БД
 ### Ключевые таблицы
