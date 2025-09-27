@@ -26,7 +26,7 @@
 |-----|----|------|-------------------------|
 | Кравченко Алексей | [atlaso4ek](https://github.com/ATLASO4EK "Кравченко Алексей") | Тимлид, Backend | SQL, ML, API, TG-bot |
 | Христофорова Алёна | [Hao_pc](https://github.com/hao-pc "Христофорова Алёна") | Техлид, Fullstack | SQL, Data Science |
-| Чайкин Арсений | [Bittjs](https://github.com/Bittjs "Чайкин Арсений") | Fullstack-разработчик | Design |
+| Чайкин Арсений | [Bittjs](https://github.com/Bittjs "Чайкин Арсений") | Frontend-разработчик | Design |
 | Серикова Анастасия | [moreiwi](https://github.com/moreiwi "Серикова Анастасия") | Frontend-разработчик | Design |
 | Ведерников Артём | [1Evgesha1](https://github.com/1Evgesha1 "Ведерников Артём") | Backend-разработчик | TG-bot |
 
