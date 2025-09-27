@@ -14,11 +14,12 @@ async def welcome_page(message, state: StateContext):
 
     await bot.set_state(user_id=message.from_user.id, chat_id=message.chat.id, state=MyStates.user_id)
     await state.add_data(userid=message.from_user.id)
+    await state.add_data(chatid=message.chat.id)
     await bot.send_message(message.chat.id, text, reply_markup=markup)
 
 # Главное меню
-@bot.message_handler()
-async def main_page(message):
+@bot.message_handler(state=MyStates.mainmenu, commands=['menu'])
+async def main_page(message, state:StateContext):
     markup = types.InlineKeyboardMarkup()
     button1 = types.InlineKeyboardButton(text="Новости", callback_data='News')
     button2 = types.InlineKeyboardButton(text="Пробки", callback_data='jams')
