@@ -22,7 +22,10 @@ const handleNavigation = (page) => {
           });
         }
       }, 100);
-    } else {
+    } else if (page === 'monitoring') {
+      //if admin setCurrentPage('home')
+    }
+      else {
       setCurrentPage(page);
     }
     setIsMenuOpen(false);

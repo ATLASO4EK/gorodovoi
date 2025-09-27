@@ -1,39 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './../styles/HomePage.css';
+
+const URL = import.meta.env.VITE_API_BASE || "";
 
 function HomePage({ setCurrentPage }) {
   const [selectedNews, setSelectedNews] = useState(null);
+  const [latestNews, setLatestNews] = useState([]);
 
-  // Данные новостей (первые 3 из NewsPage)
-  const newsData = [
-    {
-      id: 1,
-      title: 'Пингвины захватили мир',
-      author: 'Серикова А.С.',
-      time: '15.05.2025 14:30',
-      image: '#', 
-      fullText: 'Сегодня произошло невероятное событие - пингвины вышли из тени и начали захватывать мир своими милыми лапками. Это исторический момент для всего человечества.\n\nУлицы города заполнились этими удивительными созданиями, которые демонстрируют удивительную организованность в движении. ЦОДД Смоленска внимательно следит за ситуацией и разрабатывает новые маршруты для комфортного передвижения всех участников дорожного движения.',
-      imageAlt: 'Пингвины на дороге'
-    },
-    {
-      id: 2,
-      title: 'Мерч с Арсением Чайкиным!',
-      author: 'Серикова А.С.',
-      time: '15.05.2025 14:30',
-      image: '#',
-      fullText: 'Новая коллекция мерча с Арсением Чайкиным уже в продаже! Успейте приобрести эксклюзивные товары по специальным ценам.\n\nВ коллекцию вошли футболки, бейсболки и стикеры с уникальными дизайнами. Все средства от продажи пойдут на развитие дорожной инфраструктуры города. Мерч можно приобрести в центральном офисе ЦОДД Смоленска.',
-      imageAlt: 'Новый мерч ЦОДД'
-    },
-    {
-      id: 3,
-      title: 'Обновление дорожной разметки',
-      author: 'ГОНЧАРОВ ДЕНИС',
-      time: '15.05.2025 14:30',
-      image: '#',
-      fullText: 'В центре города завершены работы по обновлению дорожной разметки. Теперь движение стало более безопасным и организованным.\n\nРаботы проводились в ночное время для минимизации неудобств для участников дорожного движения. Использованы современные светоотражающие материалы, которые обеспечивают лучшую видимость в темное время суток и в условиях плохой погоды.',
-      imageAlt: 'Обновленная дорожная разметка'
-    }
-  ];
+  // Загружаем последние 3 новости
+  useEffect(() => {
+    const fetchLatestNews = async () => {
+      try {
+        const response = await fetch(URL + 'api/v1/News');
+        const data = await response.json();
+
+        const mappedNews = data.map(item => ({
+          id: item[0],
+          time: item[1],
+          author: item[2],
+          title: item[3],
+          shortText: item[4],
+          fullText: item[5],
+          image: item[6],
+          imageAlt: item[3],
+        }));
+
+        // сортируем по дате и берём 3 последние
+        const sortedNews = mappedNews.sort((a, b) => new Date(b.time) - new Date(a.time));
+        setLatestNews(sortedNews.slice(0, 3));
+      } catch (error) {
+        console.error("Ошибка загрузки новостей:", error);
+      }
+    };
+
+    fetchLatestNews();
+  }, []);
 
   const openNews = (news) => {
     setSelectedNews(news);
@@ -51,11 +52,7 @@ function HomePage({ setCurrentPage }) {
     }
   };
 
-  const openTelegramBot = () => {
-    window.open('https://t.me/moreiwi', '_blank', 'noopener,noreferrer');
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedNews) {
       document.addEventListener('keydown', handleEscapeKey);
       return () => document.removeEventListener('keydown', handleEscapeKey);
@@ -75,17 +72,21 @@ function HomePage({ setCurrentPage }) {
     }
   };
 
-
-  React.useEffect(() => {
+  useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('section') === 'services') {
       setTimeout(scrollToServices, 100);
     }
   }, []);
 
-   return (
+  const openTelegramBot = () => {
+    window.open('https://t.me/moreiwi', '_blank', 'noopener,noreferrer');
+  };
+
+  return (
     <>
       <div className="home-page">
+        {/* HERO */}
         <div className="hero-section">
           <div className="hero-background">
             <img 
@@ -100,14 +101,12 @@ function HomePage({ setCurrentPage }) {
               <h1 className="hero-title">
                 Центр организации<br />дорожного движения
               </h1>
-              <div className="hero-subtitle">
-                Смоленск
-              </div>
+              <div className="hero-subtitle">Смоленск</div>
             </div>
           </div>
         </div>
 
-     
+        {/* Последние новости */}
         <section className="news-section-home">
           <div className="news-header">
             <h2 className="news-title-home">Последние новости</h2>
@@ -120,7 +119,7 @@ function HomePage({ setCurrentPage }) {
           </div>
           
           <div className="news-grid-home">
-            {newsData.map((news) => (
+            {latestNews.map((news) => (
               <div 
                 key={news.id}
                 className="news-card-home"
@@ -165,7 +164,7 @@ function HomePage({ setCurrentPage }) {
           </div>
         </section>
 
-        
+        {/* Сервис */}
         <section id="services-section" className="services-section-home">
           <div className="services-header">
             <h2 className="services-title-home">Сервис</h2>
@@ -189,7 +188,7 @@ function HomePage({ setCurrentPage }) {
                   <h3 className="service-banner-title">Телеграм-бот ЦОДД Смоленск</h3>
                   <p className="service-banner-description">
                     Получайте актуальную информацию о дорожной ситуации, планируйте маршруты 
-                    и получайте уведомления о изменениях в режиме реального времени
+                    и получайте уведомления об изменениях в режиме реального времени
                   </p>
                 </div>
               </div>
@@ -202,7 +201,7 @@ function HomePage({ setCurrentPage }) {
         </section>
       </div>
 
-     
+      {/* Модальное окно новости */}
       {selectedNews && (
         <div className="news-modal-overlay-home" onClick={closeNews}>
           <div className="news-modal-home" onClick={(e) => e.stopPropagation()}>

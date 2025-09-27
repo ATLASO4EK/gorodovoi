@@ -17,24 +17,7 @@ import {
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 
-/**
- * Запуск:
- *  1) npm create vite@latest codd-charts -- --template react
- *  2) cd codd-charts && npm i recharts html2canvas xlsx
- *  3) замените src/App.jsx на этот файл
- *  4а) Vite proxy (рекомендуется), vite.config.js:
- *      import { defineConfig } from 'vite'
- *      import react from '@vitejs/plugin-react'
- *      export default defineConfig({
- *        plugins: [react()],
- *        server: { proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } } },
- *      })
- *      => оставьте API_BASE пустым ниже
- *  4б) ИЛИ .env: VITE_API_BASE=http://localhost:8000 и включите CORS во Flask
- *  5) npm run dev
- */
-
-const API_BASE = import.meta.env.VITE_API_BASE || ""; // при Vite proxy — пусто
+const API_BASE = import.meta.env.VITE_API_BASE || "";
 
 // ---------- форматтеры ----------
 const numFmt = new Intl.NumberFormat("ru-RU");
