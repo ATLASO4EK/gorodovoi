@@ -103,11 +103,9 @@ async def check_callback(callback):
                                                      reply_markup=markup)
     return
 
-
+# Callback профиля
 @bot.callback_query_handler(func= lambda callback: callback.data == 'profile')
 async def check_callback(callback):
-    #profile
-
     markup = types.InlineKeyboardMarkup(row_width=2)
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
     button3 = types.InlineKeyboardButton(text="Включить оповещение о пробках", callback_data='NewsAboutCity')
@@ -119,6 +117,25 @@ async def check_callback(callback):
     await bot.send_message(callback.message.chat.id, f"Привет {callback.message.chat.first_name}!", reply_markup=markup)
     return
 
+# Callback отзыва
+@bot.callback_query_handler(func= lambda callback: callback.data == 'review')
+async def check_callback(callback):
+    await bot.delete_message(callback.message.chat.id, callback.message.message_id)
+    await bot.send_message(callback.message.chat.id, f"Напишите свой отзыв или предложения для улучшения сервисов ЦОДД!")
+    await bot.set_state(chat_id=callback.message.chat.id, user_id=callback.message.from_user.id, state=MyStates.review)
+    return
+
+# Получение отзыва
+@bot.callback_query_handler(func= lambda callback: callback.data == 'review')
+async def check_callback(callback):
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
+    markup.add(button4)
+
+    await bot.send_message(callback.message.chat.id, f"Спасибо за ваше мнение!", reply_markup=markup)
+    return
+
+# Главное меню
 @bot.callback_query_handler(func= lambda callback: callback.data == 'back')
 async def check_callback(callback):
     #profile
