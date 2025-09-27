@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import NewsCategory from './../objects/NewsTemp';
-import NewsTemp from './../objects/NewsTemp';
 import './../styles/newsPage.css';
 
-import URL from './../config'
+const URL = import.meta.env.VITE_API_BASE || "";
 
 
 function NewsPage() {
@@ -15,11 +14,8 @@ function NewsPage() {
 useEffect(() => {
   const fetchData = async () => {
     try {
-      const response = await fetch(URL + 'News');
+      const response = await fetch(URL + 'api/v1/News');
       const data = await response.json();
-
-      // допустим сервер вернул массив массивов:
-      // [ [0, "Wed...", "Иван...", "Заголовок", "Короткий текст", "Полный текст", "img1"], ... ]
 
       const mappedNews = data.map(item => ({
         id: item[0],
@@ -32,7 +28,7 @@ useEffect(() => {
         imageAlt: item[3], // можно использовать заголовок как alt
       }));
 
-      setNewsList(mappedNews);      console.log(data)
+      setNewsList(mappedNews);
     } catch (error) {
       console.error("Ошибка загрузки новостей:", error);
     }

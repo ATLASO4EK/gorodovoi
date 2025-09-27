@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './Header.css'
 
 const Header = ({ setCurrentPage }) => {
@@ -8,15 +8,33 @@ const Header = ({ setCurrentPage }) => {
     setIsMenuOpen(!isMenuOpen)
   }
 
-  const handleNavigation = (page) => {
-    setCurrentPage(page);
+const handleNavigation = (page) => {
+    if (page === 'services') {
+      
+      setCurrentPage('home');
+      
+      setTimeout(() => {
+        const servicesSection = document.getElementById('services-section');
+        if (servicesSection) {
+          servicesSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }
+      }, 100);
+    } else if (page === 'monitoring') {
+      //if admin setCurrentPage('home')
+    }
+      else {
+      setCurrentPage(page);
+    }
     setIsMenuOpen(false);
   }
 
   const mainMenuItems = [
     { name: 'Главная', page: 'home' },
     { name: 'Мониторинг и аналитика', page: 'monitoring' },
-    { name: 'МВП Сервисы', page: 'services' }
+    { name: 'Сервисы', page: 'services' }
   ]
 
   const additionalMenuItems = [

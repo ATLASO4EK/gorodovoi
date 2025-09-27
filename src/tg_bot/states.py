@@ -4,3 +4,5 @@ class MyStates(StatesGroup):
     user_id = State()
     notif_state= State()
     login = State()
+    review = State()
+    mainmenu = State()
