@@ -16,7 +16,6 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (selectedNews) {
@@ -54,7 +53,6 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setSuccessMessage('');
 
     try {
       const newsData = {
@@ -85,7 +83,7 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
           }
         });
       } else {
-        
+ 
         response = await fetch(`${apiUrl}?${params.toString()}`, {
           method: 'POST',
           headers: {
@@ -101,27 +99,22 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
 
 
       if (onNewsUpdate) {
-        await onNewsUpdate();
+        onNewsUpdate();
       }
 
-      setSuccessMessage(selectedNews ? 'Новость успешно обновлена!' : 'Новость успешно создана!');
-      
- 
-      setTimeout(() => {
-        setSuccessMessage('');
-        if (!selectedNews) {
+      onSave();
+      setSelectedNews(null);
+      setFormData({
+        id: '',
+        title: '',
+        author: '',
+        time: '',
+        image: '',
+        imageAlt: '',
+        fullText: ''
+      });
 
-          setFormData({
-            id: '',
-            title: '',
-            author: '',
-            time: '',
-            image: '',
-            imageAlt: '',
-            fullText: ''
-          });
-        }
-      }, 2000);
+      setError('');
 
     } catch (error) {
       setError('Ошибка при сохранении новости: ' + error.message);
@@ -132,55 +125,78 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
   };
 
   const handleDelete = async (id) => {
+    console.log('=== ДЕТАЛИ УДАЛЕНИЯ ===');
+    console.log('Полученный ID:', id);
+    console.log('Тип ID:', typeof id);
+    console.log('Все новости:', news);
+    console.log('Найденная новость для удаления:', news.find(item => item.id == id));
+    console.log('========================');
+
     if (window.confirm('Вы уверены, что хотите удалить эту новость?')) {
       setLoading(true);
       setError('');
-      setSuccessMessage('');
 
       try {
         console.log('Пытаемся удалить новость с ID:', id);
+        console.log('Base URL:', URL);
         
-
         const params = new URLSearchParams();
         params.append('id_int', id);
-        params.append('action', 'delete');
-        
-        const response = await fetch(`${URL}api/v1/News`, {
-          method: 'POST',
+
+        const response = await fetch(`${URL}api/v1/News?${params.toString()}`, {
+          method: 'DELETE',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: params
+          }
         });
+        
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
         
         if (!response.ok) {
           const errorText = await response.text();
           throw new Error(`Ошибка HTTP: ${response.status} - ${errorText}`);
         }
 
-        console.log('Удаление успешно!');
+        const result = await response.text();
+        console.log('Response body:', result);
 
-      
-        if (onNewsUpdate) {
-          console.log('Вызываем onNewsUpdate для обновления списка новостей');
-          await onNewsUpdate(); 
+       
+        if (result.includes('success') || response.status === 200) {
+          console.log('Удаление успешно!');
+          
+
+          const updatedNews = news.filter(item => item.id !== id);
+          
+         
+          if (onNewsUpdate) {
+            console.log('Вызываем onNewsUpdate для обновления списка новостей');
+            onNewsUpdate();
+          }
+
+         
+          if (selectedNews && selectedNews.id === id) {
+            setSelectedNews(null);
+          }
+
+       
+          setError('Новость успешно удалена');
+
+          
+          setTimeout(() => {
+            setError('');
+          }, 2000);
+        } else {
+          throw new Error('Сервер не подтвердил удаление: ' + result);
         }
-
-
-        if (selectedNews && selectedNews.id === id) {
-          setSelectedNews(null);
-        }
-
-        setSuccessMessage('Новость успешно удалена');
-
-        // Автоматически закрываем сообщение через 2 секунды
-        setTimeout(() => {
-          setSuccessMessage('');
-        }, 2000);
 
       } catch (error) {
         setError('Ошибка при удалении новости: ' + error.message);
         console.error('Error deleting news:', error);
+        
+        
+        console.log('ID для удаления:', id);
+        console.log('Тип ID:', typeof id);
       } finally {
         setLoading(false);
       }
@@ -215,12 +231,6 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
           </div>
         )}
         
-        {successMessage && (
-          <div className="success-message">
-            {successMessage}
-          </div>
-        )}
-        
         <div className="editor-content">
           <div className="news-list-panel">
             <div className="panel-header">
@@ -239,7 +249,7 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
                 <div 
                   key={item.id}
                   className={`news-list-item ${selectedNews?.id === item.id ? 'selected' : ''}`}
-                  onClick={() => !loading && setSelectedNews(item)}
+                  onClick={() => setSelectedNews(item)}
                 >
                   <div className="news-item-preview">
                     <h4>{item.title}</h4>
@@ -278,7 +288,7 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
               </div>
 
               <div className="form-group">
-                <label>Автор</label>
+                <label>Автор </label>
                 <input
                   type="text"
                   name="author"
@@ -315,7 +325,7 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
               </div>
 
               <div className="form-group">
-                <label>Полный текст новости</label>
+                <label>Полный текст новости </label>
                 <textarea
                   name="fullText"
                   value={formData.fullText}
@@ -326,7 +336,7 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
                   disabled={loading}
                 />
                 <small className="form-help">
-                  Короткий текст будет автоматически сгенерирован из первых 100 символов полного текста
+                  Короткий текст  будет автоматически сгенерирован из первых 100 символов полного текста
                 </small>
               </div>
 
@@ -336,7 +346,7 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
                   className="save-button"
                   disabled={loading}
                 >
-                  {loading ? 'Сохранение...' : (selectedNews ? 'Обновить' : 'Создать') + ' новость'}
+                  {loading ? 'Сохранение...' : (selectedNews ? 'Обновить ' : 'Создать ') + ' новость'}
                 </button>
                 {selectedNews && (
                   <button 
@@ -345,7 +355,7 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
                     onClick={handleNewNews}
                     disabled={loading}
                   >
-                    Новая новость
+                    Отмена
                   </button>
                 )}
               </div>
