@@ -9,7 +9,7 @@ from src.API.public_info_handlers.news_handlers import *
 
 
 def main():
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=8000)
 
 if __name__ == "__main__":
     main()
