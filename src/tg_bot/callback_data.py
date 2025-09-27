@@ -72,8 +72,9 @@ async def check_callback(callback):
         return
 
     await bot.delete_message(callback.message.chat.id, callback.message.message_id)
-    await bot.send_message(callback.message.chat.id, f"Сноска последних новостей.\n1){news_data[0][3]} {news_data[0][4]} {news_data[0][5]}\n"+ f"<i>{news_data[0][2]}</i> \n <i>{dt.strptime(news_data[0][1],'%a, %d %b %Y %H:%M:%S GMT')}</i>\n"
-                                                     f"2){news_data[1][5]} {news_data[1][4]} \n"+f" <i>{news_data[1][2]}</i> \n<i>{ dt.strptime(news_data[1][1],'%a, %d %b %Y %H:%M:%S GMT')}</i>", parse_mode='HTML', reply_markup=markup)
+    await bot.send_message(callback.message.chat.id, f"Сноска последних новостей.\n"
+                                                     f"1) {news_data[0][3]}\n{news_data[0][4]}\n"+ f"<i>{news_data[0][2]}</i> \n<i>{dt.strptime(news_data[0][1],'%a, %d %b %Y %H:%M:%S GMT')}</i>\n"
+                                                     f"2) {news_data[1][5]}\n{news_data[1][4]}\n"+f"<i>{news_data[1][2]}</i>\n<i>{ dt.strptime(news_data[1][1],'%a, %d %b %Y %H:%M:%S GMT')}</i>", parse_mode='HTML', reply_markup=markup)
 
 # Callback пробок
 @bot.callback_query_handler(func= lambda callback: callback.data == 'jams')
