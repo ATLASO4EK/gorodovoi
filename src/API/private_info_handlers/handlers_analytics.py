@@ -7,6 +7,7 @@ from src.API.app import app
 
 @app.route('/api/v1/analytics', methods=['GET'])
 def getAnalytics_api():
+    # Получаем данные из запроса
     try:
         table = str(request.args.get('table'))
         date_start = request.args.get('date_start')
@@ -15,15 +16,18 @@ def getAnalytics_api():
         ans = jsonify('Invalid parameters')
         return ans, 500
 
+    # Проверяем данные из запроса
     if table is None:
         ans = jsonify('Invalid parameters')
         return ans, 500
 
+    # Преобразуем даты в формат datetime.datetime
     if date_start is not None:
         date_start = datetime.datetime.strptime(date_start, "%Y-%m-%d")
     if date_start is not None and date_end is not None:
         date_end = datetime.datetime.strptime(date_end, "%Y-%m-%d")
 
+    # В зависимости от выбранной таблицы получаем, вычисляем и возвращаем нужные данные
     if table.lower() == 'fines':
         data = getFinesStats(date=date_start, date_end=date_end)
         df = pd.DataFrame(columns=['id','date', 'cam_vial', 'decisions', 'fines_sum', 'collected_sum'], data = data)
@@ -83,4 +87,6 @@ def getAnalytics_api():
                         'sum_rev':sum_rev, 'per_evac':per_evac, 'avg_rev':avg_rev}), 200
 
     else:
+
+        # Если название таблицы указано неверно, то возвращаем ошибку
         return jsonify('Incorrect table name'), 400

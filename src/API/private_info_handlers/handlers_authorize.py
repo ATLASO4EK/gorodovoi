@@ -6,6 +6,7 @@ from src.config import getAdm, getEditor
 # Функция входа
 @app.route('/api/v1/auth', methods=['GET'])
 def getAuth_api():
+    # Получаем данные из запроса
     try:
         site = request.args.get('site')
         code = request.args.get('code')
@@ -15,6 +16,7 @@ def getAuth_api():
     if site is None or code is None:
         return jsonify('Invalid or missing args'), 400
 
+    # Проверяем
     if site.lower() == 'news':
         if getAdm() == code or getEditor() == code:
             return jsonify(True), 200
@@ -27,4 +29,5 @@ def getAuth_api():
         else:
             return jsonify(False), 200
 
+    # По умолчанию возвращаем False
     return jsonify(False), 200
