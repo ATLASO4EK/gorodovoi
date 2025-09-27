@@ -17,8 +17,9 @@
 ![](https://img.shields.io/badge/React-firebrick)
 ![](https://img.shields.io/badge/JavaScript-khaki)
 ![](https://img.shields.io/badge/CSS-khaki)
-![](https://img.shields.io/badge/графики-khaki)\
-![](https://img.shields.io/badge/PostgreSQL-red)
+![](https://img.shields.io/badge/ReCharts-khaki)\
+![](https://img.shields.io/badge/PostgreSQL-red)\
+![](https://img.shields.io/badge/Docker-coral)
 
 ## О нас
 Мы команда энтузиастов и специалистов в области искусственного интеллекта и разработки ПО:
