@@ -14,4 +14,5 @@ bot.setup_middleware(StateMiddleware(bot))
 # Start polling
 import asyncio
 
+print('bot started')
 asyncio.run(bot.polling())
