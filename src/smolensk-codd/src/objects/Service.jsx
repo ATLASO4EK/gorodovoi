@@ -1,8 +1,7 @@
 function Service() {
   return (
     <div>
-      <h1>МВП Сервисы</h1>
-      <p>блаблабалабаала</p>
+      <h1>Service.jsx</h1>
     </div>
   );
 }

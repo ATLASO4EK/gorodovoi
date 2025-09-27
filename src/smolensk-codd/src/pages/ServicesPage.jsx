@@ -1,10 +1,11 @@
-function ServicesPage() {
+
+function MonitoringPage() {
   return (
     <div>
-      <h1>Услуги</h1>
-      <p>блаблабалбалабалбалабалбалабалабла</p>
+      <h1>Мониторинг и аналитика</h1>
+      <p>ПОН</p>
     </div>
   );
 }
 
-export default ServicesPage;
+export default MonitoringPage;
