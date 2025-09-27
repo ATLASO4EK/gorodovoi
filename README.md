@@ -57,11 +57,11 @@
 - Просмотр последних 2 новостей от ЦОДД Смоленской области
 - Сбор отзывов о платформе ЦОДД Смоленской области
 
-Пример дизайна бота и работы с ботом:
-[![image.png](https://i.postimg.cc/P5FhC8Yc/image.png)](https://postimg.cc/21vgJyHF)
-[![image.png](https://i.postimg.cc/G2Cftc7J/image.png)](https://postimg.cc/LqxD0MMn)
-[![image.png](https://i.postimg.cc/L8gQVqGC/image.png)](https://postimg.cc/4YZ1f3fV)
-[![image.png](https://i.postimg.cc/wBd2cwXy/image.png)](https://postimg.cc/VJDXzBHm)
+Пример дизайна бота и работы с ботом:\
+[![image.png](https://i.postimg.cc/P5FhC8Yc/image.png)](https://postimg.cc/21vgJyHF)\
+[![image.png](https://i.postimg.cc/G2Cftc7J/image.png)](https://postimg.cc/LqxD0MMn)\
+[![image.png](https://i.postimg.cc/L8gQVqGC/image.png)](https://postimg.cc/4YZ1f3fV)\
+[![image.png](https://i.postimg.cc/wBd2cwXy/image.png)](https://postimg.cc/VJDXzBHm)\
 [![image.png](https://i.postimg.cc/8kFyGfP2/image.png)](https://postimg.cc/Th6jqwb0)
 ---
 ## БД
