@@ -167,7 +167,7 @@ async def get_review_text(callback: types.CallbackQuery, state: StateContext):
 
 
 # Получение отзыва
-@bot.message_handler(state=MyStates.review, is_digit=True)
+@bot.message_handler(state=MyStates.review)
 async def get_review(message: types.Message, state: StateContext):
     async with state.data() as data:
         userid = int(data.get('userid'))
