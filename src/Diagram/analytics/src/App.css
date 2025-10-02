@@ -1,0 +1,94 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* контейнер страницы */
+.codd-wrap {
+  padding: 16px;
+  margin: 0 auto;
+  max-width: 1280px;
+  color: #111827;
+  background: #f9fafb;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* грид-контейнер секций */
+.codd-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+/* карточка */
+.codd-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  overflow: visible;
+}
+
+/* шапка карточки */
+.codd-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  padding-right: 4px;
+  margin-bottom: 8px;
+}
+
+/* адаптив: планшет/мобилка */
+@media (max-width: 1024px) {
+  .lg-span-12 { grid-column: span 12; }
+  .lg-span-6  { grid-column: span 12; } /* 6 → 12 */
+  .lg-span-3  { grid-column: span 12; } /* 3 → 12 */
+}
+
+@media (max-width: 640px) {
+  .codd-wrap { padding: 12px; }
+  .codd-btn { width: 100%; }
+  .codd-input { width: 100%; }
+  .codd-toolbar { gap: 8px; }
+}

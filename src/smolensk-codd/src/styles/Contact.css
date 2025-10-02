@@ -1,0 +1,46 @@
+
+.jobs-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+.info-card {
+  --size: 22vh; /* 🔑 базовый размер — регулируй его */
+
+  flex: 1 1 calc(33.333% - 2rem); /* до 3 в строку */
+  max-width: calc(33.333% - 2vh);
+
+  aspect-ratio: 3 / 2;
+  border-radius: calc(var(--size) * 0.05);
+  background: gray;
+
+  display: flex;
+  align-items: center;
+  gap: calc(var(--size) * 0.08);
+  padding: calc(var(--size) * 0.08);
+
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.info-card-image {
+  flex-shrink: 0;
+  width: calc(var(--size) * 0.6);
+  height: auto;
+  object-fit: cover;
+  border-radius: calc(var(--size) * 0.03);
+}
+
+.info-card-title {
+  margin: 0;
+  font-size: calc(var(--size) * 0.225);
+  line-height: 1.2;
+}
+
+.info-card-description {
+  margin: 0.3em 0 0;
+  font-size: calc(var(--size) * 0.15);
+  line-height: 1.2;
+}

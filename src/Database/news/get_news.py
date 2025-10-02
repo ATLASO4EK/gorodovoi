@@ -1,0 +1,64 @@
+from src.Database.connection import *
+
+def getLastNews():
+    """
+    Возвращает из SQL-таблицы данные о 4 последних новостях
+    :return:
+    """
+    conn, cur = connect()
+
+    query = 'SELECT * FROM public.news ORDER BY id DESC LIMIT 4'
+
+    try:
+        cur.execute(query)
+        news = cur.fetchall()
+    except Exception as e:
+        print(e)
+        return e
+
+    cur.close()
+    conn.close()
+
+    return news
+
+def getLastNews_tg():
+    """
+    Возвращает из SQL-таблицы данные о 2 последних новостях без развернутого текста
+    :return:
+    """
+    conn, cur = connect()
+
+    query = 'SELECT * FROM public.news ORDER BY id DESC LIMIT 2'
+
+    try:
+        cur.execute(query)
+        news = cur.fetchall()
+    except Exception as e:
+        print(e)
+        return e
+
+    cur.close()
+    conn.close()
+
+    return news
+
+def getFullNews():
+    """
+    Возвращает из SQL-таблицы данные о всех новостях
+    :return:
+    """
+    conn, cur = connect()
+
+    query = 'SELECT * FROM public.news'
+
+    try:
+        cur.execute(query)
+        news = cur.fetchall()
+    except Exception as e:
+        print(e)
+        return e
+
+    cur.close()
+    conn.close()
+
+    return news

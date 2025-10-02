@@ -1,0 +1,16 @@
+.docs-category {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.category-title {
+  font-size: 5vh;
+  margin-bottom: 2vh;
+}
+
+.docs-row {
+  display: flex;
+  justify-content: center;  /* center horizontally */
+  gap: 2vw;                /* spacing between squares */
+  flex-wrap: wrap;          /* wrap if screen is too small */
+}
