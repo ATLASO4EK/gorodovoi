@@ -11,7 +11,7 @@
 # Содержание
 - [Стек](#стек)
 - [О нас](#о-нас)
-- [Сайт](#сайт)
+- [Основные ссылки](#основные-ссылки)
 - [Telegramm-bot](#telegramm-bot)
   - [Описание](#описание)
   - [Функционал](#текущий-функционал-бота)
@@ -28,8 +28,8 @@
 
 Ссылка на наш сайт *[тык](https://smolathon-codd.ru)*\
 Скринкаст нашего сайта *[тык](https://disk.yandex.ru/i/5aENyup_3thmYA)*\
-Разработанный нами брендбук *[тык](https://disk.yandex.ru/d/XjSgSAr2WKsjbw)* а также в этом репозитории nkeivt_brandbook.pdf\
-Презентация нашего проекта *[тык](https://disk.yandex.ru/d/A-PjiOeT9nbeWA)* а также в этом репозитории codd(3).pptx
+Разработанный нами брендбук *[тык](https://disk.yandex.ru/d/XjSgSAr2WKsjbw)*\
+Презентация нашего проекта *[тык](https://disk.yandex.ru/d/A-PjiOeT9nbeWA)*
 
 ---
 ## Стек
@@ -55,13 +55,6 @@
 | Чайкин Арсений | [Bittjs](https://github.com/Bittjs "Чайкин Арсений") | Frontend-разработчик | React, Figma |
 | Серикова Анастасия | [moreiwi](https://github.com/moreiwi "Серикова Анастасия") | Frontend-разработчик | 	Figma, Photoshop |
 | Ведерников Артём | [1Evgesha1](https://github.com/1Evgesha1 "Ведерников Артём") | Backend-разработчик | TG-bot, ML |
----
-## Сайт
-
-Ссылка на наш сайт *[тык](https://smolathon-codd.ru)*\
-Скринкаст нашего сайта *[тык](https://disk.yandex.ru/i/5aENyup_3thmYA)*\
-Разработанный нами брендбук *[тык](https://disk.yandex.ru/i/21aOMusZLtuQBg)* а также в этом репозитории codd.pdf\
-Презентация нашего проекта *[тык](https://disk.yandex.ru/d/A-PjiOeT9nbeWA)* а также в этом репозитории codd(3).pptx
 
 ---
 ## Telegramm-bot
