@@ -2,15 +2,15 @@ import datetime
 
 from src.Database.connection import connect
 
-def post_reviews(datetime:datetime.datetime,
+def post_reviews(date:datetime.datetime,
                  text:str):
     conn, cur = connect()
 
-    if datetime is None or text is None:
+    if date is None or text is None:
         return False
 
     query = 'INSERT INTO private.tgreviews (datetime, text) VALUES (%s, %s);'
-    data = (datetime, text)
+    data = (date, text)
 
     cur.execute(query, data)
     conn.commit()
