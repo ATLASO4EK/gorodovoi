@@ -306,15 +306,15 @@ _**Возвращает**_:
 
 - PUT `tg`\
 _**Принимает**_:\
-tg_id - integer, telegramm-id пользователя
-isnotifon - boolean, включены ли уведомления
+tg_id - integer, telegramm-id пользователя\
+isnotifon - boolean, включены ли уведомления\
 _**Возвращает**_:
 
 `reviews`
 - POST `reviews`\
 _**Принимает**_:\
 text - str, текст отзыва\
-_**Возвращает**_:
+_**Возвращает**_:\
 True, если успешно, или exception, если возникла ошибка
 
 `News`
