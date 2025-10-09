@@ -140,10 +140,34 @@ async def profile(callback, state: StateContext):
 
     markup.add(button4, button3, button5)
 
+    await bot.set_state(state=MyStates.NotifState,chat_id=chatid, user_id=userid)
+    text="Notification is on"
+    await bot.add_data(NotifState=text, user_id=userid)
     await bot.delete_message(callback.message.chat.id, callback.message.message_id)
     await bot.send_message(callback.message.chat.id, f"Привет {callback.message.chat.first_name}!", reply_markup=markup)
     return
 
+@bot.callback_query_handler(func= lambda callback: callback.data=='NewsAboutCity')
+async def Notification(callback, state: StateContext):
+    async with state.data() as data:
+        try:
+            userid = int(data.get('userid'))
+            chatid = int(data.get('chatid'))
+            notif = int(data.get('NotifState'))
+        except Exception as e:
+            print(e)
+            await bot.send_message(text='Произошла непредвиденная ошибка,\n'
+                                        'Попробуйте использовать /start еще раз или чуть позже',
+                                   chat_id=callback.message.chat.id)
+            return
+
+    if notif=="Notification is on":
+        await bot.answer_callback_query(callback_query_id=callback.id, text="Notification is on")
+        await bot.edit_message_text()
+        text = "Notification is off"
+    elif notif=="Notification is off":
+        await bot.answer_callback_query(callback_query_id=callback.id, text="Notification is off")
+        text= "Notification is on"
 
 # Callback отзыва
 @bot.callback_query_handler(func=lambda callback: callback.data == 'review')
