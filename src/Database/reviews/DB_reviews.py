@@ -17,3 +17,5 @@ def post_reviews(datetime:datetime.datetime,
 
     cur.close()
     conn.close()
+
+    return True
