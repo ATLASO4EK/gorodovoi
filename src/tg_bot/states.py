@@ -6,4 +6,3 @@ class MyStates(StatesGroup):
     login = State()
     review = State()
     mainmenu = State()
-    NotifState= State()

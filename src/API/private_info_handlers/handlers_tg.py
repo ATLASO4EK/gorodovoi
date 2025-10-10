@@ -50,7 +50,7 @@ def putUsers_api():
         return jsonify('More args expected'), 400
 
     try:
-        data = getTg(tg_id, isnotifon)
+        data = putTg(tg_id, isnotifon)
     except Exception as e:
         return jsonify(e), 500
 
