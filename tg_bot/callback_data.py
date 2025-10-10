@@ -127,6 +127,7 @@ async def profile(callback, state: StateContext):
         try:
             userid = int(data.get('userid'))
             chatid = int(data.get('chatid'))
+            print(userid)
         except Exception as e:
             print(e)
             await bot.send_message(text='Произошла непредвиденная ошибка,\n'
@@ -140,34 +141,33 @@ async def profile(callback, state: StateContext):
 
     markup.add(button4, button3, button5)
 
-    await bot.set_state(state=MyStates.NotifState,chat_id=chatid, user_id=userid)
-    text="Notification is on"
-    await bot.add_data(NotifState=text)
     await bot.delete_message(callback.message.chat.id, callback.message.message_id)
     await bot.send_message(callback.message.chat.id, f"Привет {callback.message.chat.first_name}!", reply_markup=markup)
-    return
 
 @bot.callback_query_handler(func= lambda callback: callback.data=='NewsAboutCity')
 async def Notification(callback, state: StateContext):
-    async with state.data() as data:
-        try:
-            userid = int(data.get('userid'))
-            chatid = int(data.get('chatid'))
-            notif = int(data.get('NotifState'))
-        except Exception as e:
-            print(e)
-            await bot.send_message(text='Произошла непредвиденная ошибка,\n'
-                                        'Попробуйте использовать /start еще раз или чуть позже',
-                                   chat_id=callback.message.chat.id)
-            return
+    url = 'http://127.0.0.1:8000/api/v1/tg'
+    params = {}
+    params['tg_id']= 1450141987
+    resp=json.loads(requests.get(url=url, params=params).content.decode('utf-8'))
 
-    if notif=="Notification is on":
-        await bot.answer_callback_query(callback_query_id=callback.id, text="Notification is on")
-        await bot.edit_message_text()
-        text = "Notification is off"
-    elif notif=="Notification is off":
-        await bot.answer_callback_query(callback_query_id=callback.id, text="Notification is off")
-        text= "Notification is on"
+    markup = types.InlineKeyboardMarkup()
+    button = types.InlineKeyboardButton(text="Назад", callback_data='back')
+    markup.add(button)
+
+    if resp[0][2]==False:
+        await bot.answer_callback_query(callback_query_id=callback.id, text='Уведомления включены')
+        params['isnotifon']=True
+        resp=requests.put(url=url, params=params)
+        await main_page(callback.message,state)
+        print(f"{resp.status_code}FFFF")
+    else:
+        await bot.answer_callback_query(callback_query_id=callback.id, text='Уведомления выключены')
+        params['isnotifon'] = False
+        resp=requests.put(url=url, params=params)
+        await main_page(callback.message, state)
+        print(f"{resp.status_code}AAAa")
+
 
 # Callback отзыва
 @bot.callback_query_handler(func=lambda callback: callback.data == 'review')
