@@ -26,8 +26,7 @@ def postUsers_api():
         isnotifon = str(request.args.get('isnotifon'))
     except Exception as e:
         return jsonify(e), 400
-    print(tg_id)
-    print(isnotifon)
+
     if tg_id is None or isnotifon is None:
         return jsonify('More args expected'), 400
 
