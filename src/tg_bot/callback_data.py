@@ -217,7 +217,7 @@ async def get_review(message: types.Message, state: StateContext):
     params={}
     params['datetime'] = date
     params['text']=text
-    resp = requests.post(url,params=params)
+    requests.post(url,params=params)
 
     markup = types.InlineKeyboardMarkup(row_width=2)
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
