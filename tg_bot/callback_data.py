@@ -9,7 +9,7 @@ import pandas as pd
 from src.API.private_info_handlers.handlers_tg import *
 from states import MyStates
 from telebot.types import ReplyParameters
-
+from datetime import datetime
 
 # Callback регистрации
 @bot.callback_query_handler(func=lambda callback: callback.data == 'reg')
@@ -146,16 +146,29 @@ async def profile(callback, state: StateContext):
 
 @bot.callback_query_handler(func= lambda callback: callback.data=='NewsAboutCity')
 async def Notification(callback, state: StateContext):
+    async with state.data() as data:
+        try:
+            userid = int(data.get('userid'))
+            chatid = int(data.get('chatid'))
+            print(userid)
+        except Exception as e:
+            print(e)
+            await bot.send_message(text='Произошла непредвиденная ошибка,\n'
+                                        'Попробуйте использовать /start еще раз или чуть позже',
+                                   chat_id=callback.message.chat.id)
+            return
+
     url = 'http://127.0.0.1:8000/api/v1/tg'
     params = {}
-    params['tg_id']= 1450141987
+    params['tg_id']= userid
     resp=json.loads(requests.get(url=url, params=params).content.decode('utf-8'))
+    isnotifon = resp[0][2]
 
     markup = types.InlineKeyboardMarkup()
     button = types.InlineKeyboardButton(text="Назад", callback_data='back')
     markup.add(button)
 
-    if resp[0][2]==False:
+    if isnotifon==False:
         await bot.answer_callback_query(callback_query_id=callback.id, text='Уведомления включены')
         params['isnotifon']=True
         resp=requests.put(url=url, params=params)
@@ -167,6 +180,8 @@ async def Notification(callback, state: StateContext):
         resp=requests.put(url=url, params=params)
         await main_page(callback.message, state)
         print(f"{resp.status_code}AAAa")
+
+    await bot.set_state(user_id=userid, chat_id=chatid)
 
 
 # Callback отзыва
@@ -193,6 +208,7 @@ async def get_review_text(callback: types.CallbackQuery, state: StateContext):
 # Получение отзыва
 @bot.message_handler(state=MyStates.review)
 async def get_review(message: types.Message, state: StateContext):
+
     async with state.data() as data:
         userid = int(data.get('userid'))
         chatid = int(data.get('chatid'))
@@ -201,6 +217,12 @@ async def get_review(message: types.Message, state: StateContext):
                         state=MyStates.mainmenu)
 
     text = message.text
+    url = 'http://127.0.0.1:8000/api/v1/reviews'
+    date = datetime.now()
+    params={}
+    params['datetime'] = date
+    params['text']=text
+    resp = requests.post(url,params=params)
 
     markup = types.InlineKeyboardMarkup(row_width=2)
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
