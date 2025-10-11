@@ -136,7 +136,7 @@ async def profile(callback, state: StateContext):
             return
     markup = types.InlineKeyboardMarkup(row_width=1)
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
-    button3 = types.InlineKeyboardButton(text="Включить оповещения [В Разработке]", callback_data='NewsAboutCity')
+    button3 = types.InlineKeyboardButton(text="Уведомления", callback_data='NewsAboutCity')
     button5 = types.InlineKeyboardButton(text="Оставить отзыв", callback_data='review')
 
     markup.add(button4, button3, button5)
@@ -150,7 +150,6 @@ async def Notification(callback, state: StateContext):
         try:
             userid = int(data.get('userid'))
             chatid = int(data.get('chatid'))
-            print(userid)
         except Exception as e:
             print(e)
             await bot.send_message(text='Произошла непредвиденная ошибка,\n'
@@ -173,15 +172,12 @@ async def Notification(callback, state: StateContext):
         params['isnotifon']=True
         resp=requests.put(url=url, params=params)
         await main_page(callback.message,state)
-        print(f"{resp.status_code}FFFF")
     else:
         await bot.answer_callback_query(callback_query_id=callback.id, text='Уведомления выключены')
         params['isnotifon'] = False
         resp=requests.put(url=url, params=params)
         await main_page(callback.message, state)
-        print(f"{resp.status_code}AAAa")
-
-    await bot.set_state(user_id=userid, chat_id=chatid)
+    await bot.delete_message(callback.message.chat.id, callback.message.message_id)
 
 
 # Callback отзыва
@@ -222,7 +218,7 @@ async def get_review(message: types.Message, state: StateContext):
     params={}
     params['datetime'] = date
     params['text']=text
-    resp = requests.post(url,params=params)
+    requests.post(url,params=params)
 
     markup = types.InlineKeyboardMarkup(row_width=2)
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
