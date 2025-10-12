@@ -64,13 +64,14 @@ async def scheduler():
 def worker():
     asyncio.run((scheduler()))
 
-# Запуск всех процессов
+# Функция запуска всех процессов
 async def main():
     process = Process(target=worker)
     process.start()
     await bot.polling()
     process.join()
 
+# Непосредственно запуск
 if __name__=='__main__':
     print('bot started')
     asyncio.run(main())
