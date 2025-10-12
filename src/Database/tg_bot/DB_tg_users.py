@@ -22,15 +22,13 @@ def getTg(id_int:int=None,
 
     return ans
 
-def postTg(tg_id:int=None,
-          isnotifon:bool=None):
+def postTg(tg_id:int,
+          isnotifon:bool,
+          chat_id:int):
     conn, cur = connect()
 
-    if tg_id is None or isnotifon is None:
-        return False
-
-    query = 'INSERT INTO private.tgusers (tg_id, isnotifon) VALUES (%s, %s);'
-    data = (tg_id, isnotifon)
+    query = 'INSERT INTO private.tgusers (tg_id, isnotifon, chat_id) VALUES (%s, %s, %s);'
+    data = (tg_id, isnotifon, chat_id)
 
     cur.execute(query, data)
     conn.commit()

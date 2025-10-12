@@ -23,7 +23,8 @@ def getUsers_api():
 def postUsers_api():
     try:
         tg_id = int(request.args.get('tg_id'))
-        isnotifon = str(request.args.get('isnotifon'))
+        chat_id = int(request.args.get('chat_id'))
+        isnotifon = bool(request.args.get('isnotifon'))
     except Exception as e:
         return jsonify(e), 400
 
@@ -31,7 +32,7 @@ def postUsers_api():
         return jsonify('More args expected'), 400
 
     try:
-        data = postTg(tg_id, isnotifon)
+        data = postTg(tg_id, isnotifon, chat_id)
     except Exception as e:
         return jsonify(e), 500
 

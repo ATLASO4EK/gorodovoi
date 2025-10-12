@@ -18,7 +18,7 @@ async def auth(callback, state: StateContext):
     params = {}
 
     try:
-        regs = pd.DataFrame(columns=['id', 'tg_id', 'isnotifon'],
+        regs = pd.DataFrame(columns=['id', 'tg_id', 'isnotifon', 'chat_id'],
                          data=json.loads(requests.get(url).content.decode('utf-8')))[
                 'tg_id'].tolist()
     except Exception as e:
@@ -30,8 +30,10 @@ async def auth(callback, state: StateContext):
     try:
         async with state.data() as data:
             userid = int(data.get('userid'))
+            chatid = int(data.get('chatid'))
         params['tg_id'] = userid
         params['isnotifon'] = False
+        params['chat_id'] = chatid
     except Exception as e:
         print(e)
         await bot.send_message(text='Произошла непредвиденная ошибка,\n'
@@ -136,7 +138,7 @@ async def profile(callback, state: StateContext):
             return
     markup = types.InlineKeyboardMarkup(row_width=1)
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
-    button3 = types.InlineKeyboardButton(text="Включить оповещения [В Разработке]", callback_data='NewsAboutCity')
+    button3 = types.InlineKeyboardButton(text="Уведомления", callback_data='NewsAboutCity')
     button5 = types.InlineKeyboardButton(text="Оставить отзыв", callback_data='review')
 
     markup.add(button4, button3, button5)
@@ -170,13 +172,14 @@ async def Notification(callback, state: StateContext):
     if isnotifon==False:
         await bot.answer_callback_query(callback_query_id=callback.id, text='Уведомления включены')
         params['isnotifon']=True
-        requests.put(url=url, params=params)
+        resp=requests.put(url=url, params=params)
         await main_page(callback.message,state)
     else:
         await bot.answer_callback_query(callback_query_id=callback.id, text='Уведомления выключены')
         params['isnotifon'] = False
-        requests.put(url=url, params=params)
+        resp=requests.put(url=url, params=params)
         await main_page(callback.message, state)
+    await bot.delete_message(callback.message.chat.id, callback.message.message_id)
 
 
 # Callback отзыва

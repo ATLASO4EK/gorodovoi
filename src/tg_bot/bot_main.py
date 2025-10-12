@@ -1,6 +1,18 @@
 import asyncio
+import threading
+from multiprocessing import Process
+from ctypes.wintypes import tagRECT
+
+from sqlalchemy.sql.operators import truediv
 from telebot import asyncio_filters
 from callback_data import *
+import aioschedule, time, requests, json
+import pandas as pd
+
+
+from src.Database.tg_bot.DB_tg_users import getTg
+
+import datetime
 
 bot.add_custom_filter(asyncio_filters.StateFilter(bot))
 bot.add_custom_filter(asyncio_filters.IsDigitFilter())
@@ -11,8 +23,55 @@ from telebot.states.asyncio.middleware import StateMiddleware
 
 bot.setup_middleware(StateMiddleware(bot))
 
-# Start polling
-import asyncio
+async def send_notif():
+    url = 'http://127.0.0.1:8000/api/v1/jams'
 
-print('bot started')
-asyncio.run(bot.polling())
+    try:
+        jams_data = json.loads(requests.get(url).content.decode('utf-8'))
+    except Exception as e:
+        print(e)
+        return
+
+    if jams_data[0][1] >= 5:
+        tg_ids = pd.DataFrame(data=getTg(isnotifon=True), columns=['id', 'tg_id', 'isnotifon', 'chat_id'])
+        tg_ids = tg_ids.loc[:]['chat_id'].tolist()
+        for usid in tg_ids:
+            await bot.send_message(chat_id=usid, text=f'В ближайший час ожидаются пробки около {jams_data[0][1]} баллов!')
+
+async def scheduler():
+    posting_time = [
+        '06:00',
+        '07:00',
+        '08:00',
+        '09:00',
+        '10:00',
+        '11:00',
+        '12:00',
+        '13:00',
+        '14:00',
+        '15:00',
+        '16:00',
+        '17:00',
+        '18:00',
+        '19:00',
+        '20:00',
+        '21:00',
+        '22:00']
+
+    while True:
+        if datetime.datetime.now().strftime('%H:%M') in posting_time:
+            await send_notif()
+        await asyncio.sleep(60)
+
+def worker():
+    asyncio.run((scheduler()))
+
+async def main():
+    process = Process(target=worker)
+    process.start()
+    await bot.polling()
+    process.join()
+
+if __name__=='__main__':
+    print('bot started')
+    asyncio.run(main())
