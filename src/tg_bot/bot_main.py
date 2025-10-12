@@ -1,14 +1,9 @@
 import asyncio
-import threading
 from multiprocessing import Process
-from ctypes.wintypes import tagRECT
-
-from sqlalchemy.sql.operators import truediv
 from telebot import asyncio_filters
 from callback_data import *
-import aioschedule, time, requests, json
+import requests, json
 import pandas as pd
-
 
 from src.Database.tg_bot.DB_tg_users import getTg
 
@@ -23,6 +18,7 @@ from telebot.states.asyncio.middleware import StateMiddleware
 
 bot.setup_middleware(StateMiddleware(bot))
 
+# Отправление уведомлений
 async def send_notif():
     url = 'http://127.0.0.1:8000/api/v1/jams'
 
@@ -38,6 +34,7 @@ async def send_notif():
         for usid in tg_ids:
             await bot.send_message(chat_id=usid, text=f'В ближайший час ожидаются пробки около {jams_data[0][1]} баллов!')
 
+# Планирование уведомлений
 async def scheduler():
     posting_time = [
         '06:00',
@@ -63,9 +60,11 @@ async def scheduler():
             await send_notif()
         await asyncio.sleep(60)
 
+# Рабочий процесс
 def worker():
     asyncio.run((scheduler()))
 
+# Запуск всех процессов
 async def main():
     process = Process(target=worker)
     process.start()
