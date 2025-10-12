@@ -7,6 +7,7 @@ from message_handler import main_page
 from datetime import datetime as dt
 import pandas as pd
 from src.API.private_info_handlers.handlers_tg import *
+from src.config import get_api
 from states import MyStates
 from telebot.types import ReplyParameters
 from datetime import datetime
@@ -14,7 +15,7 @@ from datetime import datetime
 # Callback регистрации
 @bot.callback_query_handler(func=lambda callback: callback.data == 'reg')
 async def auth(callback, state: StateContext):
-    url = 'http://127.0.0.1:8000/api/v1/tg'
+    url = f'{get_api()}tg'
     params = {}
 
     try:
@@ -76,7 +77,7 @@ async def news(callback, state: StateContext):
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
     markup.add(button4)
 
-    url = 'http://127.0.0.1:8000/api/v1/News'
+    url = f'{get_api()}News'
     params = {'filters': 'tg'}
 
     try:
@@ -102,7 +103,7 @@ async def jams(callback, state: StateContext):
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
     markup.add(button4)
 
-    url = 'http://127.0.0.1:8000/api/v1/jams'
+    url = f'{get_api()}jams'
 
     try:
         jams_data = json.loads(requests.get(url).content.decode('utf-8'))
@@ -125,17 +126,6 @@ async def jams(callback, state: StateContext):
 # Callback профиля
 @bot.callback_query_handler(func=lambda callback: callback.data == 'profile')
 async def profile(callback, state: StateContext):
-    async with state.data() as data:
-        try:
-            userid = int(data.get('userid'))
-            chatid = int(data.get('chatid'))
-            print(userid)
-        except Exception as e:
-            print(e)
-            await bot.send_message(text='Произошла непредвиденная ошибка,\n'
-                                        'Попробуйте использовать /start еще раз или чуть позже',
-                                   chat_id=callback.message.chat.id)
-            return
     markup = types.InlineKeyboardMarkup(row_width=1)
     button4 = types.InlineKeyboardButton(text="Назад", callback_data='back')
     button3 = types.InlineKeyboardButton(text="Уведомления", callback_data='NewsAboutCity')
@@ -159,7 +149,7 @@ async def Notification(callback, state: StateContext):
                                    chat_id=callback.message.chat.id)
             return
 
-    url = 'http://127.0.0.1:8000/api/v1/tg'
+    url = f'{get_api()}tg'
     params = {}
     params['tg_id']= userid
     resp=json.loads(requests.get(url=url, params=params).content.decode('utf-8'))
@@ -215,7 +205,7 @@ async def get_review(message: types.Message, state: StateContext):
                         state=MyStates.mainmenu)
 
     text = message.text
-    url = 'http://127.0.0.1:8000/api/v1/reviews'
+    url = f'{get_api()}reviews'
     date = datetime.now()
     params={}
     params['datetime'] = date

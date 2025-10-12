@@ -4,7 +4,7 @@ from telebot import asyncio_filters
 from callback_data import *
 import requests, json
 import pandas as pd
-
+from src.config import get_api
 from src.Database.tg_bot.DB_tg_users import getTg
 
 import datetime
@@ -20,7 +20,7 @@ bot.setup_middleware(StateMiddleware(bot))
 
 # Отправление уведомлений
 async def send_notif():
-    url = 'http://127.0.0.1:8000/api/v1/jams'
+    url = f'{get_api()}jams'
 
     try:
         jams_data = json.loads(requests.get(url).content.decode('utf-8'))
