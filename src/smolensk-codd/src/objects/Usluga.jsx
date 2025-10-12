@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './../styles/UslugiPage.css';
 
 const ProjectIcon = () => (
@@ -44,6 +44,7 @@ function Usluga({ title, description, price, features, icon, onOrder, index }) {
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -51,6 +52,31 @@ function Usluga({ title, description, price, features, icon, onOrder, index }) {
     service: title,
     message: ""
   });
+
+  // Определяем мобильное устройство
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Блокируем скролл при открытии модалки
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showModal]);
 
   const handleOrderClick = (e) => {
     e.preventDefault();
@@ -82,7 +108,6 @@ function Usluga({ title, description, price, features, icon, onOrder, index }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
 
     setTimeout(() => {
       setIsSubmitting(false);
@@ -128,8 +153,8 @@ function Usluga({ title, description, price, features, icon, onOrder, index }) {
       </div>
 
       {showModal && (
-        <div className="usluga-modal-overlay" onClick={handleCloseModal}>
-          <div className="usluga-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className={`usluga-modal-overlay ${isMobile ? 'mobile' : ''}`} onClick={handleCloseModal}>
+          <div className={`usluga-modal-content ${isMobile ? 'mobile' : ''}`} onClick={(e) => e.stopPropagation()}>
 
             {!isSuccess ? (
               <>
@@ -208,7 +233,7 @@ function Usluga({ title, description, price, features, icon, onOrder, index }) {
                       onChange={handleInputChange}
                       disabled={isSubmitting}
                       placeholder="Опишите детали заказа, особые требования или задайте вопросы..."
-                      rows="4"
+                      rows={isMobile ? "3" : "4"}
                     />
                   </div>
 

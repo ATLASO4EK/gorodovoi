@@ -13,11 +13,9 @@ function NewsPage({ onNewsUpdate, news }) {
     return localStorage.getItem('isAdmin') === 'true';
   });
 
-
   useEffect(() => {
     localStorage.setItem('isAdmin', isAdmin.toString());
   }, [isAdmin]);
-
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -25,7 +23,6 @@ function NewsPage({ onNewsUpdate, news }) {
       setIsVisible(true);
     }, 100);
   }, []);
-
 
   const openNews = (newsItem) => {
     setSelectedNews(newsItem);
@@ -51,11 +48,11 @@ function NewsPage({ onNewsUpdate, news }) {
   }, [selectedNews]);
 
   const formatText = (text) => {
+    if (!text) return null;
     return text.split('\n').map((paragraph, index) => (
-      <p key={index}>{paragraph}</p>
+      paragraph.trim() ? <p key={index}>{paragraph}</p> : null
     ));
   };
-
 
   const handleOpenLogin = () => {
     setIsLoginModalOpen(true);
@@ -79,18 +76,17 @@ function NewsPage({ onNewsUpdate, news }) {
 
   const handleCloseEditor = () => {
     setIsEditorOpen(false);
- 
     if (onNewsUpdate) {
       onNewsUpdate();
     }
   };
 
-const handleNewsUpdate = () => {
-  console.log('NewsPage: handleNewsUpdate вызван');
-  if (onNewsUpdate) {
-    onNewsUpdate();
-  }
-};
+  const handleNewsUpdate = () => {
+    console.log('NewsPage: handleNewsUpdate вызван');
+    if (onNewsUpdate) {
+      onNewsUpdate();
+    }
+  };
 
   return (
     <>
@@ -136,46 +132,49 @@ const handleNewsUpdate = () => {
         </section>
       </div>
 
+      {/* Исправленное модальное окно - теперь использует стили как на главной странице */}
       {selectedNews && (
-        <div className="news-modal-overlay" onClick={closeNews}>
-          <div className="news-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="news-modal-overlay-home" onClick={closeNews}>
+          <div className="news-modal-home" onClick={(e) => e.stopPropagation()}>
             <button 
-              className="modal-close" 
+              className="modal-close-home" 
               onClick={closeNews}
               aria-label="Закрыть новость"
             >
               <span>×</span>
             </button>
-            <div className="modal-image-container">
+            <div className="modal-image-container-home">
               {selectedNews.image && selectedNews.image !== '#' ? (
                 <img 
                   src={selectedNews.image} 
-                  alt={selectedNews.imageAlt} 
-                  className="modal-image"
+                  alt={selectedNews.imageAlt || selectedNews.title} 
+                  className="modal-image-home"
                   onError={(e) => {
                     e.target.style.display = 'none';
                     e.target.nextSibling.style.display = 'flex';
                   }}
                 />
               ) : null}
-              <div className="modal-image-placeholder" style={{ display: selectedNews.image && selectedNews.image !== '#' ? 'none' : 'flex' }}>
-                <span className="modal-emoji">📰</span>
-                <span className="modal-image-text">ЦОДД Смоленск</span>
+              <div className="modal-image-placeholder-home" style={{ 
+                display: (selectedNews.image && selectedNews.image !== '#') ? 'none' : 'flex' 
+              }}>
+                <span className="modal-emoji-home">📰</span>
+                <span className="news-category-home">ЦОДД Смоленск</span>
               </div>
             </div>
-            <div className="modal-content">
-              <h2 className="modal-title">{selectedNews.title}</h2>
-              <div className="modal-meta">
-                <span className="modal-author">
-                  <span className="author-icon">👤</span>
-                  Автор: {selectedNews.author}
+            <div className="modal-content-home">
+              <h2 className="modal-title-home">{selectedNews.title}</h2>
+              <div className="modal-meta-home">
+                <span className="modal-author-home">
+                  <span className="author-icon-home">👤</span>
+                  Автор: {selectedNews.author || 'Неизвестный автор'}
                 </span>
-                <span className="modal-time">
-                  <span className="time-icon">🕒</span>
-                  Опубликовано: {selectedNews.time}
+                <span className="modal-time-home">
+                  <span className="time-icon-home">🕒</span>
+                  Опубликовано: {selectedNews.time || 'Дата не указана'}
                 </span>
               </div>
-              <div className="modal-text">
+              <div className="modal-text-home">
                 {formatText(selectedNews.fullText)}
               </div>
             </div>
@@ -189,15 +188,15 @@ const handleNewsUpdate = () => {
         onLoginSuccess={handleLoginSuccess}
       />
 
-{isEditorOpen && (
-  <NewsEditor 
-    news={news}
-    onSave={handleCloseEditor}
-    onClose={handleCloseEditor}
-    isAdmin={isAdmin}
-    onNewsUpdate={handleNewsUpdate} 
-  />
-)}
+      {isEditorOpen && (
+        <NewsEditor 
+          news={news}
+          onSave={handleCloseEditor}
+          onClose={handleCloseEditor}
+          isAdmin={isAdmin}
+          onNewsUpdate={handleNewsUpdate} 
+        />
+      )}
     </>
   );
 }

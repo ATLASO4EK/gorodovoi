@@ -79,25 +79,6 @@
   animation: slideUpFade 1s ease-out 0.5s both;
 }
 
-.city-image {
-  width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-  border-radius: 0 0 20px 20px;
-}
-
-.hero-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 48px;
-  font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  line-height: 1.2;
-}
-
 .news-section-home {
   padding: 40px 0;
   max-width: 1400px;
@@ -369,134 +350,6 @@
   margin-bottom: 15px;
 }
 
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes modalAppear {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@media (max-width: 1200px) {
-  .hero-title {
-    font-size: 56px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .hero-title {
-    font-size: 48px;
-  }
-  
-  .news-grid-home {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-section {
-    height: 70vh;
-    min-height: 500px;
-    margin-bottom: 40px;
-  }
-  
-  .hero-title {
-    font-size: 36px;
-  }
-  
-  .hero-subtitle {
-    font-size: 18px;
-  }
-  
-  .hero-content {
-    padding: 0 15px 60px 15px;
-  }
-  
-  .hero-text {
-    font-size: 32px;
-  }
-  
-  .news-header {
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-  }
-  
-  .news-title-home {
-    font-size: 28px;
-  }
-  
-  .news-grid-home {
-    grid-template-columns: 1fr;
-    gap: 15px;
-    padding: 0 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-section {
-    height: 60vh;
-    min-height: 400px;
-  }
-  
-  .hero-title {
-    font-size: 28px;
-  }
-  
-  .hero-subtitle {
-    font-size: 16px;
-  }
-  
-  .hero-content {
-    padding: 0 10px 40px 10px;
-  }
-  
-  .hero-text {
-    font-size: 24px;
-  }
-  
-  .news-title-home {
-    font-size: 24px;
-  }
-  
-  .modal-content-home {
-    padding: 20px;
-  }
-  
-  .modal-title-home {
-    font-size: 22px;
-  }
-  
-  .modal-text-home {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 360px) {
-  .hero-title {
-    font-size: 24px;
-  }
-  
-  .hero-subtitle {
-    font-size: 14px;
-  }
-}
-
 .services-section-home {
   padding: 60px 0;
   max-width: 1400px;
@@ -624,7 +477,44 @@
   margin-left: 10px;
 }
 
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (max-width: 1200px) {
+  .hero-title {
+    font-size: 56px;
+  }
+}
+
 @media (max-width: 1024px) {
+  .hero-title {
+    font-size: 48px;
+  }
+  
+  .news-grid-home {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
   .service-banner-content {
     padding: 25px 30px;
   }
@@ -639,6 +529,72 @@
 }
 
 @media (max-width: 768px) {
+  .hero-section {
+    height: 70vh;
+    min-height: 500px;
+    margin-bottom: 40px;
+  }
+  
+  .hero-title {
+    font-size: 36px;
+  }
+  
+  .hero-subtitle {
+    font-size: 18px;
+  }
+  
+  .hero-content {
+    padding: 0 15px 60px 15px;
+  }
+  
+  .news-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .news-title-home {
+    font-size: 28px;
+  }
+  
+  .news-grid-home {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 0 15px 20px 15px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .news-grid-home::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .news-grid-home::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  .news-grid-home::-webkit-scrollbar-thumb {
+    background: #62a744;
+    border-radius: 3px;
+  }
+
+  .news-grid-home::-webkit-scrollbar-thumb:hover {
+    background: #8B00FF;
+  }
+
+  .news-card-home {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+    min-height: 350px;
+  }
+
+  .news-card-home:hover {
+    transform: none;
+    border-color: #62a744;
+  }
+  
   .services-section-home {
     padding: 40px 0;
   }
@@ -691,6 +647,49 @@
 }
 
 @media (max-width: 480px) {
+  .hero-section {
+    height: 60vh;
+    min-height: 400px;
+  }
+  
+  .hero-title {
+    font-size: 28px;
+  }
+  
+  .hero-subtitle {
+    font-size: 16px;
+  }
+  
+  .hero-content {
+    padding: 0 10px 40px 10px;
+  }
+  
+  .news-title-home {
+    font-size: 24px;
+  }
+  
+  .modal-content-home {
+    padding: 20px;
+  }
+  
+  .modal-title-home {
+    font-size: 22px;
+  }
+  
+  .modal-text-home {
+    font-size: 14px;
+  }
+
+  .news-grid-home {
+    gap: 12px;
+    padding: 0 10px 15px 10px;
+  }
+
+  .news-card-home {
+    flex: 0 0 260px;
+    min-height: 320px;
+  }
+  
   .services-section-home {
     padding: 30px 0;
   }
@@ -731,27 +730,85 @@
   }
 }
 
-.news-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
+@media (max-width: 360px) {
+  .hero-title {
+    font-size: 24px;
+  }
+  
+  .hero-subtitle {
+    font-size: 14px;
+  }
+
+  .news-card-home {
+    flex: 0 0 240px;
+    min-height: 300px;
+  }
+}
+/* Анимации для HomePage */
+.home-page {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.all-news-button {
-  background: #62a744;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Montserrat', sans-serif;
+.home-page.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.all-news-button:hover {
-  background: #8B00FF;
-  transform: translateY(-2px);
+/* Анимации для элементов с задержкой */
+.home-page.visible .hero-section {
+  animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+.home-page.visible .news-section-home {
+  animation: fadeInUp 0.6s ease 0.4s both;
+}
+
+.home-page.visible .services-section-home {
+  animation: fadeInUp 0.6s ease 0.6s both;
+}
+
+/* Анимации для карточек новостей с последовательным появлением */
+.home-page.visible .news-card-home {
+  animation: fadeInUp 0.6s ease both;
+}
+
+.home-page.visible .news-card-home:nth-child(1) { animation-delay: 0.5s; }
+.home-page.visible .news-card-home:nth-child(2) { animation-delay: 0.6s; }
+.home-page.visible .news-card-home:nth-child(3) { animation-delay: 0.7s; }
+
+/* Анимация для баннера сервиса */
+.home-page.visible .service-banner-content {
+  animation: fadeInUp 0.6s ease 0.8s both;
+}
+
+/* Базовые анимации */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.news-card-home, .service-banner-content {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-page,
+  .news-card-home,
+  .service-banner-content {
+    transition: none;
+    animation: none;
+  }
+  
+  .home-page.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

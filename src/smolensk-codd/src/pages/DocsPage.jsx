@@ -105,7 +105,7 @@ function DocsPage() {
           type: "PDF",
           size: "2.4 МБ",
           date: "2024 г.",
-          file: "https://codd67.ru/wp-content/uploads/2023/09/1_ustav-1.pdf"
+          file: "/docs/Chart-CODD-Smolensk.pdf"
         },
         {
           title: "Распоряжение о реорганизации",
@@ -113,7 +113,7 @@ function DocsPage() {
           type: "PDF",
           size: "1.8 МБ",
           date: "2023 г.",
-          file: "https://codd67.ru/wp-content/uploads/2023/09/1_1_rasporyazhenie-o-reorganizatsii-2.pdf"
+          file: "/docs/rasporyazhenie-o-reorganizatsii.pdf"
         },
         {
           title: "Распоряжение о внесении изменений в Устав",
@@ -121,7 +121,7 @@ function DocsPage() {
           type: "PDF",
           size: "1.2 МБ",
           date: "2024 г.",
-          file: "https://codd67.ru/wp-content/uploads/2024/08/5_Распоряжение-о-внесении-изменений-в-Устав.pdf"
+          file: "/docs/Order-on-amendments-to-the-Charter.pdf"
         }
       ]
     },
@@ -135,7 +135,7 @@ function DocsPage() {
           type: "PDF",
           size: "1.1 МБ",
           date: "2023 г.",
-          file: "https://codd67.ru/wp-content/uploads/2023/09/2_ИНН_ЦОДД.pdf"
+          file: "/docs/INN-CODD.pdf"
         },
         {
           title: "Свидетельство ОГРН",
@@ -143,7 +143,7 @@ function DocsPage() {
           type: "PDF",
           size: "1.3 МБ",
           date: "2023 г.",
-          file: "https://codd67.ru/wp-content/uploads/2023/09/3_ОГРН_Свидетельство-о-регистрации-ЦОДД.pdf"
+          file: "/docs/OGRN-Certificate.pdf"
         }
       ]
     },
@@ -157,7 +157,7 @@ function DocsPage() {
           type: "PDF",
           size: "1.5 МБ",
           date: "2023 г.",
-          file: "https://codd67.ru/wp-content/uploads/2023/09/4_Распоряжение-о-назначении-директора.pdf"
+          file: "/docs/Order-on-the-appointment-of-the-Director.pdf"
         },
         {
           title: "Сводная ведомость оценки условий труда",
@@ -165,7 +165,7 @@ function DocsPage() {
           type: "PDF",
           size: "3.2 МБ",
           date: "2024 г.",
-          file: "https://codd67.ru/wp-content/uploads/2024/02/сводная-ведомость-результатов-проведения-специальной-оценки-условий-труда.pdf"
+          file: "/docs/Summary-statement-of-the-assessment-of-working-conditions.pdf"
         },
         {
           title: "Закон о ЦОДД",
@@ -173,7 +173,7 @@ function DocsPage() {
           type: "PDF",
           size: "2.1 МБ",
           date: "2023 г.",
-          file: "https://codd67.ru/wp-content/uploads/2023/09/Law-1.pdf"
+          file: "/docs/The-Law-on-CODD.pdf"
         },
         {
           title: "Памятка о ЦОДД",
@@ -181,7 +181,7 @@ function DocsPage() {
           type: "PDF",
           size: "0.9 МБ",
           date: "2023 г.",
-          file: "https://codd67.ru/wp-content/uploads/2023/09/Memo-2.pdf"
+          file: "/docs/A-reminder-about-CODD.pdf"
         }
       ]
     }
