@@ -11,7 +11,8 @@ async def welcome_page(message, state: StateContext):
     markup.add(button)
     text = ('Вас приветствует ЦОДД Смоленска!\nЭтот телеграмм бот создан, что бы помочь понять ситуацию на дорогах.\n'
             'Чтобы пользоваться ботом вам нужно зарегистрироваться по кнопке ниже.')
-
+    print(message.from_user.id)
+    print(message.chat.id)
     await bot.set_state(user_id=message.from_user.id, chat_id=message.chat.id, state=MyStates.user_id)
     await state.add_data(userid=message.from_user.id)
     await state.add_data(chatid=message.chat.id)
