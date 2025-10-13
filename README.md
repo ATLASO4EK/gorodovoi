@@ -350,3 +350,26 @@ _**Возвращает**_:
 _**Принимает**_:\
 id_int - integer, id в БД\
 _**Возвращает**_:
+
+`vacancy_resp`
+- POST `vacancy_resp`\
+_**Принимает**_:\
+full_name = string, ФИО\
+email = string, email\
+phone = string, номер телефона\
+job_exp = string, описание опыта работы\
+desired_vacancy = string, желаемая должность (опционально)\
+add_info = string, дополнительная информация/сопроводительное письмо (опционально)\
+ischecked = bool, проверенно ли человеком заявление (опционально, по умолчанию - False)\
+_**Возвращает**_:
+
+`service_resp`
+- POST `service_resp`\
+_**Принимает**_:\
+full_name = string, ФИО\
+email = string, email\
+phone = string, номер телефона\
+service = string, услуга\
+add_info = string, дополнительная информация/сопроводительное письмо (опционально)\
+ischecked = bool, проверенно ли человеком заявление (опционально, по умолчанию - False)\
+_**Возвращает**_:
