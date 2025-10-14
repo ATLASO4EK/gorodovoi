@@ -78,18 +78,6 @@ const Team = () => {
 
       <div className="team-members">
    
-        <div className="member-card placeholder" data-aos="fade-right">
-          <div className="member-photo">
-            <div className="photo-placeholder">
-              <UserPlusIcon />
-            </div>
-          </div>
-          <div className="member-info">
-            <span className="placeholder-text">Присоединяйтесь к нашей команде</span>
-            <p className="placeholder-description">Станьте частью команды, которая меняет город к лучшему</p>
-            <button className="join-button">Стать частью команды</button>
-          </div>
-        </div>
 
         <div className="member-card director" data-aos="zoom-in">
           <div className="member-badge">Руководитель</div>
@@ -123,18 +111,7 @@ const Team = () => {
         </div>
 
    
-        <div className="member-card placeholder" data-aos="fade-left">
-          <div className="member-photo">
-            <div className="photo-placeholder">
-              <GrowthIcon />
-            </div>
-          </div>
-          <div className="member-info">
-            <span className="placeholder-text">Мы растем и развиваемся</span>
-            <p className="placeholder-description">Присоединяйтесь к нам и участвуйте в развитии городской инфраструктуры</p>
-            <button className="join-button">Узнать о вакансиях</button>
-          </div>
-        </div>
+    
       </div>
 
 
@@ -157,16 +134,7 @@ const Team = () => {
       </div>
 
     
-      <div className="team-cta">
-        <div className="cta-content">
-          <h2>Хотите присоединиться к нашей команде?</h2>
-          <p>Мы всегда рады талантливым специалистам, готовым работать для улучшения городской среды</p>
-          <div className="cta-buttons">
-            <button className="cta-button primary">Отправить резюме</button>
-            <button className="cta-button secondary">Посмотреть вакансии</button>
-          </div>
-        </div>
-      </div>
+
     </div>
   );
 };

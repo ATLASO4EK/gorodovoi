@@ -16,6 +16,7 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [wordCount, setWordCount] = useState(0);
 
   useEffect(() => {
     if (selectedNews) {
@@ -40,6 +41,12 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
       });
     }
   }, [selectedNews]);
+
+  useEffect(() => {
+    // Подсчет слов при изменении полного текста
+    const words = formData.fullText.trim().split(/\s+/).filter(word => word.length > 0);
+    setWordCount(words.length);
+  }, [formData.fullText]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -325,7 +332,22 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
               </div>
 
               <div className="form-group">
-                <label>Полный текст новости </label>
+                <label>Альтернативный текст изображения</label>
+                <input
+                  type="text"
+                  name="imageAlt"
+                  value={formData.imageAlt}
+                  onChange={handleInputChange}
+                  placeholder="Описание изображения для доступности"
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>
+                  Полный текст новости 
+                  <span className="word-counter">({wordCount} слов)</span>
+                </label>
                 <textarea
                   name="fullText"
                   value={formData.fullText}
@@ -335,9 +357,6 @@ function NewsEditor({ news, onSave, onClose, isAdmin, onNewsUpdate }) {
                   placeholder="Полный текст новости..."
                   disabled={loading}
                 />
-                <small className="form-help">
-                  Короткий текст  будет автоматически сгенерирован из первых 100 символов полного текста
-                </small>
               </div>
 
               <div className="form-actions">

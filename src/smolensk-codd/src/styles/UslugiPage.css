@@ -257,23 +257,41 @@
   }
 }
 
+/* Улучшенные стили для модального окна */
 .modal-header {
   padding: 30px 30px 20px;
   border-bottom: 2px solid #f0f0f0;
   position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
 }
 
-.modal-header h2 {
-  font-size: 28px;
+.modal-title-section {
+  flex: 1;
+}
+
+.modal-title-section h2 {
+  font-size: 24px;
   color: #333;
-  margin: 0;
+  margin: 0 0 8px 0;
   font-weight: 600;
 }
 
+.modal-subtitle {
+  font-size: 16px;
+  color: #62a744;
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ЕДИНСТВЕННЫЙ ПРАВИЛЬНЫЙ СТИЛЬ ДЛЯ КНОПКИ ЗАКРЫТИЯ */
 .modal-close {
   position: absolute;
-  top: 25px;
-  right: 25px;
+  top: 20px;
+  right: 20px;
   background: #62a744;
   color: white;
   border: none;
@@ -282,6 +300,7 @@
   border-radius: 50%;
   font-size: 20px;
   cursor: pointer;
+  z-index: 1001;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -291,6 +310,12 @@
 .modal-close:hover {
   background: #8B00FF;
   transform: rotate(90deg);
+}
+
+.modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .modal-close svg {
@@ -303,6 +328,12 @@
   padding: 30px;
 }
 
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
 .form-group {
   margin-bottom: 25px;
 }
@@ -312,55 +343,91 @@
   margin-bottom: 8px;
   font-weight: 600;
   color: #333;
+  font-size: 14px;
+}
+
+.optional-label {
+  font-weight: 400;
+  color: #888;
+  font-size: 0.9em;
 }
 
 .form-group input,
-.form-group textarea,
-.form-group select {
+.form-group textarea {
   width: 100%;
-  padding: 12px 16px;
+  padding: 14px 16px;
   border: 2px solid #e8f5e8;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 16px;
   transition: all 0.3s ease;
   font-family: 'Montserrat', sans-serif;
+  background: white;
 }
 
 .form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
+.form-group textarea:focus {
   outline: none;
   border-color: #62a744;
   box-shadow: 0 0 0 3px rgba(98, 167, 68, 0.1);
+  background: #f8fff8;
+}
+
+.form-group input:disabled,
+.form-group textarea:disabled {
+  background-color: #f8f8f8;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.service-display {
+  padding: 14px 16px;
+  background: #f8fff8;
+  border: 2px solid #e8f5e8;
+  border-radius: 12px;
+  color: #62a744;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.4;
 }
 
 .form-group textarea {
   resize: vertical;
   min-height: 100px;
-}
-
-.disabled-input {
-  background-color: #f8f8f8;
-  color: #666;
-  cursor: not-allowed;
+  line-height: 1.5;
 }
 
 .form-footer {
   text-align: center;
   margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.form-notes {
+  margin-bottom: 20px;
+}
+
+.form-notes p {
+  font-size: 14px;
+  color: #888;
+  margin: 0;
 }
 
 .submit-button {
   background: linear-gradient(135deg, #62a744, #8bc34a);
   color: white;
   border: none;
-  padding: 15px 40px;
+  padding: 16px 40px;
   border-radius: 50px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 200px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .submit-button:hover:not(:disabled) {
@@ -391,7 +458,7 @@
 }
 
 .success-message {
-  padding: 50px 30px;
+  padding: 40px 30px;
   text-align: center;
 }
 
@@ -405,39 +472,66 @@
   justify-content: center;
   font-size: 40px;
   color: white;
-  margin: 0 auto 20px;
+  margin: 0 auto 25px;
+  animation: bounceIn 0.6s ease;
 }
 
 .success-message h3 {
-  font-size: 28px;
+  font-size: 24px;
   color: #333;
   margin-bottom: 15px;
+  font-weight: 600;
 }
 
 .success-message p {
   color: #666;
   line-height: 1.6;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
+  font-size: 16px;
 }
 
 .success-details {
   background: #f8fff8;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 25px;
+  border-radius: 12px;
   margin-bottom: 30px;
   text-align: left;
+  border: 2px solid #e8f5e8;
 }
 
-.success-details p {
-  margin: 5px 0;
-  color: #555;
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e8f5e8;
+}
+
+.detail-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.detail-item strong {
+  color: #333;
+  font-weight: 600;
+  min-width: 140px;
+}
+
+.detail-item span {
+  color: #666;
+  text-align: right;
+  flex: 1;
+  line-height: 1.4;
 }
 
 .success-close {
   background: #62a744;
   color: white;
   border: none;
-  padding: 12px 30px;
+  padding: 14px 35px;
   border-radius: 50px;
   font-size: 16px;
   font-weight: 600;
@@ -448,6 +542,36 @@
 .success-close:hover {
   background: #8bc34a;
   transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(98, 167, 68, 0.3);
+}
+
+/* Анимации */
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Дополнительные секции */
@@ -528,21 +652,70 @@
   font-size: 16px;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .uslugi-section.visible .usluga-card:nth-child(1) { animation-delay: 0.8s; }
 .uslugi-section.visible .usluga-card:nth-child(2) { animation-delay: 1.0s; }
 .uslugi-section.visible .usluga-card:nth-child(3) { animation-delay: 1.2s; }
 
+/* Адаптивность для модального окна */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .modal-header {
+    padding: 25px 25px 15px;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .modal-title-section h2 {
+    font-size: 22px;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .detail-item span {
+    text-align: left;
+  }
+  
+  .modal-close {
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@media (max-width: 480px) {
+  .usluga-modal-content {
+    margin: 10px;
+    max-height: 95vh;
+  }
+  
+  .modal-header,
+  .order-form,
+  .success-message {
+    padding: 20px;
+  }
+  
+  .submit-button {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .modal-close {
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Остальные медиа-запросы */
 @media (max-width: 1200px) {
   .uslugi-header h1 {
     font-size: 56px;
@@ -585,19 +758,6 @@
   
   .uslugi-header h1 {
     font-size: 40px;
-  }
-  
-  .uslugi-modal-content {
-    margin: 10px;
-    max-height: 95vh;
-  }
-  
-  .modal-header {
-    padding: 20px;
-  }
-  
-  .order-form {
-    padding: 20px;
   }
 }
 
