@@ -26,7 +26,7 @@
 ---
 ## Основные ссылки
 
-Ссылка на наш сайт *[тык](https://smolathon-codd.ru)*\
+Ссылка на наш сайт *[тык](http://45.144.177.53:5173/)*\
 Скринкаст нашего сайта *[тык](https://disk.yandex.ru/i/5aENyup_3thmYA)*\
 Разработанный нами брендбук *[тык](https://disk.yandex.ru/d/XjSgSAr2WKsjbw)*\
 Презентация нашего проекта *[тык](https://disk.yandex.ru/d/A-PjiOeT9nbeWA)*
