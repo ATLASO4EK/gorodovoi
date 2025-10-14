@@ -242,4 +242,307 @@
 
 .cancel-button:hover {
   background: #444;
+  transform: translateY(-2px);
+}
+
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin: 0 20px 20px;
+  border-left: 4px solid #c62828;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Мобильная версия */
+@media (max-width: 768px) {
+  .news-editor-overlay {
+    padding: 10px;
+    align-items: flex-start;
+  }
+  
+  .news-editor {
+    max-height: 95vh;
+    border-radius: 16px;
+    margin-top: 10px;
+  }
+  
+  /* Кнопка закрытия - зеленая с фиолетовым при наведении */
+  .editor-close {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    background: #62a744;
+    box-shadow: 0 2px 8px rgba(98, 167, 68, 0.3);
+  }
+  
+  .editor-close:hover {
+    background: #8B00FF;
+    transform: rotate(90deg);
+  }
+  
+  .editor-title {
+    font-size: 22px;
+    margin: 25px 15px 15px;
+    padding: 0 15px;
+    padding-top: 10px;
+  }
+  
+  .editor-content {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 400px;
+  }
+  
+  .news-list-panel {
+    border-right: none;
+    border-bottom: 2px solid #e8f5e8;
+    border-radius: 16px 16px 0 0;
+    padding: 15px;
+    max-height: 300px;
+  }
+  
+  .panel-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .panel-header h3 {
+    text-align: center;
+    font-size: 16px;
+  }
+  
+  .add-new-button {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .news-list {
+    max-height: 200px;
+    gap: 8px;
+  }
+  
+  .news-list-item {
+    padding: 12px;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .delete-button {
+    align-self: flex-end;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .edit-form-panel {
+    padding: 20px;
+    border-radius: 0 0 16px 16px;
+  }
+  
+  .edit-form-panel h3 {
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .news-form {
+    gap: 16px;
+  }
+  
+  .news-form input,
+  .news-form textarea {
+    padding: 14px;
+    font-size: 16px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .save-button,
+  .cancel-button {
+    padding: 14px;
+    font-size: 16px;
+  }
+  
+  .error-message {
+    margin: 0 15px 15px;
+    padding: 10px 15px;
+  }
+}
+
+/* Планшетная версия */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .news-editor {
+    max-width: 95%;
+  }
+  
+  .editor-close {
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    background: #62a744;
+  }
+  
+  .editor-close:hover {
+    background: #8B00FF;
+    transform: rotate(90deg);
+  }
+  
+  .editor-content {
+    grid-template-columns: 280px 1fr;
+  }
+  
+  .news-list-panel {
+    padding: 15px;
+  }
+  
+  .edit-form-panel {
+    padding: 20px 25px;
+  }
+  
+  .news-list-item {
+    padding: 12px;
+  }
+  
+  .news-item-preview h4 {
+    font-size: 13px;
+  }
+}
+
+
+@media (max-width: 360px) {
+  .news-editor-overlay {
+    padding: 5px;
+  }
+  
+  .news-editor {
+    border-radius: 14px;
+  }
+  
+ 
+  .editor-close {
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    background: #62a744;
+  }
+  
+  .editor-close:hover {
+    background: #8B00FF;
+    transform: rotate(90deg);
+  }
+  
+  .editor-title {
+    font-size: 20px;
+    margin: 20px 10px 10px;
+    padding-top: 5px;
+  }
+  
+  .news-list-panel,
+  .edit-form-panel {
+    padding: 12px;
+  }
+  
+  .news-form input,
+  .news-form textarea {
+    padding: 12px;
+  }
+}
+
+@media (min-width: 768px) and (max-height: 1024px) and (orientation: portrait) {
+  .news-editor {
+    max-height: 85vh;
+  }
+  
+  .editor-content {
+    min-height: 500px;
+  }
+  
+  .news-list {
+    max-height: 350px;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 768px) and (orientation: landscape) {
+  .news-editor {
+    max-height: 85vh;
+  }
+  
+  .editor-content {
+    min-height: 400px;
+  }
+  
+  .news-list {
+    max-height: 280px;
+  }
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+
+@media (hover: none) and (pointer: coarse) {
+  .editor-close:active {
+    background: #8B00FF;
+    transform: rotate(90deg) scale(0.95);
+  }
+  
+  .add-new-button:active,
+  .delete-button:active,
+  .save-button:active,
+  .cancel-button:active {
+    transform: scale(0.95);
+  }
+  
+  .news-list-item:active {
+    transform: scale(0.98);
+  }
+  
+  .news-list-item {
+    padding: 16px;
+  }
+  
+  .news-form input,
+  .news-form textarea {
+    font-size: 16px;
+  }
+}
+
+.news-list {
+  scrollbar-width: thin;
+  scrollbar-color: #62a744 #f1f1f1;
+}
+.word-counter {
+  font-size: 12px;
+  color: #666;
+  margin-left: 8px;
+  font-weight: normal;
+  font-style: italic;
+}
+
+/* Стили для мобильных устройств */
+@media (max-width: 768px) {
+  .word-counter {
+    font-size: 11px;
+    margin-left: 6px;
+  }
 }
