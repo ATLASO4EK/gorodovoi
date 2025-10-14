@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './../styles/ProjectsPage.css';
 import Project from '../objects/Project';
-import Exception from '../objects/Exception';
+import Exception from '../Exception';
 
 const ProjectsPage = () => {
   const [isVisible, setIsVisible] = useState(false);
