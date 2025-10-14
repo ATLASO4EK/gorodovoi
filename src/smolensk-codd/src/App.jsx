@@ -3,9 +3,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
 import './index.css';
-import './App.css';
-import Exception from './objects/Exception';
-import TrafficJams from './objects/TrafficJams';
+import './styles/App.css';
+import Exception from './Exception';
 
 function App() {
   const [components, setComponents] = useState({});
@@ -25,9 +24,12 @@ function App() {
     }
   };
 
-  /* Импорты */
+  /* Импорты с ограничением времени и контролем плавности */
   useEffect(() => {
-    (async () => {
+    const loadComponents = async () => {
+      const startTime = Date.now();
+      const MAX_LOAD_TIME = 1500; // макс. время загрузки 1.5с
+
       const componentsList = [
         'Header', 
         'Footer', 
@@ -42,28 +44,58 @@ function App() {
         'JobPage', 
         'ContactsPage', 
         'BannerPage', 
-        'UslugiPage' 
+        'UslugiPage',
+        'TrafficJams'
       ];
       
       const comps = {};
       let loaded = 0;
-      
-      for (const compName of componentsList) {
+
+      const updateProgress = (count) => {
+        loaded = count;
+        const progress = Math.round((loaded / componentsList.length) * 100);
+        setLoadingProgress(progress);
+      };
+
+      const loadPromises = componentsList.map(async (compName) => {
         const path = compName === 'Header' || compName === 'Footer' 
           ? `./${compName}.jsx` 
-          : `./pages/${compName}.jsx`;
-        
-        comps[compName] = await safeImport(path);
-        loaded++;
-        setLoadingProgress(Math.round((loaded / componentsList.length) * 100));
-        
-        
-        await new Promise(resolve => setTimeout(resolve, 100));
+          : compName === 'TrafficJams'
+            ? `./objects/${compName}.jsx`
+            : `./pages/${compName}.jsx`;
+
+        try {
+          const component = await Promise.race([
+            safeImport(path),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Timeout')), MAX_LOAD_TIME)
+            )
+          ]);
+          comps[compName] = component;
+          updateProgress(loaded + 1);
+          return true;
+        } catch (error) {
+          console.warn(`Ошибка загрузки ${compName}:`, error);
+          comps[compName] = Exception;
+          updateProgress(loaded + 1);
+          return false;
+        }
+      });
+
+      await Promise.allSettled(loadPromises);
+
+      // Минимальное время загрузки для плавности
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(800 - elapsedTime, 0);
+      if (remainingTime > 0) {
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
       }
-      
+
       setComponents(comps);
       setIsLoading(false);
-    })();
+    };
+
+    loadComponents();
   }, []);
 
   const loadNews = async () => {
@@ -97,13 +129,12 @@ function App() {
     setNewsUpdateTrigger(prev => prev + 1);
   };
 
-  // Экран загрузки
   if (isLoading) {
     return (
       <div className="loading-screen">
         <div className="loading-container">
           <div className="loading-logo">
-            <img src="/public/logogreen.png" alt="Логотип" className="logo-image" />
+            <img src='public/logogreen.svg' alt="Логотип" className="logo-image" />
           </div>
           <div className="loading-content">
             <h1 className="loading-title">ЦОДД Смоленской области</h1>
@@ -144,6 +175,7 @@ function App() {
     ContactsPage,
     BannerPage, 
     UslugiPage,
+    TrafficJams
   } = components;
 
   const renderPage = () => {

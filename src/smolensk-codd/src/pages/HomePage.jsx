@@ -3,7 +3,7 @@ import './../styles/HomePage.css';
 
 const URL = import.meta.env.VITE_API_BASE || "";
 
-import Exception from './../objects/Exception.jsx';
+import Exception from '../Exception.jsx';
 
 function HomePage({ setCurrentPage, forceNewsUpdate }) { 
   const [selectedNews, setSelectedNews] = useState(null);
@@ -12,6 +12,10 @@ function HomePage({ setCurrentPage, forceNewsUpdate }) {
   const [isVisible, setIsVisible] = useState(false);
   const [error, setError] = useState(false);
 
+  useEffect(() => {
+    setIsVisible(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   useEffect(() => {
     const fetchLatestNews = async () => {
@@ -35,7 +39,6 @@ function HomePage({ setCurrentPage, forceNewsUpdate }) {
           imageAlt: item[3],
         }));
 
-    
         const sortedNews = mappedNews.sort((a, b) => new Date(b.time) - new Date(a.time));
         setLatestNews(sortedNews.slice(0, 3));
         setError(false);
@@ -47,6 +50,12 @@ function HomePage({ setCurrentPage, forceNewsUpdate }) {
 
     fetchLatestNews();
   }, [updateCounter]);
+
+  useEffect(() => {
+    if (forceNewsUpdate) {
+      setUpdateCounter(prev => prev + 1);
+    }
+  }, [forceNewsUpdate]);
 
   const openNews = (news) => {
     setSelectedNews(news);
@@ -76,11 +85,7 @@ function HomePage({ setCurrentPage, forceNewsUpdate }) {
       <p key={index}>{paragraph}</p>
     ));
   };
-  useEffect(() => {
-    if (forceNewsUpdate) {
-      setUpdateCounter(prev => prev + 1);
-    }
-  }, [forceNewsUpdate]);
+
   const scrollToServices = () => {
     const servicesSection = document.getElementById('services-section');
     if (servicesSection) {
@@ -99,15 +104,9 @@ function HomePage({ setCurrentPage, forceNewsUpdate }) {
     window.open('https://t.me/CODD_roads_bot', '_blank', 'noopener,noreferrer');
   };
 
-useEffect(() => {
-  if (forceNewsUpdate) {
-    setUpdateCounter(prev => prev + 1);
-  }
-}, [forceNewsUpdate]);
   return (
     <>
-      <div className="home-page">
-
+      <div className={`home-page ${isVisible ? 'visible' : ''}`}>
         <div className="hero-section">
           <div className="hero-background">
             <img 
@@ -127,71 +126,73 @@ useEffect(() => {
           </div>
         </div>
 
-   
-        <section className="news-section-home">
-          <div className="news-header">
-            <h2 className="news-title-home">Последние новости</h2>
-            <button 
-              className="all-news-button"
-              onClick={() => setCurrentPage('news')}
+<section className="news-section-home">
+  <div className="news-header">
+    <h2 className="news-title-home">Последние новости</h2>
+    <button 
+      className="all-news-button"
+      onClick={() => setCurrentPage('news')}
+    >
+      Все новости
+    </button>
+  </div>
+  
+  {error ? (
+    <div className="news-error-container">
+      <Exception message="Не удалось загрузить последние новости 😞" />
+    </div>
+  ) : (
+    <div className="news-container-home">
+      <div className="news-scroll-wrapper">
+        <div className="news-grid-home">
+          {latestNews.map((news, index) => (
+            <div 
+              key={news.id}
+              className="news-card-home"
+              onClick={() => openNews(news)}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => e.key === 'Enter' && openNews(news)}
             >
-              Все новости
-            </button>
-          </div>
-          
-          {error ? (
-            <div className="news-error-container">
-              <Exception message="Не удалось загрузить последние новости 😞" />
-            </div>
-          ) : (
-            <div className="news-grid-home">
-              {latestNews.map((news, index) => (
-                <div 
-                  key={news.id}
-                  className="news-card-home"
-                  onClick={() => openNews(news)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyPress={(e) => e.key === 'Enter' && openNews(news)}
-                >
-                  <div className="news-image-container-home">
-                    {news.image && news.image !== '#' && news.image !== '' ? (
-                      <img 
-                        src={news.image} 
-                        alt={news.imageAlt || news.title} 
-                        className="news-image-home"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }}
-                      />
-                    ) : null}
-                    <div className="news-image-placeholder-home" style={{ 
-                      display: (news.image && news.image !== '#' && news.image !== '') ? 'none' : 'flex' 
-                    }}>
-                      <span className="news-emoji-home">📰</span>
-                      <span className="news-category-home">Новость ЦОДД</span>
-                    </div>
-                  </div>
-                  
-                  <div className="news-card-content-home">
-                    <h3 className="news-card-title-home">{news.title}</h3>
-                    <div className="news-meta-home">
-                      <span className="news-author-home">
-                        <span className="author-icon-home">👤</span>
-                        {news.author}
-                      </span>
-                      <span className="news-time-home">
-                        <span className="time-icon-home">🕒</span>
-                        {news.time}
-                      </span>
-                    </div>
-                  </div>
+              <div className="news-image-container-home">
+                {news.image && news.image !== '#' && news.image !== '' ? (
+                  <img 
+                    src={news.image} 
+                    alt={news.imageAlt || news.title} 
+                    className="news-image-home"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div className="news-image-placeholder-home" style={{ 
+                  display: (news.image && news.image !== '#' && news.image !== '') ? 'none' : 'flex' 
+                }}>
+                  <span className="news-emoji-home">📰</span>
+                  <span className="news-category-home">Новость ЦОДД</span>
                 </div>
-              ))}
+              </div>
+              <div className="news-card-content-home">
+                <h3 className="news-card-title-home">{news.title}</h3>
+                <div className="news-meta-home">
+                  <span className="news-author-home">
+                    <span className="author-icon-home">👤</span>
+                    {news.author}
+                  </span>
+                  <span className="news-time-home">
+                    <span className="time-icon-home">🕒</span>
+                    {news.time}
+                  </span>
+                </div>
+              </div>
             </div>
-          )}
-        </section>
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+</section>
 
         <section id="services-section" className="services-section-home">
           <div className="services-header">
@@ -229,7 +230,6 @@ useEffect(() => {
         </section>
       </div>
 
-     
       {selectedNews && (
         <div className="news-modal-overlay-home" onClick={closeNews}>
           <div className="news-modal-home" onClick={(e) => e.stopPropagation()}>
@@ -241,10 +241,10 @@ useEffect(() => {
               <span>×</span>
             </button>
             <div className="modal-image-container-home">
-              {selectedNews.image && selectedNews.image !== '#' ? (
+              {selectedNews.image && selectedNews.image !== '#' && selectedNews.image !== '' ? (
                 <img 
                   src={selectedNews.image} 
-                  alt={selectedNews.imageAlt} 
+                  alt={selectedNews.imageAlt || selectedNews.title} 
                   className="modal-image-home"
                   onError={(e) => {
                     e.target.style.display = 'none';
@@ -252,7 +252,9 @@ useEffect(() => {
                   }}
                 />
               ) : null}
-              <div className="modal-image-placeholder-home" style={{ display: selectedNews.image && selectedNews.image !== '#' ? 'none' : 'flex' }}>
+              <div className="modal-image-placeholder-home" style={{ 
+                display: (selectedNews.image && selectedNews.image !== '#' && selectedNews.image !== '') ? 'none' : 'flex' 
+              }}>
                 <span className="modal-emoji-home">📰</span>
                 <span className="news-category-home">ЦОДД Смоленск</span>
               </div>
@@ -277,7 +279,6 @@ useEffect(() => {
         </div>
       )}
     </>
-    
   );
 }
 

@@ -1,9 +1,7 @@
 // Страница Контактов
 import { useEffect, useState } from 'react';
 import './../styles/ContactsPage.css';
-
-import Contact from '../objects/Contact';
-import Exception from '../objects/Exception';
+import Exception from '../Exception';
 
 const ContactsPage = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -11,12 +9,51 @@ const ContactsPage = () => {
   const [contactsData, setContactsData] = useState(null);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [ContactComponent, setContactComponent] = useState(null);
 
+  // === Безопасный импорт Contact ===
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadContactSafely = async () => {
+      try {
+        const module = await import('../objects/Contact.jsx');
+        if (isMounted) setContactComponent(() => module.default);
+      } catch (error) {
+        console.error('Не удалось импортировать Contact.jsx, используется Exception.jsx вместо него:', error);
+        try {
+          const fallbackModule = await import('../Exception.jsx');
+          if (isMounted) setContactComponent(() => fallbackModule.default);
+        } catch (fallbackError) {
+          console.error('Не удалось импортировать Exception.jsx как fallback:', fallbackError);
+          if (isMounted)
+            setContactComponent(() => ({ message }) => (
+              <div
+                style={{
+                  padding: '2rem',
+                  textAlign: 'center',
+                  color: 'red',
+                  fontFamily: 'sans-serif',
+                }}
+              >
+                <h2>{message || 'Ошибка: компонент Contact недоступен'}</h2>
+              </div>
+            ));
+        }
+      }
+    };
+
+    loadContactSafely();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // === Загрузка данных контактов ===
   useEffect(() => {
     window.scrollTo(0, 0);
     setTimeout(() => setIsVisible(true), 100);
-    
-    // 🔹 Исправленный путь к данным
+
     fetch('/src/assets/contactsData.json')
       .then((res) => {
         if (!res.ok) throw new Error('Файл не найден');
@@ -36,12 +73,21 @@ const ContactsPage = () => {
       });
   }, []);
 
-  const hasContacts = 
-    contactsData && 
-    typeof contactsData === 'object' && 
-    contactsData[activeTab] && 
-    Array.isArray(contactsData[activeTab]) && 
+  const hasContacts =
+    contactsData &&
+    typeof contactsData === 'object' &&
+    contactsData[activeTab] &&
+    Array.isArray(contactsData[activeTab]) &&
     contactsData[activeTab].length > 0;
+
+  // === Если Contact ещё не загружен ===
+  if (!ContactComponent) {
+    return (
+      <div className="contacts-container" style={{ textAlign: 'center', padding: '2rem' }}>
+        <p>Загрузка контактов...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={`contacts-container ${isVisible ? 'visible' : ''}`}>
@@ -65,6 +111,7 @@ const ContactsPage = () => {
             <Exception message="Контакты для выбранной категории не найдены." />
           ) : (
             <>
+              {/* === ТАБЫ === */}
               <div className="contacts-tabs">
                 <button
                   className={`tab-button ${activeTab === 'general' ? 'active' : ''}`}
@@ -92,10 +139,11 @@ const ContactsPage = () => {
                 </button>
               </div>
 
+              {/* === КОНТАКТЫ === */}
               <div className="contacts-grid">
                 {contactsData[activeTab]?.map((contact, index) => (
                   <div className="contact-card" key={index}>
-                    <Contact
+                    <ContactComponent
                       title={contact.title || 'Без названия'}
                       description={contact.description || 'Описание отсутствует'}
                       phone={contact.phone}
@@ -104,6 +152,7 @@ const ContactsPage = () => {
                       hours={contact.hours}
                       icon={contact.icon || ' '}
                       onContact={contact.onContact}
+                      message="Ошибка: компонент Contact недоступен"
                     />
 
                     <div className="contact-card-actions">

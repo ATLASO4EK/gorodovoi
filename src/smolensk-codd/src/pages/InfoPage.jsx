@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import './../styles/info.css';
-import Exception from '../objects/Exception';
+import Exception from '../Exception';
 
 const InfoPage = () => {
   const [isVisible, setIsVisible] = useState(false);

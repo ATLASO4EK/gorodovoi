@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import ReactDOM from "react-dom/client";
 import {
   ResponsiveContainer,
   LineChart,
@@ -17,15 +18,15 @@ import {
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 
-import Exception from "./../objects/Exception";
-
 /**
  * Если используешь Vite proxy — оставь API_BASE пустым.
  * Иначе положи в .env: VITE_API_BASE=http://localhost:8000
  */
 const API_BASE = import.meta.env.VITE_API_BASE || "";
 
-// ---------- форматтеры ----------
+/* =========================
+   Форматтеры и утилиты
+   ========================= */
 const numFmt = new Intl.NumberFormat("ru-RU");
 const moneyFmt = new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", maximumFractionDigits: 0 });
 const numCompact = new Intl.NumberFormat("ru-RU", { notation: "compact", maximumFractionDigits: 1 });
@@ -37,8 +38,6 @@ function fmt(kind, v) {
   if (kind === "pct") return `${n.toFixed(1)}%`;
   return numCompact.format(n);
 }
-
-// ---------- утилиты ----------
 function asDate(s) {
   try {
     if (!s) return null;
@@ -70,8 +69,6 @@ async function fetchJson(url) {
   if (!ct.includes("application/json")) throw new Error(`Expected JSON, got ${ct || "unknown"}: ${text.slice(0, 200)}`);
   return JSON.parse(text);
 }
-
-// скользящее среднее
 function movingAvg(arr, window = 7) {
   const out = [];
   for (let i = 0; i < arr.length; i++) {
@@ -82,7 +79,67 @@ function movingAvg(arr, window = 7) {
   return out;
 }
 
-// ---------- RAW API ----------
+// ---- color helpers ----
+const COLORS = {
+  green: "#10b981",
+  blue: "#3b82f6",
+  orange: "#f59e0b",
+  purple: "#9333ea",
+  red: "#ef4444",
+  gray: "#9ca3af",
+  trend: "#6b7280",
+};
+
+function getPieColor(name) {
+  // ФИНЕС: Взыскано/Осталось; ЭВАК: Эвакуации/Прочие выезды
+  const map = {
+    "Взыскано": COLORS.green,
+    "Осталось": COLORS.orange,
+    "Эвакуации": COLORS.orange,
+    "Прочие выезды": COLORS.gray,
+  };
+  return map[name] || COLORS.blue;
+}
+
+function getBarColor(name, tab, kind) {
+  // kind: "counts" | "money"
+  if (tab === "fines") {
+    if (kind === "counts") {
+      if (name === "Нарушения") return COLORS.red;
+      if (name === "Постановления") return COLORS.blue;
+    } else {
+      if (name === "Штрафы") return COLORS.purple;
+      if (name === "Взыскано") return COLORS.green;
+    }
+  } else {
+    if (kind === "counts") {
+      if (name === "Выезды") return COLORS.blue;
+      if (name === "Эвакуации") return COLORS.orange;
+    } else {
+      // money (Эвак)
+      if (name === "Поступления") return COLORS.green;
+    }
+  }
+  return COLORS.blue;
+}
+
+function LegendBullets({ items }) {
+  // items: [{name, color}]
+  return (
+    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+      {items.map((it, i) => (
+        <div key={i} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: it.color, display: "inline-block" }} />
+          <span style={{ fontSize: 12, color: "#111827" }}>{it.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* =========================
+   RAW API
+   ========================= */
 async function fetchFines(dateStart, dateEnd) {
   const p = new URLSearchParams();
   if (dateStart) p.set("date", fmtISO(dateStart));
@@ -108,7 +165,6 @@ async function fetchFines(dateStart, dateEnd) {
     })
     .filter((r) => r.date);
 }
-
 async function fetchEvac(dateStart, dateEnd) {
   const p = new URLSearchParams();
   if (dateStart) p.set("date", fmtISO(dateStart));
@@ -135,7 +191,9 @@ async function fetchEvac(dateStart, dateEnd) {
     .filter((r) => r.date);
 }
 
-// ---------- analytics API ----------
+/* =========================
+   analytics API
+   ========================= */
 async function fetchAnalytics(table, dateStart, dateEnd) {
   const p = new URLSearchParams();
   p.set("table", table === "evac" ? "evacuate" : "fines");
@@ -145,31 +203,9 @@ async function fetchAnalytics(table, dateStart, dateEnd) {
   return fetchJson(url);
 }
 
-// ---------- экспорт ----------
-async function exportPNG(node, filename = "chart.png") {
-  if (!node) return;
-
-  // приоритет: реальный график внутри
-  const target =
-    node.querySelector?.(".recharts-wrapper") ||
-    node;
-
-  const canvas = await html2canvas(target, {
-    backgroundColor: "#ffffff",
-    scale: window.devicePixelRatio || 2,
-    useCORS: true,
-    ignoreElements: (el) => el?.hasAttribute?.("data-export-ignore"),
-    width: target.scrollWidth,
-    height: target.scrollHeight,
-    windowWidth: target.scrollWidth,
-    windowHeight: target.scrollHeight,
-  });
-  const url = canvas.toDataURL("image/png");
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-}
+/* =========================
+   Экспорт CSV/XLSX
+   ========================= */
 function escapeCSV(v) {
   if (v === undefined || v === null) return "";
   const s = String(v).replace(/\r?\n/g, " ");
@@ -203,7 +239,40 @@ function exportXLSX(rows, sheetName = "Sheet1", filename = "data.xlsx") {
   XLSX.writeFile(wb, filename);
 }
 
-// ---------- агрегаторы (тренды на byDay) ----------
+/* =========================
+   Импорт/Экспорт БД по API
+   ========================= */
+async function importDB(file, { allowCustomIds = false } = {}) {
+  const qs = new URLSearchParams();
+  if (allowCustomIds) qs.set("allow_custom_ids", "1");
+  const url = `${API_BASE}/api/v1/admin/import-xlsx${qs.toString() ? "?" + qs.toString() : ""}`;
+  const fd = new FormData();
+  fd.append("file", file);
+  const res = await fetch(url, { method: "POST", body: fd });
+  const text = await res.text();
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+  return JSON.parse(text);
+}
+async function exportDB({ sheets } = {}) {
+  const qs = new URLSearchParams();
+  if (sheets && sheets.length > 0) qs.set("sheets", sheets.join(","));
+  const url = `${API_BASE}/api/v1/admin/export-xlsx${qs.toString() ? "?" + qs.toString() : ""}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`HTTP ${res.status}: ${errText.slice(0, 200)}`);
+  }
+  const blob = await res.blob();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "export.xlsx";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* =========================
+   Агрегаторы
+   ========================= */
 function aggregateFines(rows) {
   const byDay = rows
     .slice()
@@ -246,7 +315,6 @@ function aggregateFines(rows) {
     ],
   };
 }
-
 function aggregateEvac(rows) {
   const byDay = rows
     .slice()
@@ -285,7 +353,9 @@ function aggregateEvac(rows) {
   };
 }
 
-// ---------- Таблица аналитики (данные из /api/v1/analytics) ----------
+/* =========================
+   Таблица аналитики и KPI
+   ========================= */
 function AnalyticsSummaryTable({ table, analytics }) {
   if (!analytics) return null;
   const rows =
@@ -331,6 +401,7 @@ function AnalyticsSummaryTable({ table, analytics }) {
                   textAlign: "right",
                   fontWeight: 600,
                   color: "#0f172a",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {fmt(kind, v)}
@@ -342,8 +413,6 @@ function AnalyticsSummaryTable({ table, analytics }) {
     </div>
   );
 }
-
-// ---------- KPI (тянем из /api/v1/analytics) ----------
 function KPIFromAnalytics({ table, analytics }) {
   if (!analytics) return null;
   const items =
@@ -361,20 +430,28 @@ function KPIFromAnalytics({ table, analytics }) {
           { k: "Доля эвакуаций", v: analytics.per_evac, kind: "pct" },
         ];
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 12 }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        gap: 12,
+      }}
+    >
       {items.map((it, i) => (
         <div
           key={i}
           style={{
-            gridColumn: "span 3",
             backgroundColor: "#ffffff",
             color: "#111827",
             borderRadius: 12,
             padding: 12,
             boxShadow: "0 1px 3px rgba(0,0,0,.08)",
+            minWidth: 0,
           }}
         >
-          <div style={{ fontSize: 12, color: "#6b7280" }}>{it.k}</div>
+          <div style={{ fontSize: 12, color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {it.k}
+          </div>
           <div style={{ fontSize: 22, fontWeight: 700, marginTop: 6, color: "#0f172a" }}>{fmt(it.kind, it.v)}</div>
         </div>
       ))}
@@ -382,19 +459,220 @@ function KPIFromAnalytics({ table, analytics }) {
   );
 }
 
-// общий стиль для шапок карточек с кнопками
-const headerRowStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: 8,
-  flexWrap: "wrap",
-  rowGap: 8,
-  paddingRight: 4,
-  marginBottom: 8,
-};
+/* =========================================================
+   КОНСИСТЕНТНЫЙ PNG-ЭКСПОРТ: offscreen fixed React render
+   ========================================================= */
+async function exportPNGConsistent(renderChart, filename = "chart.png", { width = 1280, height = 720, dpr = 2 } = {}) {
+  const host = document.createElement("div");
+  Object.assign(host.style, {
+    position: "fixed",
+    left: "-10000px",
+    top: "0",
+    width: `${width}px`,
+    height: `${height}px`,
+    background: "#fff",
+    zIndex: "-1",
+    overflow: "hidden",
+    fontFamily: "Inter, system-ui, sans-serif",
+  });
+  document.body.appendChild(host);
 
-// ---------- UI ----------
+  const root = ReactDOM.createRoot(host);
+  root.render(renderChart({ width, height }));
+
+  // ждём появления и стабилизации SVG
+  const waitFor = async (cond, timeout = 3000) => {
+    const t0 = Date.now();
+    while (!cond()) {
+      if (Date.now() - t0 > timeout) break;
+      await new Promise((r) => setTimeout(r, 30));
+    }
+  };
+  await new Promise((r) => requestAnimationFrame(r));
+  if (document.fonts?.ready) { try { await document.fonts.ready; } catch {} }
+  await waitFor(() => host.querySelector("svg.recharts-surface"));
+  await new Promise((r) => setTimeout(r, 50));
+
+  const canvas = await html2canvas(host, {
+    backgroundColor: "#ffffff",
+    scale: dpr,
+    width,
+    height,
+    windowWidth: width,
+    windowHeight: height,
+    useCORS: true,
+  });
+
+  root.unmount();
+  document.body.removeChild(host);
+
+  const url = canvas.toDataURL("image/png");
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+}
+
+/* =========================
+   Рендеры для экспорта (фикс. размер + форматтеры + no animation)
+   ========================= */
+// ==== TREND (Штрафы) — суммы (₽): Штрафы + Взыскано ====
+function renderTrendFinesMoney({ data }) {
+  const C = { s: "#9333ea", c: "#10b981" }; // штрафы=фиолет, взыскано=зелёный
+  return ({ width, height }) => (
+    <div style={{ width, height, background: "#fff" }}>
+      <LineChart width={width} height={height} data={data} margin={{ top: 44, right: 24, bottom: 52, left: 16 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="date" angle={-30} textAnchor="end" height={52} tick={{ fontSize: 12 }} />
+        <YAxis tickFormatter={(v) => rubCompact.format(Number(v) || 0)} tick={{ fontSize: 12 }} />
+        <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
+        <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
+        <Line type="monotone" dataKey="Штрафы"   dot={false} isAnimationActive={false} stroke={C.s} strokeWidth={2} />
+        <Line type="monotone" dataKey="Взыскано" dot={false} isAnimationActive={false} stroke={C.c} strokeWidth={2} />
+      </LineChart>
+    </div>
+  );
+}
+
+// ==== TREND (Штрафы) — количества (шт.): Нарушения + Постановления ====
+function renderTrendFinesCounts({ data }) {
+  const C = { n: "#ef4444", p: "#3b82f6" }; // нарушения=красный, постановления=синий
+  return ({ width, height }) => (
+    <div style={{ width, height, background: "#fff" }}>
+      <LineChart width={width} height={height} data={data} margin={{ top: 44, right: 24, bottom: 52, left: 16 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="date" angle={-30} textAnchor="end" height={52} tick={{ fontSize: 12 }} />
+        <YAxis tickFormatter={(v) => numCompact.format(Number(v) || 0)} tick={{ fontSize: 12 }} />
+        <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
+        <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
+        <Line type="monotone" dataKey="Нарушения"     dot={false} isAnimationActive={false} stroke={C.n} strokeWidth={2} />
+        <Line type="monotone" dataKey="Постановления" dot={false} isAnimationActive={false} stroke={C.p} strokeWidth={2} />
+      </LineChart>
+    </div>
+  );
+}
+
+// ==== TREND (Эвакуация) — количества (шт.): Выезды + Эвакуации ====
+function renderTrendEvacCounts({ data }) {
+  const C = { v: "#3b82f6", e: "#f59e0b" }; // выезды=синий, эвакуации=оранж
+  return ({ width, height }) => (
+    <div style={{ width, height, background: "#fff" }}>
+      <LineChart width={width} height={height} data={data} margin={{ top: 44, right: 24, bottom: 52, left: 16 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="date" angle={-30} textAnchor="end" height={52} tick={{ fontSize: 12 }} />
+        <YAxis tickFormatter={(v) => numCompact.format(Number(v) || 0)} tick={{ fontSize: 12 }} />
+        <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
+        <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
+        <Line type="monotone" dataKey="Выезды"     dot={false} isAnimationActive={false} stroke={C.v} strokeWidth={2} />
+        <Line type="monotone" dataKey="Эвакуации"  dot={false} isAnimationActive={false} stroke={C.e} strokeWidth={2} />
+      </LineChart>
+    </div>
+  );
+}
+
+// ==== TREND (Эвакуация) — деньги (₽): Поступления ====
+function renderTrendEvacMoney({ data }) {
+  const C = { r: "#10b981" }; // поступления=зелёный
+  return ({ width, height }) => (
+    <div style={{ width, height, background: "#fff" }}>
+      <LineChart width={width} height={height} data={data} margin={{ top: 44, right: 24, bottom: 52, left: 16 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="date" angle={-30} textAnchor="end" height={52} tick={{ fontSize: 12 }} />
+        <YAxis tickFormatter={(v) => rubCompact.format(Number(v) || 0)} tick={{ fontSize: 12 }} />
+        <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
+        <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: 12 }} />
+        <Line type="monotone" dataKey="Поступления" dot={false} isAnimationActive={false} stroke={C.r} strokeWidth={2} />
+      </LineChart>
+    </div>
+  );
+}
+
+
+function renderStructurePie({ data }) {
+  const COLORS = ["#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#8b5cf6"];
+  return ({ width, height }) => (
+    <div style={{ width, height, background: "#fff" }}>
+      <PieChart width={width} height={height}>
+        <Legend
+          verticalAlign="top"
+          height={36}
+          wrapperStyle={{ fontSize: 12, color: "#111827" }}
+        />
+        <Pie
+          data={data}
+          dataKey="value"
+          nameKey="name"
+          cx={width / 2}
+          cy={height / 2 + 10}
+          innerRadius={Math.min(width, height) * 0.22}
+          outerRadius={Math.min(width, height) * 0.35}
+          labelLine={false}
+          label={({ name, value }) => `${name}: ${numCompact.format(Number(value) || 0)}`}
+          isAnimationActive={false}
+        >
+          {data.map((_, i) => (
+            <Cell key={i} fill={COLORS[i % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip
+          formatter={(v, n) => {
+            const total = data.reduce((s, x) => s + Number(x.value || 0), 0) || 1;
+            const precise = numFmt.format(Number(v) || 0);
+            const perc = ((Number(v) || 0) / total) * 100;
+            return [`${precise} (${perc.toFixed(1)}%)`, n];
+          }}
+        />
+      </PieChart>
+    </div>
+  );
+}
+
+function renderBarCounts({ data }) {
+  const COLOR = "#2563eb"; // синий
+  return ({ width, height }) => (
+    <div style={{ width, height, background: "#fff" }}>
+      <BarChart width={width} height={height} data={data} margin={{ top: 36, right: 16, bottom: 16, left: 12 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0f172a" }} />
+        <YAxis tickFormatter={(v) => numCompact.format(Number(v) || 0)} tick={{ fontSize: 12, fill: "#0f172a" }} />
+        <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
+        <Legend
+          verticalAlign="top"
+          height={28}
+          wrapperStyle={{ fontSize: 12, color: "#111827" }}
+          payload={[{ value: "Значение", type: "square", color: COLOR }]}
+        />
+        <Bar dataKey="value" name="Значение" isAnimationActive={false} fill={COLOR} />
+      </BarChart>
+    </div>
+  );
+}
+
+function renderBarMoney({ data }) {
+  const COLOR = "#10b981"; // зелёный
+  return ({ width, height }) => (
+    <div style={{ width, height, background: "#fff" }}>
+      <BarChart width={width} height={height} data={data} margin={{ top: 36, right: 16, bottom: 16, left: 12 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0f172a" }} />
+        <YAxis tickFormatter={(v) => rubCompact.format(Number(v) || 0)} tick={{ fontSize: 12, fill: "#0f172a" }} />
+        <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
+        <Legend
+          verticalAlign="top"
+          height={28}
+          wrapperStyle={{ fontSize: 12, color: "#111827" }}
+          payload={[{ value: "Сумма", type: "square", color: COLOR }]}
+        />
+        <Bar dataKey="value" name="Сумма" isAnimationActive={false} fill={COLOR} />
+      </BarChart>
+    </div>
+  );
+}
+
+
+/* =========================
+   Основной компонент
+   ========================= */
 export default function App() {
   const [tab, setTab] = useState("fines"); // fines | evac
   const [dateStart, setDateStart] = useState("");
@@ -406,12 +684,29 @@ export default function App() {
   const [analytics, setAnalytics] = useState(null);
   const [anError, setAnError] = useState("");
 
-  // refs для экспорта PNG
+  // адаптив
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
+
+  // refs
   const lineRef = useRef(null);
   const donutRef = useRef(null);
   const countsRef = useRef(null);
   const moneyRef = useRef(null);
   const analyticsRef = useRef(null);
+
+  // Импорт/Экспорт панель
+  const [impExpBusy, setImpExpBusy] = useState(false);
+  const [impFile, setImpFile] = useState(null);
+  const [allowIds, setAllowIds] = useState(false);
+  const [selSheets, setSelSheets] = useState({ fines: true, evac: true, routes: true, lights: true });
+  const [impExpMsg, setImpExpMsg] = useState("");
 
   useEffect(() => {
     void reload();
@@ -481,13 +776,10 @@ export default function App() {
     gridColumn: `span ${isMobile ? nMobile : nDesktop}`,
   });
 
-  if (error) {
-    return <Exception message = "Не удалось увы и ах"/>;
-  }
   return (
     <div
       style={{
-        padding: 20,
+        padding: isMobile ? 12 : 20,
         maxWidth: 1280,
         margin: "0 auto",
         fontFamily: "Inter, system-ui, sans-serif",
@@ -495,55 +787,93 @@ export default function App() {
         backgroundColor: "#f9fafb",
       }}
     >
-      <h1 style={{ fontSize: 28, marginBottom: 12 }}>
-        ЦОДД — диаграммы (build v6){" "}
-        <span style={{ color: "#62a744", fontSize: 14, fontWeight: 600 }}>KPI из /api/v1/analytics</span>
+      <h1 style={{ fontSize: isMobile ? 22 : 28, marginBottom: 12 }}>
+        ЦОДД — диаграммы (build v12){" "}
+        <span style={{ color: "#62a744", fontSize: isMobile ? 12 : 14, fontWeight: 600 }}>KPI из /api/v1/analytics</span>
       </h1>
 
-      <div style={{ display: "flex", gap: 12, alignItems: "end", flexWrap: "wrap" }}>
-        <div>
+      {/* Фильтры (ровные контролы) */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(160px, max-content))",
+          alignItems: "end",
+          gap: 12,
+          marginBottom: 8,
+        }}
+      >
+        <div style={{ minWidth: 180 }}>
           <label style={{ display: "block", fontSize: 12, color: "#374151", marginBottom: 6 }}>Таблица</label>
           <select
             value={tab}
             onChange={(e) => setTab(e.target.value)}
-            style={{ padding: 8, borderRadius: 8, border: "1px solid " + "#d1d5db", minWidth: 180 }}
+            style={{
+              height: 40,
+              padding: "8px 10px",
+              borderRadius: 8,
+              border: "1px solid #d1d5db",
+              minWidth: 180,
+              boxSizing: "border-box",
+            }}
           >
             <option value="fines">Штрафы</option>
             <option value="evac">Эвакуация</option>
           </select>
         </div>
-        <div>
+
+        <div style={{ minWidth: 160 }}>
           <label style={{ display: "block", fontSize: 12, color: "#374151", marginBottom: 6 }}>Дата с</label>
           <input
             type="date"
             value={dateStart}
             onChange={(e) => setDateStart(e.target.value)}
-            style={{ padding: 8, borderRadius: 8, border: "1px solid " + "#d1d5db" }}
+            style={{
+              height: 40,
+              padding: "8px 10px",
+              borderRadius: 8,
+              border: "1px solid #d1d5db",
+              width: "100%",
+              boxSizing: "border-box",
+            }}
           />
         </div>
-        <div>
+
+        <div style={{ minWidth: 160 }}>
           <label style={{ display: "block", fontSize: 12, color: "#374151", marginBottom: 6 }}>Дата по</label>
           <input
             type="date"
             value={dateEnd}
             onChange={(e) => setDateEnd(e.target.value)}
-            style={{ padding: 8, borderRadius: 8, border: "1px solid " + "#d1d5db" }}
+            style={{
+              height: 40,
+              padding: "8px 10px",
+              borderRadius: 8,
+              border: "1px solid #d1d5db",
+              width: "100%",
+              boxSizing: "border-box",
+            }}
           />
         </div>
-        <button
-          onClick={reload}
-          disabled={loading}
-          style={{
-            padding: "10px 14px",
-            borderRadius: 10,
-            border: "1px solid #111827",
-            background: loading ? "#9ca3af" : "#111827",
-            color: "white",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "Загрузка…" : "Применить"}
-        </button>
+
+        <div>
+          <label style={{ display: "block", visibility: "hidden", marginBottom: 6 }}>.</label>
+          <button
+            onClick={reload}
+            disabled={loading}
+            style={{
+              height: 40,
+              padding: "0 16px",
+              borderRadius: 10,
+              border: "1px solid #111827",
+              background: loading ? "#9ca3af" : "#111827",
+              color: "white",
+              cursor: loading ? "not-allowed" : "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {loading ? "Загрузка…" : "Применить"}
+          </button>
+        </div>
       </div>
 
       {(error || anError) && <div style={{ color: "#b91c1c", marginTop: 12 }}>Ошибка: {error || anError}</div>}
@@ -553,248 +883,480 @@ export default function App() {
       )}
 
       {rows.length > 0 && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gap: 16, marginTop: 20 }}>
-          {/* KPI из analytics */}
-          <div style={{ gridColumn: "span 12" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(12, 1fr)",
+            gap: 16,
+            marginTop: 20,
+          }}
+        >
+          {/* KPI */}
+          <div style={span(12)}>
             <KPIFromAnalytics table={tab} analytics={analytics} />
           </div>
 
-          {/* Линии + экспорт */}
-          <div
-            style={{
-              gridColumn: "span 12",
-              minHeight: 380,
-              background: "#fff",
-              borderRadius: 12,
-              padding: 16,
-              boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-              overflow: "visible",
-            }}
-            ref={lineRef}
-          >
-            <div style={headerRowStyle}>
-              <h3 style={{ margin: 0, color: "#0f172a" }}>Динамика по дням</h3>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
-                <button onClick={() => exportPNG(lineRef.current, `trend_${tab}.png`)}>PNG</button>
-                <button onClick={() => exportCSV(agg.byDay, `trend_${tab}.csv`)}>CSV</button>
-                <button onClick={() => exportXLSX(agg.byDay, "Trend", `trend_${tab}.xlsx`)}>XLSX</button>
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={380}>
-              <LineChart data={agg.byDay} margin={{ top: 10, right: 28, bottom: 48, left: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 12, fill: "#0f172a" }}
-                  interval="preserveEnd"
-                  angle={-30}
-                  textAnchor="end"
-                  height={52}
-                />
-                <YAxis
-                  width={90}
-                  tick={{ fontSize: 12, fill: "#0f172a" }}
-                  tickFormatter={(v) => numCompact.format(Number(v) || 0)}
-                />
-                <Tooltip
-                  formatter={(v, n) => [
-                    ["Штрафы", "Взыскано", "Поступления", "Тренд штрафов (7д)", "Тренд поступлений (7д)"].includes(n)
-                      ? moneyFmt.format(Number(v) || 0)
-                      : numFmt.format(Number(v) || 0),
-                    n,
-                  ]}
-                />
-                <Legend />
-                {tab === "fines" ? (
-                  <>
-                    <Line type="monotone" dataKey="Нарушения" dot={false} />
-                    <Line type="monotone" dataKey="Постановления" dot={false} />
-                    <Line type="monotone" dataKey="Штрафы" dot={false} />
-                    <Line type="monotone" dataKey="Взыскано" dot={false} />
-                    <Line type="monotone" dataKey="Тренд штрафов (7д)" dot={false} strokeDasharray="5 5" />
-                  </>
-                ) : (
-                  <>
-                    <Line type="monotone" dataKey="Выезды" dot={false} />
-                    <Line type="monotone" dataKey="Эвакуации" dot={false} />
-                    <Line type="monotone" dataKey="Поступления" dot={false} />
-                    <Line type="monotone" dataKey="Тренд поступлений (7д)" dot={false} strokeDasharray="5 5" />
-                  </>
-                )}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+{tab === "fines" && (
+  <>
+    {/* Суммы (₽): Штрафы + Взыскано */}
+    <div
+      style={{
+        gridColumn: "span 12",
+        minHeight: isMobile ? 320 : 380,
+        background: "#fff",
+        borderRadius: 12,
+        padding: 16,
+        boxShadow: "0 1px 3px rgba(0,0,0,.08)",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <h3 style={{ margin: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>Динамика: суммы (₽)</h3>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
+          <button
+            onClick={() =>
+              exportPNGConsistent(
+                renderTrendFinesMoney({ data: agg.byDay }),
+                `trend_fines_money.png`,
+                { width: 1280, height: 720 }
+              )
+            }
+          >PNG</button>
+          <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Штрафы: d["Штрафы"], Взыскано: d["Взыскано"] })), `trend_fines_money.csv`)}>CSV</button>
+          <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Штрафы: d["Штрафы"], Взыскано: d["Взыскано"] })), "Trend (₽)", `trend_fines_money.xlsx`)}>XLSX</button>
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
+        <LineChart
+          data={agg.byDay}
+          margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
+          <YAxis width={isMobile ? 70 : 90} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => rubCompact.format(Number(v) || 0)} />
+          <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
+          <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
+          <Line type="monotone" dataKey="Штрафы"   dot={false} stroke="#9333ea" strokeWidth={2} />
+          <Line type="monotone" dataKey="Взыскано" dot={false} stroke="#10b981" strokeWidth={2} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
 
-          {/* Донат + экспорт */}
-          <div
-            style={{
-              gridColumn: "span 6",
-              minHeight: 340,
-              background: "#fff",
-              borderRadius: 12,
-              padding: 16,
-              boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-              overflow: "visible",
-            }}
-            ref={donutRef}
-          >
-            <div style={headerRowStyle}>
-              <h3 style={{ margin: 0, color: "#0f172a" }}>{tab === "fines" ? "Структура взысканий" : "Структура выездов"}</h3>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
-                <button onClick={() => exportPNG(donutRef.current, `structure_${tab}.png`)}>PNG</button>
-                <button
-                  onClick={() =>
-                    exportCSV(
-                      agg.pie.map((x) => ({ Показатель: x.name, Значение: x.value })),
-                      `structure_${tab}.csv`
-                    )
-                  }
+    {/* Количества (шт.): Нарушения + Постановления */}
+    <div
+      style={{
+        gridColumn: "span 12",
+        minHeight: isMobile ? 320 : 380,
+        background: "#fff",
+        borderRadius: 12,
+        padding: 16,
+        boxShadow: "0 1px 3px rgba(0,0,0,.08)",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <h3 style={{ margin: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>Динамика: количества (шт.)</h3>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
+          <button
+            onClick={() =>
+              exportPNGConsistent(
+                renderTrendFinesCounts({ data: agg.byDay }),
+                `trend_fines_counts.png`,
+                { width: 1280, height: 720 }
+              )
+            }
+          >PNG</button>
+          <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Нарушения: d["Нарушения"], Постановления: d["Постановления"] })), `trend_fines_counts.csv`)}>CSV</button>
+          <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Нарушения: d["Нарушения"], Постановления: d["Постановления"] })), "Trend (шт.)", `trend_fines_counts.xlsx`)}>XLSX</button>
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
+        <LineChart
+          data={agg.byDay}
+          margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
+          <YAxis width={isMobile ? 60 : 80} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
+          <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
+          <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
+          <Line type="monotone" dataKey="Нарушения"     dot={false} stroke="#ef4444" strokeWidth={2} />
+          <Line type="monotone" dataKey="Постановления" dot={false} stroke="#3b82f6" strokeWidth={2} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  </>
+)}
+
+        {/* === Тренды: для ЭВАКУАЦИИ две карточки === */}
+        {tab === "evac" && (
+          <>
+            {/* Количества (шт.): Выезды + Эвакуации */}
+            <div
+              style={{
+                gridColumn: "span 12",
+                minHeight: isMobile ? 320 : 380,
+                background: "#fff",
+                borderRadius: 12,
+                padding: 16,
+                boxShadow: "0 1px 3px rgba(0,0,0,.08)",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <h3 style={{ margin: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>Динамика: выезды и эвакуации (шт.)</h3>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
+                  <button
+                    onClick={() =>
+                      exportPNGConsistent(
+                        renderTrendEvacCounts({ data: agg.byDay }),
+                        `trend_evac_counts.png`,
+                        { width: 1280, height: 720 }
+                      )
+                    }
+                  >PNG</button>
+                  <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Выезды: d["Выезды"], Эвакуации: d["Эвакуации"] })), `trend_evac_counts.csv`)}>CSV</button>
+                  <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Выезды: d["Выезды"], Эвакуации: d["Эвакуации"] })), "Trend (шт.)", `trend_evac_counts.xlsx`)}>XLSX</button>
+                </div>
+              </div>
+              <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
+                <LineChart
+                  data={agg.byDay}
+                  margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
                 >
-                  CSV
-                </button>
-                <button
-                  onClick={() =>
-                    exportXLSX(agg.pie.map((x) => ({ name: x.name, value: x.value })), "Structure", `structure_${tab}.xlsx`)
-                  }
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
+                  <YAxis width={isMobile ? 60 : 80} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
+                  <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
+                  <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
+                  <Line type="monotone" dataKey="Выезды"    dot={false} stroke="#3b82f6" strokeWidth={2} />
+                  <Line type="monotone" dataKey="Эвакуации" dot={false} stroke="#f59e0b" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Деньги (₽): Поступления */}
+            <div
+              style={{
+                gridColumn: "span 12",
+                minHeight: isMobile ? 320 : 380,
+                background: "#fff",
+                borderRadius: 12,
+                padding: 16,
+                boxShadow: "0 1px 3px rgba(0,0,0,.08)",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <h3 style={{ margin: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>Динамика: поступления (₽)</h3>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
+                  <button
+                    onClick={() =>
+                      exportPNGConsistent(
+                        renderTrendEvacMoney({ data: agg.byDay }),
+                        `trend_evac_money.png`,
+                        { width: 1280, height: 720 }
+                      )
+                    }
+                  >PNG</button>
+                  <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Поступления: d["Поступления"] })), `trend_evac_money.csv`)}>CSV</button>
+                  <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Поступления: d["Поступления"] })), "Trend (₽)", `trend_evac_money.xlsx`)}>XLSX</button>
+                </div>
+              </div>
+              <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
+                <LineChart
+                  data={agg.byDay}
+                  margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
                 >
-                  XLSX
-                </button>
-              </div>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
+                  <YAxis width={isMobile ? 70 : 90} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => rubCompact.format(Number(v) || 0)} />
+                  <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
+                  <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
+                  <Line type="monotone" dataKey="Поступления" dot={false} stroke="#10b981" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie
-                  data={agg.pie}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={100}
-                  labelLine={false}
-                  label={({ name, value }) => `${name}: ${numCompact.format(Number(value) || 0)}`}
-                >
-                  {agg.pie.map((_, i) => (
-                    <Cell key={i} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(v, n) => {
-                    const total = agg.pie.reduce((s, x) => s + Number(x.value || 0), 0) || 1;
-                    const precise = numFmt.format(Number(v) || 0);
-                    const perc = ((Number(v) || 0) / total) * 100;
-                    return [`${precise} (${perc.toFixed(1)}%)`, n];
-                  }}
-                />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-            <ul style={{ marginTop: 8, fontSize: 12, color: "#374151", listStyle: "disc", paddingLeft: 20 }}>
-              {agg.pie.map((s, i) => {
-                const total = agg.pie.reduce((sum, x) => sum + Number(x.value || 0), 0) || 1;
-                const perc = ((Number(s.value) || 0) / total) * 100;
-                const precise = s.kind === "rub" ? moneyFmt.format(Number(s.value) || 0) : numFmt.format(Number(s.value) || 0);
-                return (
-                  <li key={i}>
-                    {s.name}: <b>{precise}</b> ({perc.toFixed(1)}%)
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          </>
+        )}
 
-          {/* Бар: счётчики + экспорт */}
-          <div
-            style={{
-              gridColumn: "span 3",
-              minHeight: 340,
-              background: "#fff",
-              borderRadius: 12,
-              padding: 16,
-              boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-              overflow: "visible",
-            }}
-            ref={countsRef}
-          >
-            <div style={headerRowStyle}>
-              <h3 style={{ margin: 0, color: "#0f172a" }}>Показатели (шт.)</h3>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
-                <button onClick={() => exportPNG(countsRef.current, `counts_${tab}.png`)}>PNG</button>
-                <button onClick={() => exportCSV(agg.barCounts, `counts_${tab}.csv`)}>CSV</button>
-                <button onClick={() => exportXLSX(agg.barCounts, "Counts", `counts_${tab}.xlsx`)}>XLSX</button>
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={agg.barCounts} margin={{ top: 10, right: 12, bottom: 10, left: 8 }} barCategoryGap={24}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0f172a" }} />
-                <YAxis width={70} tick={{ fontSize: 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
-                <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
-                <Bar dataKey="value" name="Значение" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+{/* Структура (пирог) + экспорт */}
+<div
+  style={{
+    gridColumn: isMobile ? "span 12" : "span 6",
+    minHeight: 340,
+    background: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    boxShadow: "0 1px 3px rgba(0,0,0,.08)",
+  }}
+  ref={donutRef}
+>
+  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+    <h3 style={{ margin: 0, color: "#0f172a" }}>
+      {tab === "fines" ? "Структура взысканий" : "Структура выездов"}
+    </h3>
+    <div style={{ display: "flex", gap: 8 }} data-export-ignore>
+      <button onClick={() => exportPNGConsistent(renderStructurePie({ data: agg.pie }), `structure_${tab}.png`, { width: 1200, height: 800 })}>PNG</button>
+      <button onClick={() => exportCSV(agg.pie.map((x) => ({ Показатель: x.name, Значение: x.value })), `structure_${tab}.csv`)}>CSV</button>
+      <button onClick={() => exportXLSX(agg.pie.map((x) => ({ name: x.name, value: x.value })), "Structure", `structure_${tab}.xlsx`)}>XLSX</button>
+    </div>
+  </div>
 
-          {/* Бар: деньги + экспорт */}
-          <div
-            style={{
-              gridColumn: "span 3",
-              minHeight: 340,
-              background: "#fff",
-              borderRadius: 12,
-              padding: 16,
-              boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-              overflow: "visible",
-            }}
-            ref={moneyRef}
-          >
-            <div style={headerRowStyle}>
-              <h3 style={{ margin: 0, color: "#0f172a" }}>Денежные показатели (₽)</h3>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
-                <button onClick={() => exportPNG(moneyRef.current, `money_${tab}.png`)}>PNG</button>
-                <button onClick={() => exportCSV(agg.barMoney, `money_${tab}.csv`)}>CSV</button>
-                <button onClick={() => exportXLSX(agg.barMoney, "Money", `money_${tab}.xlsx`)}>XLSX</button>
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={agg.barMoney} margin={{ top: 10, right: 12, bottom: 10, left: 8 }} barCategoryGap={24}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0f172a" }} />
-                <YAxis width={80} tick={{ fontSize: 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
-                <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
-                <Bar dataKey="value" name="Сумма" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+  {/* “ручная” легенда с цветами, чтобы в онлайне совпадало с PNG */}
+  <div style={{ marginTop: 8 }} data-export-ignore>
+    <LegendBullets items={agg.pie.map(p => ({ name: p.name, color: getPieColor(p.name) }))} />
+  </div>
 
-          {/* Таблица аналитики + экспорт */}
-          <div style={{ gridColumn: "span 12" }} ref={analyticsRef}>
-            <div style={headerRowStyle}>
-              <h3 style={{ margin: 0, color: "#0f172a" }}>
+  <ResponsiveContainer width="100%" height={260}>
+    <PieChart>
+      <Pie
+        data={agg.pie}
+        dataKey="value"
+        nameKey="name"
+        cx="50%"
+        cy="50%"
+        innerRadius={55}
+        outerRadius={100}
+        labelLine={false}
+        label={({ name, value }) => `${name}: ${numCompact.format(Number(value) || 0)}`}
+        isAnimationActive={false}
+      >
+        {agg.pie.map((slice, i) => (
+          <Cell key={i} fill={getPieColor(slice.name)} />
+        ))}
+      </Pie>
+      <Tooltip
+        formatter={(v, n) => {
+          const total = agg.pie.reduce((s, x) => s + Number(x.value || 0), 0) || 1;
+          const precise = numFmt.format(Number(v) || 0);
+          const perc = ((Number(v) || 0) / total) * 100;
+          return [`${precise} (${perc.toFixed(1)}%)`, n];
+        }}
+      />
+    </PieChart>
+  </ResponsiveContainer>
+
+  <ul style={{ marginTop: 8, fontSize: 12, color: "#374151", listStyle: "disc", paddingLeft: 20 }}>
+    {agg.pie.map((s, i) => {
+      const total = agg.pie.reduce((sum, x) => sum + Number(x.value || 0), 0) || 1;
+      const perc = ((Number(s.value) || 0) / total) * 100;
+      const precise = s.kind === "rub" ? moneyFmt.format(Number(s.value) || 0) : numFmt.format(Number(s.value) || 0);
+      return (
+        <li key={i}>
+          {s.name}: <b>{precise}</b> ({perc.toFixed(1)}%)
+        </li>
+      );
+    })}
+  </ul>
+</div>
+
+<div
+  style={{
+    gridColumn: isMobile ? "span 12" : "span 3",
+    minHeight: 340,
+    background: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    boxShadow: "0 1px 3px rgba(0,0,0,.08)",
+    overflow: "hidden",
+  }}
+  ref={countsRef}
+>
+      {/* Шапка: разрешаем переносы, заголовок не обрезаем */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          minWidth: 0,
+          flexWrap: "wrap",          // ← ключ: можно переносить на следующую строку
+        }}
+      >
+        <h3
+          style={{
+            margin: 0,
+            color: "#0f172a",
+            fontSize: isMobile ? 16 : 18,
+            lineHeight: 1.25,
+            flex: "1 1 auto",
+            // убрали overflow/nowrap, чтобы текст не исчезал
+            whiteSpace: "normal",     // ← позволяет переносить строку
+            wordBreak: "break-word",  // ← если слово длинное
+            marginRight: 8,
+          }}
+        >
+          Показатели (шт.)
+        </h3>
+        <div
+          style={{
+            display: "flex",
+            flex: "0 0 auto",
+            gap: 8,
+            rowGap: 8,
+            flexWrap: "wrap",
+            justifyContent: "flex-end",
+            marginLeft: "auto",       // ← при широкой шапке уводит кнопки вправо
+          }}
+          data-export-ignore
+        >
+          <button onClick={() => exportPNGConsistent(renderBarCounts({ data: agg.barCounts }), `counts_${tab}.png`, { width: 900, height: 700 })}>PNG</button>
+          <button onClick={() => exportCSV(agg.barCounts, `counts_${tab}.csv`)}>CSV</button>
+          <button onClick={() => exportXLSX(agg.barCounts, "Counts", `counts_${tab}.xlsx`)}>XLSX</button>
+        </div>
+      </div>
+
+
+
+      {/* ручная легенда с цветами */}
+      <div style={{ marginTop: 8 }} data-export-ignore>
+        <LegendBullets items={agg.barCounts.map(b => ({ name: b.name, color: getBarColor(b.name, tab, "counts") }))} />
+      </div>
+
+      <ResponsiveContainer width="100%" height={260}>
+        <BarChart data={agg.barCounts} margin={{ top: 10, right: 12, bottom: 10, left: 8 }} barCategoryGap={24}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0f172a" }} />
+          <YAxis width={70} tick={{ fontSize: 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
+          <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
+          <Bar dataKey="value" name="Значение" isAnimationActive={false}>
+            {agg.barCounts.map((entry, idx) => (
+              <Cell key={`c-${idx}`} fill={getBarColor(entry.name, tab, "counts")} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+
+    {/* Бар: деньги (₽) + экспорт */}
+    <div
+      style={{
+        gridColumn: isMobile ? "span 12" : "span 3",
+        minHeight: 340,
+        background: "#fff",
+        borderRadius: 12,
+        padding: 16,
+        boxShadow: "0 1px 3px rgba(0,0,0,.08)",
+        overflow: "hidden",
+      }}
+      ref={moneyRef}
+    >
+      {/* Шапка: разрешаем переносы, заголовок не обрезаем */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          minWidth: 0,
+          flexWrap: "wrap",          // ← ключ: можно переносить на следующую строку
+        }}
+      >
+        <h3
+          style={{
+            margin: 0,
+            color: "#0f172a",
+            fontSize: isMobile ? 16 : 18,
+            lineHeight: 1.25,
+            flex: "1 1 auto",
+            whiteSpace: "normal",     // ← позволяет переносить строку
+            wordBreak: "break-word",
+            marginRight: 8,
+          }}
+        >
+          Денежные показатели (₽)
+        </h3>
+        <div
+          style={{
+            display: "flex",
+            flex: "0 0 auto",
+            gap: 8,
+            rowGap: 8,
+            flexWrap: "wrap",
+            justifyContent: "flex-end",
+            marginLeft: "auto",       // ← при широкой шапке уводит кнопки вправо
+          }}
+          data-export-ignore
+        >
+          <button onClick={() => exportPNGConsistent(renderBarMoney({ data: agg.barMoney }), `money_${tab}.png`, { width: 900, height: 700 })}>PNG</button>
+          <button onClick={() => exportCSV(agg.barMoney, `money_${tab}.csv`)}>CSV</button>
+          <button onClick={() => exportXLSX(agg.barMoney, "Money", `money_${tab}.xlsx`)}>XLSX</button>
+        </div>
+      </div>
+
+      {/* ручная легенда с цветами */}
+      <div style={{ marginTop: 8 }} data-export-ignore>
+        <LegendBullets items={agg.barMoney.map(b => ({ name: b.name, color: getBarColor(b.name, tab, "money") }))} />
+      </div>
+
+      <ResponsiveContainer width="100%" height={260}>
+        <BarChart data={agg.barMoney} margin={{ top: 10, right: 12, bottom: 10, left: 8 }} barCategoryGap={24}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0f172a" }} />
+          <YAxis width={80} tick={{ fontSize: 12, fill: "#0f172a" }} tickFormatter={(v) => rubCompact.format(Number(v) || 0)} />
+          <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
+          <Bar dataKey="value" name="Сумма" isAnimationActive={false}>
+            {agg.barMoney.map((entry, idx) => (
+              <Cell key={`m-${idx}`} fill={getBarColor(entry.name, tab, "money")} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+
+
+          {/* Таблица аналитики */}
+          <div style={{ ...span(12) }} ref={analyticsRef}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space_between",
+                alignItems: "center",
+                gap: 8,
+                flexWrap: "wrap",
+                rowGap: 8,
+                paddingRight: 4,
+                marginBottom: 8,
+              }}
+            >
+              <h3 style={{ margin: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>
                 Сводка аналитики ({tab === "fines" ? "Штрафы" : "Эвакуация"})
               </h3>
               {analytics && (
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
-                  <button onClick={() => exportPNG(analyticsRef.current, `analytics_${tab}.png`)}>PNG</button>
+                  <button
+                    onClick={() =>
+                      exportPNGConsistent(
+                        ({ width, height }) => (
+                          <div style={{ width, height, background: "#fff", padding: 24, boxSizing: "border-box", fontFamily: "Inter, system-ui, sans-serif" }}>
+                            <h3 style={{ margin: 0, marginBottom: 12, color: "#0f172a" }}>
+                              Сводка аналитики ({tab === "fines" ? "Штрафы" : "Эвакуация"})
+                            </h3>
+                            <AnalyticsSummaryTable table={tab} analytics={analytics} />
+                          </div>
+                        ),
+                        `analytics_${tab}.png`,
+                        { width: 1280, height: 720 }
+                      )
+                    }
+                  >
+                    PNG
+                  </button>
                   <button
                     onClick={() => {
-                      const rows = tab === "fines"
-                        ? [
-                            { metric: "Нарушения (камера)", value: analytics.sum_cam },
-                            { metric: "Постановления", value: analytics.sum_des },
-                            { metric: "Сумма штрафов", value: analytics.sum_fin },
-                            { metric: "Взыскано", value: analytics.sum_col },
-                            { metric: "Доля взысканий", value: analytics.per_col },
-                            { metric: "Кам./постановления", value: analytics.per_cam_right },
-                            { metric: "Средний штраф/постановление", value: analytics.avg_fin_des },
-                          ]
-                        : [
-                            { metric: "Выезды", value: analytics.sum_trip },
-                            { metric: "Эвакуации", value: analytics.sum_evac },
-                            { metric: "Поступления", value: analytics.sum_rev },
-                            { metric: "Доля эвакуаций", value: analytics.per_evac },
-                            { metric: "Средние поступления/эвакуацию", value: analytics.avg_rev },
-                          ];
+                      const rows =
+                        tab === "fines"
+                          ? [
+                              { metric: "Нарушения (камера)", value: analytics.sum_cam },
+                              { metric: "Постановления", value: analytics.sum_des },
+                              { metric: "Сумма штрафов", value: analytics.sum_fin },
+                              { metric: "Взыскано", value: analytics.sum_col },
+                              { metric: "Доля взысканий", value: analytics.per_col },
+                              { metric: "Кам./постановления", value: analytics.per_cam_right },
+                              { metric: "Средний штраф/постановление", value: analytics.avg_fin_des },
+                            ]
+                          : [
+                              { metric: "Выезды", value: analytics.sum_trip },
+                              { metric: "Эвакуации", value: analytics.sum_evac },
+                              { metric: "Поступления", value: analytics.sum_rev },
+                              { metric: "Доля эвакуаций", value: analytics.per_evac },
+                              { metric: "Средние поступления/эвакуацию", value: analytics.avg_rev },
+                            ];
                       exportCSV(rows, `analytics_${tab}.csv`);
                     }}
                   >
@@ -802,23 +1364,24 @@ export default function App() {
                   </button>
                   <button
                     onClick={() => {
-                      const rows = tab === "fines"
-                        ? [
-                            { metric: "Нарушения (камера)", value: analytics.sum_cam },
-                            { metric: "Постановления", value: analytics.sum_des },
-                            { metric: "Сумма штрафов", value: analytics.sum_fin },
-                            { metric: "Взыскано", value: analytics.sum_col },
-                            { metric: "Доля взысканий", value: analytics.per_col },
-                            { metric: "Кам./постановления", value: analytics.per_cam_right },
-                            { metric: "Средний штраф/постановление", value: analytics.avg_fin_des },
-                          ]
-                        : [
-                            { metric: "Выезды", value: analytics.sum_trip },
-                            { metric: "Эвакуации", value: analytics.sum_evac },
-                            { metric: "Поступления", value: analytics.sum_rev },
-                            { metric: "Доля эвакуаций", value: analytics.per_evac },
-                            { metric: "Средние поступления/эвакуацию", value: analytics.avg_rev },
-                          ];
+                      const rows =
+                        tab === "fines"
+                          ? [
+                              { metric: "Нарушения (камера)", value: analytics.sum_cam },
+                              { metric: "Постановления", value: analytics.sum_des },
+                              { metric: "Сумма штрафов", value: analytics.sum_fin },
+                              { metric: "Взыскано", value: analytics.sum_col },
+                              { metric: "Доля взысканий", value: analytics.per_col },
+                              { metric: "Кам./постановления", value: analytics.per_cam_right },
+                              { metric: "Средний штраф/постановление", value: analytics.avg_fin_des },
+                            ]
+                          : [
+                              { metric: "Выезды", value: analytics.sum_trip },
+                              { metric: "Эвакуации", value: analytics.sum_evac },
+                              { metric: "Поступления", value: analytics.sum_rev },
+                              { metric: "Доля эвакуаций", value: analytics.per_evac },
+                              { metric: "Средние поступления/эвакуацию", value: analytics.avg_rev },
+                            ];
                       exportXLSX(rows, "Analytics", `analytics_${tab}.xlsx`);
                     }}
                   >
@@ -828,6 +1391,112 @@ export default function App() {
               )}
             </div>
             <AnalyticsSummaryTable table={tab} analytics={analytics} />
+          </div>
+
+          {/* Импорт / Экспорт */}
+          <div style={{ ...span(12) }}>
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 12,
+                padding: 16,
+                boxShadow: "0 1px 3px rgba(0,0,0,.08)",
+                marginTop: 4,
+              }}
+            >
+              <h3 style={{ marginTop: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>Импорт / Экспорт базы</h3>
+
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selSheets.fines}
+                    onChange={(e) => setSelSheets((s) => ({ ...s, fines: e.target.checked }))}
+                  />{" "}
+                  Штрафы
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selSheets.evac}
+                    onChange={(e) => setSelSheets((s) => ({ ...s, evac: e.target.checked }))}
+                  />{" "}
+                  Эвакуация
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selSheets.routes}
+                    onChange={(e) => setSelSheets((s) => ({ ...s, routes: e.target.checked }))}
+                  />{" "}
+                  Эвакуация маршрут
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selSheets.lights}
+                    onChange={(e) => setSelSheets((s) => ({ ...s, lights: e.target.checked }))}
+                  />{" "}
+                  Реестр светофоров
+                </label>
+              </div>
+
+              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 12 }}>
+                <input type="file" accept=".xlsx,.xls" onChange={(e) => setImpFile(e.target.files?.[0] || null)} />
+                <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <input type="checkbox" checked={allowIds} onChange={(e) => setAllowIds(e.target.checked)} />
+                  Разрешить собственные ID при импорте
+                </label>
+                <button
+                  onClick={handleImport}
+                  disabled={impExpBusy || !impFile}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: 8,
+                    border: "1px solid #111827",
+                    background: "#111827",
+                    color: "#fff",
+                    width: isMobile ? "100%" : undefined,
+                  }}
+                >
+                  Загрузить в БД
+                </button>
+              </div>
+
+              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                <button
+                  onClick={handleExport}
+                  disabled={impExpBusy}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: 8,
+                    border: "1px solid #0f766e",
+                    background: "#0f766e",
+                    color: "#fff",
+                    width: isMobile ? "100%" : undefined,
+                  }}
+                >
+                  Выгрузить в XLSX
+                </button>
+                <span style={{ color: "#6b7280", fontSize: 12 }}>Если не выбрать ничего — выгрузятся все листы.</span>
+              </div>
+
+              {impExpMsg && (
+                <pre
+                  style={{
+                    marginTop: 12,
+                    padding: 12,
+                    background: "#f3f4f6",
+                    borderRadius: 8,
+                    maxHeight: 260,
+                    overflow: "auto",
+                    fontSize: isMobile ? 12 : 13,
+                  }}
+                >
+{impExpMsg}
+                </pre>
+              )}
+            </div>
           </div>
         </div>
       )}

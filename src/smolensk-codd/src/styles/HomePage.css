@@ -866,3 +866,222 @@
     font-size: 13px;
   }
 }
+/* HomePage.css - исправления для мобильной версии */
+.hero-section {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  max-height: 1200px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 60px;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+  .hero-section {
+    height: 70vh;
+    min-height: 500px;
+    margin-bottom: 40px;
+    align-items: flex-end; /* Оставляем выравнивание по низу */
+  }
+  
+  .hero-content {
+    padding: 0 15px 60px 15px;
+    width: 100%;
+  }
+  
+  .hero-bg-image {
+    object-position: center center; /* Центрируем изображение */
+  }
+  
+  /* Убедитесь, что hero-section начинается сразу под хедером */
+  .home-page {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    height: 60vh;
+    min-height: 400px;
+    margin-bottom: 30px;
+  }
+  
+  .hero-content {
+    padding: 0 10px 40px 10px;
+  }
+  
+  .hero-title {
+    font-size: 28px;
+  }
+  
+  .hero-subtitle {
+    font-size: 16px;
+  }
+}
+/* Контейнер для горизонтальной прокрутки новостей */
+.news-container-home {
+  position: relative;
+  width: 100%;
+}
+
+.news-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  padding: 0 20px 20px 20px;
+  margin: 0 -20px;
+}
+
+.news-scroll-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.news-grid-home {
+  display: flex;
+  gap: 20px;
+  padding: 10px 0;
+  width: max-content;
+}
+
+/* Стили для карточек новостей на мобильных */
+.news-card-home {
+  flex: 0 0 calc(100vw - 60px); /* Ширина карточки почти на весь экран */
+  min-width: calc(100vw - 60px);
+  max-width: calc(100vw - 60px);
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #e8f5e8;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(98, 167, 68, 0.08);
+  scroll-snap-align: start;
+}
+
+/* Индикатор прокрутки */
+.news-scroll-indicator {
+  display: none;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 0 20px;
+}
+
+.scroll-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e8f5e8;
+  transition: all 0.3s ease;
+}
+
+.scroll-dot.active {
+  background: #62a744;
+  transform: scale(1.2);
+}
+
+/* Стили для десктопной версии */
+@media (min-width: 769px) {
+  .news-grid-home {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    width: 100%;
+    padding: 0 20px;
+  }
+  
+  .news-card-home {
+    flex: none;
+    min-width: auto;
+    max-width: none;
+  }
+  
+  .news-scroll-wrapper {
+    overflow-x: visible;
+    overflow-y: visible;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+/* Мобильная версия */
+@media (max-width: 768px) {
+  .news-section-home {
+    padding: 30px 0;
+  }
+  
+  .news-header {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+  
+  .news-scroll-indicator {
+    display: flex;
+  }
+  
+  .news-card-home:hover {
+    transform: none; /* Убираем трансформацию на мобильных */
+    border-color: #e8f5e8;
+  }
+  
+  .news-card-home:active {
+    transform: scale(0.98);
+    border-color: #62a744;
+  }
+  
+  /* Улучшаем внешний вид для мобильных */
+  .news-image-container-home {
+    height: 180px;
+  }
+  
+  .news-card-content-home {
+    padding: 15px;
+  }
+  
+  .news-card-title-home {
+    font-size: 16px;
+    min-height: 40px;
+    -webkit-line-clamp: 3;
+  }
+  
+  .news-meta-home {
+    font-size: 12px;
+  }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 480px) {
+  .news-card-home {
+    flex: 0 0 calc(100vw - 40px);
+    min-width: calc(100vw - 40px);
+    max-width: calc(100vw - 40px);
+  }
+  
+  .news-scroll-wrapper {
+    padding: 0 15px 15px 15px;
+    margin: 0 -15px;
+  }
+  
+  .news-header {
+    padding: 0 15px;
+  }
+  
+  .news-image-container-home {
+    height: 160px;
+  }
+  
+  .news-emoji-home {
+    font-size: 36px;
+  }
+  
+  .news-category-home {
+    font-size: 12px;
+  }
+}

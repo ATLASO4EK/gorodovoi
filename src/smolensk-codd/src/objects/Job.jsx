@@ -1,8 +1,5 @@
 /* Объект-Шаблон Вакансии */
 
-import { useState, useEffect, useRef } from "react";
-import "./../styles/Job.css";
-
   /*
   Принимает:          Пример:
   date: str;          "date": "Сегодня в 10:30",
@@ -14,6 +11,8 @@ import "./../styles/Job.css";
 
   Использование: pages/JobPage.jsx => jobsData (assets/jobsData.json)
   */
+import { useState, useEffect, useRef } from "react";
+import "./../styles/Job.css";
 
 function Job({ date, title, salary, company, location, description, index }) {
   const [isModalOpen, setIsModalOpen] = useState(false);

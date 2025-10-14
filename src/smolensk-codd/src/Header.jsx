@@ -2,7 +2,7 @@
 /* ! За сами переходы отвечает App.jsx ! */
 
 import { useState } from 'react'
-import './Header.css'
+import './styles/Header.css'
 
 const Header = ({ setCurrentPage }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -54,7 +54,7 @@ const Header = ({ setCurrentPage }) => {
       <nav className="nav">
         <div className="nav-content">
           <div className="logo">
-            <img src="./public/logo.png" alt="логотип ЦОДД" className="logo-img" /> 
+            <img src="public/logo.svg" alt="логотип ЦОДД" className="logo-img" /> 
           </div>
           
           <div className="nav-buttons">
