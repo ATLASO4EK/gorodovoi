@@ -17,6 +17,12 @@ import {
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
 
+import Exception from "./../objects/Exception";
+
+/**
+ * Если используешь Vite proxy — оставь API_BASE пустым.
+ * Иначе положи в .env: VITE_API_BASE=http://localhost:8000
+ */
 const API_BASE = import.meta.env.VITE_API_BASE || "";
 
 // ---------- форматтеры ----------
@@ -438,6 +444,46 @@ export default function App() {
 
   const agg = useMemo(() => (tab === "fines" ? aggregateFines(rows) : aggregateEvac(rows)), [tab, rows]);
 
+  async function handleImport() {
+    setImpExpMsg("");
+    if (!impFile) {
+      setImpExpMsg("Выберите .xlsx файл для импорта.");
+      return;
+    }
+    setImpExpBusy(true);
+    try {
+      const result = await importDB(impFile, { allowCustomIds: allowIds });
+      setImpExpMsg(`Импорт: ${result.ok ? "успешно" : "ошибка"}\n` + JSON.stringify(result.summary || result.error, null, 2));
+      await reload();
+    } catch (e) {
+      setImpExpMsg(`Ошибка импорта: ${e.message}`);
+    } finally {
+      setImpExpBusy(false);
+    }
+  }
+  async function handleExport() {
+    setImpExpMsg("");
+    setImpExpBusy(true);
+    try {
+      const selected = Object.entries(selSheets)
+        .filter(([, v]) => v)
+        .map(([k]) => k);
+      await exportDB({ sheets: selected.length ? selected : undefined });
+      setImpExpMsg("Экспорт: файл export.xlsx скачан.");
+    } catch (e) {
+      setImpExpMsg(`Ошибка экспорта: ${e.message}`);
+    } finally {
+      setImpExpBusy(false);
+    }
+  }
+
+  const span = (nDesktop, nMobile = 12) => ({
+    gridColumn: `span ${isMobile ? nMobile : nDesktop}`,
+  });
+
+  if (error) {
+    return <Exception message = "Не удалось увы и ах"/>;
+  }
   return (
     <div
       style={{

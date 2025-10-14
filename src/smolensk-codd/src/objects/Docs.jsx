@@ -1,7 +1,21 @@
+/*Объект-Шаблон Документа*/
+
+/*
+Принимает:          Пример:
+title: str;         title: "Устав ЦОДД Смоленск",
+description: str;   description: "Основной документ, определяющий порядок деятельности и полномочия центра организации дорожного движения",
+type: str;          type: "PDF",
+size: str;          size: "2.4 МБ",
+date: str;          date: "2024 г.",
+file: str;          file: "/docs/Chart-CODD-Smolensk.pdf"
+
+Использование: pages/DocsPage.jsx => documentsData
+*/
+
 import { useState } from 'react';
 import './../styles/Docs.css';
 
-
+// Изменить импорты
 const DocumentIcon = () => (
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>

@@ -1,4 +1,7 @@
-import React, { useState } from 'react'
+/* Хэдер/Навигация */
+/* ! За сами переходы отвечает App.jsx ! */
+
+import { useState } from 'react'
 import './Header.css'
 
 const Header = ({ setCurrentPage }) => {

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Docs from '../objects/Docs';
 import '../styles/Docs.css';
 
+//необходимо убрать эти импорты
 const DocumentStatsIcon = () => (
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -65,7 +66,6 @@ function DocsPage() {
   const categoryRefs = useRef([]);
 
   useEffect(() => {
-
     window.scrollTo(0, 0);
     setTimeout(() => setIsVisible(true), 100);
 

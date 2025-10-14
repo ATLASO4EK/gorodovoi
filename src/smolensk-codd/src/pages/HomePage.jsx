@@ -3,16 +3,25 @@ import './../styles/HomePage.css';
 
 const URL = import.meta.env.VITE_API_BASE || "";
 
+import Exception from './../objects/Exception.jsx';
+
 function HomePage({ setCurrentPage, forceNewsUpdate }) { 
   const [selectedNews, setSelectedNews] = useState(null);
   const [latestNews, setLatestNews] = useState([]);
-  const [updateCounter, setUpdateCounter] = useState(0); 
+  const [updateCounter, setUpdateCounter] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const [error, setError] = useState(false);
 
 
   useEffect(() => {
     const fetchLatestNews = async () => {
       try {
         const response = await fetch(URL + 'api/v1/News');
+
+        if (!response.ok) {
+          throw new Error(`Ошибка запроса: ${response.status}`);
+        }
+
         const data = await response.json();
 
         const mappedNews = data.map(item => ({
@@ -29,8 +38,10 @@ function HomePage({ setCurrentPage, forceNewsUpdate }) {
     
         const sortedNews = mappedNews.sort((a, b) => new Date(b.time) - new Date(a.time));
         setLatestNews(sortedNews.slice(0, 3));
+        setError(false);
       } catch (error) {
         console.error("Ошибка загрузки новостей:", error);
+        setError(true);
       }
     };
 
@@ -128,50 +139,58 @@ useEffect(() => {
             </button>
           </div>
           
-          <div className="news-grid-home">
-            {latestNews.map((news) => (
-              <div 
-                key={news.id}
-                className="news-card-home"
-                onClick={() => openNews(news)}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => e.key === 'Enter' && openNews(news)}
-              >
-                <div className="news-image-container-home">
-                  {news.image && news.image !== '#' ? (
-                    <img 
-                      src={news.image} 
-                      alt={news.imageAlt} 
-                      className="news-image-home"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.nextSibling.style.display = 'flex';
-                      }}
-                    />
-                  ) : null}
-                  <div className="news-image-placeholder-home" style={{ display: news.image && news.image !== '#' ? 'none' : 'flex' }}>
-                    <span className="news-emoji-home">📰</span>
-                    <span className="news-category-home">Новость ЦОДД</span>
+          {error ? (
+            <div className="news-error-container">
+              <Exception message="Не удалось загрузить последние новости 😞" />
+            </div>
+          ) : (
+            <div className="news-grid-home">
+              {latestNews.map((news, index) => (
+                <div 
+                  key={news.id}
+                  className="news-card-home"
+                  onClick={() => openNews(news)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => e.key === 'Enter' && openNews(news)}
+                >
+                  <div className="news-image-container-home">
+                    {news.image && news.image !== '#' && news.image !== '' ? (
+                      <img 
+                        src={news.image} 
+                        alt={news.imageAlt || news.title} 
+                        className="news-image-home"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className="news-image-placeholder-home" style={{ 
+                      display: (news.image && news.image !== '#' && news.image !== '') ? 'none' : 'flex' 
+                    }}>
+                      <span className="news-emoji-home">📰</span>
+                      <span className="news-category-home">Новость ЦОДД</span>
+                    </div>
+                  </div>
+                  
+                  <div className="news-card-content-home">
+                    <h3 className="news-card-title-home">{news.title}</h3>
+                    <div className="news-meta-home">
+                      <span className="news-author-home">
+                        <span className="author-icon-home">👤</span>
+                        {news.author}
+                      </span>
+                      <span className="news-time-home">
+                        <span className="time-icon-home">🕒</span>
+                        {news.time}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="news-card-content-home">
-                  <h3 className="news-card-title-home">{news.title}</h3>
-                  <div className="news-meta-home">
-                    <span className="news-author-home">
-                      <span className="author-icon-home">👤</span>
-                      {news.author}
-                    </span>
-                    <span className="news-time-home">
-                      <span className="time-icon-home">🕒</span>
-                      {news.time}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <section id="services-section" className="services-section-home">
