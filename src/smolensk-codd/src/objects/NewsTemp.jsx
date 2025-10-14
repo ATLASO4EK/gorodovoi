@@ -1,4 +1,7 @@
+/*Объект-Шаблон Статьи*/
+
 import './../styles/NewsPage.css'
+
 function NewsTemp({ id, author, title, time, onOpen, image, imageAlt, fullText }) {
   return (
     <div 
@@ -47,7 +50,7 @@ function NewsTemp({ id, author, title, time, onOpen, image, imageAlt, fullText }
     </div>
   )
 }
-
+/*Объект-Шаблон Категории*/
 function NewsCategory({ category, NewsTemps, onNewsOpen }) {
   return (
     <div className="news-category">

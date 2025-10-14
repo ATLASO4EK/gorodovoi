@@ -1,3 +1,4 @@
+/* Job.css - Обновленная версия */
 .jobs-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -106,6 +107,9 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .job-card:hover {
@@ -182,34 +186,62 @@
   padding-top: 20px;
 }
 
+/* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ КНОПКИ ОТКЛИКНУТЬСЯ */
 .job-apply {
-  background: #62A744;
+  background: linear-gradient(135deg, #62a744 0%, #8bc34a 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 25px;
+  padding: 16px 32px;
+  border-radius: 50px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Montserrat', sans-serif;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 8px 25px rgba(98, 167, 68, 0.3);
+  display: block;
   width: 100%;
   max-width: 200px;
   margin-left: auto;
   margin-right: auto;
-  display: block;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .job-apply:hover {
-  background: #558c3a;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(98, 167, 68, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(98, 167, 68, 0.4);
+  background: linear-gradient(135deg, #8B00FF 0%, #6a00cc 100%);
 }
 
 .job-apply:active {
-  background: #8B00FF;
-  transform: translateY(0);
+  background: linear-gradient(135deg, #8B00FF 0%, #6a00cc 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(139, 0, 255, 0.4);
 }
 
+.job-apply:disabled {
+  background: #cccccc;
+  transform: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: not-allowed;
+}
+
+.job-apply::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.job-apply:hover::before {
+  left: 100%;
+}
 
 .modal-overlay {
   position: fixed;
@@ -272,7 +304,6 @@
   background: #fff5f5;
 }
 
-
 .application-form {
   padding: 24px;
 }
@@ -320,40 +351,61 @@
   margin-top: 24px;
 }
 
+/* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ КНОПКИ ОТПРАВКИ */
 .submit-button {
   width: 100%;
-  background: #62A744;
+  background: linear-gradient(135deg, #62a744 0%, #8bc34a 100%);
   color: white;
   border: none;
   padding: 16px;
-  border-radius: 12px;
+  border-radius: 50px;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   font-family: 'Montserrat', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  box-shadow: 0 8px 25px rgba(98, 167, 68, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .submit-button:hover:not(:disabled) {
-  background: #558c3a;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(98, 167, 68, 0.4);
+  background: linear-gradient(135deg, #8B00FF 0%, #6a00cc 100%);
 }
 
 .submit-button:active:not(:disabled) {
-  background: #8B00FF;
-  transform: translateY(0);
+  background: linear-gradient(135deg, #8B00FF 0%, #6a00cc 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(139, 0, 255, 0.4);
 }
 
 .submit-button:disabled {
-  background: #ccc;
+  background: #cccccc;
   cursor: not-allowed;
   transform: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+.submit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.submit-button:hover:not(:disabled)::before {
+  left: 100%;
+}
 
 .spinner {
   width: 20px;
@@ -363,7 +415,6 @@
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-
 
 .success-message {
   padding: 40px 24px;
@@ -419,7 +470,6 @@
   transform: translateY(-2px);
 }
 
-
 .jobs-cta {
   background: linear-gradient(135deg, #62A744 0%, #325026 100%);
   border-radius: 20px;
@@ -458,27 +508,54 @@
   border: 2px solid white;
 }
 
+/* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ CTA КНОПКИ */
 .cta-button.primary {
   background: white;
   color: #62A744;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
-.cta-button.primary:active {
+.cta-button.primary:hover {
   background: #8B00FF;
   border-color: #8B00FF;
   color: white;
-  transform: translateY(0);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(139, 0, 255, 0.4);
+}
+
+.cta-button.primary:active {
+  background: #6a00cc;
+  border-color: #6a00cc;
+  transform: translateY(-1px);
+}
+
+.cta-button.primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.cta-button.primary:hover::before {
+  left: 100%;
 }
 
 .cta-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
-
-.cta-button.primary:hover {
-  background: #f8f8f8;
-}
-
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -513,7 +590,6 @@
   }
 }
 
-
 @media (min-width: 768px) {
   .jobs-container {
     padding: 40px 32px;
@@ -544,16 +620,7 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .job-card,
-  .modal-content,
-  .submit-button,
-  .spinner {
-    transition: none;
-    animation: none;
-  }
-}
-jobs-section {
+.jobs-section {
   opacity: 0;
   transform: translateY(30px);
   transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -564,17 +631,10 @@ jobs-section {
   transform: translateY(0);
 }
 
-.job-card {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
 .jobs-section.visible .job-card {
   opacity: 1;
   transform: translateY(0);
 }
-
 
 .jobs-section.visible .jobs-header {
   animation: fadeInUp 0.6s ease 0.2s both;
@@ -592,14 +652,12 @@ jobs-section {
   animation: fadeInUp 0.6s ease 0.8s both;
 }
 
-
 .jobs-section.visible .job-card:nth-child(1) { animation-delay: 0.7s; }
 .jobs-section.visible .job-card:nth-child(2) { animation-delay: 0.8s; }
 .jobs-section.visible .job-card:nth-child(3) { animation-delay: 0.9s; }
 .jobs-section.visible .job-card:nth-child(4) { animation-delay: 1.0s; }
 .jobs-section.visible .job-card:nth-child(5) { animation-delay: 1.1s; }
 .jobs-section.visible .job-card:nth-child(6) { animation-delay: 1.2s; }
-
 
 @keyframes fadeInUp {
   from {
@@ -612,7 +670,6 @@ jobs-section {
   }
 }
 
-
 .job-card,
 .stat-item,
 .cta-button,
@@ -620,19 +677,45 @@ jobs-section {
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-
 .job-card:hover,
 .stat-item:hover {
   transform: translateY(-8px);
 }
 
+/* АДАПТИВНОСТЬ ДЛЯ КНОПОК */
+@media (max-width: 768px) {
+  .job-apply {
+    padding: 14px 28px;
+    font-size: 15px;
+    max-width: 180px;
+  }
+  
+  .cta-button.primary {
+    padding: 12px 28px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .job-apply {
+    padding: 12px 24px;
+    font-size: 14px;
+    max-width: 160px;
+  }
+  
+  .cta-button.primary {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .jobs-section,
   .job-card,
   .stat-item,
   .cta-button,
-  .submit-button {
+  .submit-button,
+  .job-apply {
     transition: none;
     animation: none;
   }
@@ -646,8 +729,13 @@ jobs-section {
     opacity: 1;
     transform: translateY(0);
   }
+  
+  .job-apply::before,
+  .submit-button::before,
+  .cta-button.primary::before {
+    display: none;
+  }
 }
-
 
 .breadcrumb {
   display: flex;
