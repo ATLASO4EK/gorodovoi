@@ -2,7 +2,27 @@ version: "3.9"
 
 services:
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      # - "31.31.197.48:8000:8000"
       - "8000:8000"
+    networks:
+      - smolathon
+
+  frontend:
+    build:
+      context: ./src/smolensk-codd
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    networks:
+      - smolathon
+
+networks:
+  smolathon:
+    driver: bridge
+
+
