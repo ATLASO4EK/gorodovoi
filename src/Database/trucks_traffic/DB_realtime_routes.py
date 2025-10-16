@@ -9,9 +9,9 @@ def get_routes(
         return False, e
 
     if identificator is not None:
-        query = f"SELECT * FROM tracks_traffic.coords WHERE identificator='{identificator}'"
+        query = f"SELECT * FROM tracks_traffic.realtime_routes WHERE identificator='{identificator}'"
     elif identificator is None:
-        query = 'SELECT * FROM tracks_traffic.coords'
+        query = 'SELECT * FROM tracks_traffic.realtime_routes'
     else:
         return False, 'Bad Request: Incorrect or missing args'
 
@@ -35,7 +35,18 @@ def post_route(
     except Exception as e:
         return False, e
 
-    data = (identificator, route)
+    try:
+        route_str = ''
+        for i in range(len(route)):
+            if i != len(route)-1:
+                route_str += str(route[i])
+                route_str += ','
+            else:
+                route_str += str(route[i])
+    except Exception as e:
+        return False, e
+
+    data = (identificator, route_str)
     query = 'INSERT INTO tracks_traffic.realtime_routes (identificator, route) VALUES (%s, %s);'
 
     try:
@@ -58,12 +69,23 @@ def put_route(
     except Exception as e:
         return False, e
 
+    try:
+        route_str = ''
+        for i in range(len(route)):
+            if i != len(route)-1:
+                route_str += str(route[i])
+                route_str += ','
+            else:
+                route_str += str(route[i])
+    except Exception as e:
+        return False, e
+
     query = ("UPDATE tracks_traffic.realtime_routes "
              "SET "
              "route = %s "
              "WHERE "
              "identificator = %s;")
-    data = (route, identificator)
+    data = (route_str, identificator)
 
     try:
         cur.execute(query, data)

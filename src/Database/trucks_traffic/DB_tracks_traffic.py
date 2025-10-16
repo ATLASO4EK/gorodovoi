@@ -33,7 +33,7 @@ def post_detector(name:str,
         return False, e
 
     data = (name, lat, lon)
-    query = 'INSERT INTO tracks_traffic.coords (name, lat, lon) VALUES (%s, %s, %s);'
+    query = 'INSERT INTO tracks_traffic.coords (name, latitude, longitude) VALUES (%s, %s, %s);'
 
     try:
         cur.execute(query, data)
