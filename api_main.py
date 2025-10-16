@@ -15,6 +15,7 @@ from src.API.tracks_traffic_analytics.handlers_tracks_traffic import *
 from src.API.tracks_traffic_analytics.handlers_detections import *
 from src.API.tracks_traffic_analytics.handlers_realtime_routes import *
 from src.API.tracks_traffic_analytics.handlers_coop_movement import *
+from src.API.tracks_traffic_analytics.handlers_clustering import *
 
 from src.API.ML_handlers.ML_handlers import *
 
