@@ -25,3 +25,29 @@ def get_detectors_api():
     except Exception as e:
         print(e)
         return jsonify(str(e)), 500
+
+@app.route('/api/v1/tracks_traffic/detectors', methods=['POST'])
+def post_detector_api():
+    try:
+        name = str(request.args.get('name'))
+        lat = float(request.args.get('lat'))
+        lon = float(request.args.get('lon'))
+    except Exception as e:
+        print(e)
+        return jsonify(str(e)), 400
+
+    try:
+        suc, data= post_detector(name=name,
+                      lat=lat,
+                      lon=lon)
+
+        if suc:
+            return jsonify(suc), 200
+        elif not suc:
+            return jsonify(str(data)), 500
+        else:
+            return jsonify('Unexpected error occurred'), 500
+
+    except Exception as e:
+        print(e)
+        return jsonify(str(e)), 500
