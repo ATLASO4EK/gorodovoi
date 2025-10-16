@@ -4,8 +4,7 @@ from telebot import asyncio_filters
 from callback_data import *
 import requests, json
 import pandas as pd
-from src.config import get_api
-from src.Database.tg_bot.DB_tg_users import getTg
+from config import get_api
 
 import datetime
 

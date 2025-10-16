@@ -6,8 +6,7 @@ from telebot import types
 from message_handler import main_page
 from datetime import datetime as dt
 import pandas as pd
-from src.API.private_info_handlers.handlers_tg import *
-from src.config import get_api
+from config import get_api
 from states import MyStates
 from telebot.types import ReplyParameters
 from datetime import datetime

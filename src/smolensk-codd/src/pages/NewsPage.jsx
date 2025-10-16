@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './../styles/newsPage.css';
+import './../styles/NewsPage.css';
 
 function NewsPage({ onNewsUpdate, news }) {
   const [isVisible, setIsVisible] = useState(false);
