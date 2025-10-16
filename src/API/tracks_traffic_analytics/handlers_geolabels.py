@@ -1,6 +1,5 @@
 from src.API.app import app
 from flask import  request, jsonify
-import datetime
 
 from src.Database.trucks_traffic.DB_tracks_traffic import get_detectors, post_detector
 
