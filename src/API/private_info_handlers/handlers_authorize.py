@@ -1,7 +1,7 @@
 from src.API.app import app
 from flask import  request, jsonify
 
-from src.config import getAdm, getEditor
+from config import getAdm, getEditor
 
 # Функция входа
 @app.route('/api/v1/auth', methods=['GET'])
