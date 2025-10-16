@@ -12,10 +12,15 @@
 - [Стек](#стек)
 - [О нас](#о-нас)
 - [Основные ссылки](#основные-ссылки)
-- [Telegramm-bot](#telegramm-bot)
-  - [Описание](#описание)
-  - [Функционал](#текущий-функционал-бота)
-  - [Пример работы с ботом](#пример-дизайна-бота-и-работы-с-ботом)
+- [Telegramm боты](#telegramm-боты)
+  - [Публичный бот](#публичный-бот)
+    - [Описание](#описание)
+    - [Функционал](#текущий-функционал-бота)
+    - [Пример работы с ботом](#пример-дизайна-бота-и-работы-с-ботом)
+- [Закрытый бот](#закрытый-бот)
+    - [Описание](#описание-1)
+    - [Функционал](#текущий-функционал-бота-1)
+    - [Пример работы с ботом](#пример-дизайна-бота-и-работы-с-ботом-1)
 - [БД](#бд)
   - [Ключевые таблицы](#ключевые-таблицы)
   - [Ограничения](#ограничения)
@@ -23,15 +28,19 @@
 - [API](#api)
   - [Описание](#описание-api)
   - [Документация](#документация)
----
+
 ## Основные ссылки
+### Отборочный этап
+Ссылка на наш сайт (Отборочный этап) *[тык](http://45.144.177.53:5173/)*\
+Скринкаст нашего сайта (Отборочный этап) *[тык](https://disk.yandex.ru/i/5aENyup_3thmYA)*\
+Разработанный нами брендбук (Отборочный этап) *[тык](https://disk.yandex.ru/d/XjSgSAr2WKsjbw)*\
+Презентация нашего проекта (Отборочный этап) *[тык](https://disk.yandex.ru/d/A-PjiOeT9nbeWA)*
 
-Ссылка на наш сайт *[тык](http://45.144.177.53:5173/)*\
-Скринкаст нашего сайта *[тык](https://disk.yandex.ru/i/5aENyup_3thmYA)*\
-Разработанный нами брендбук *[тык](https://disk.yandex.ru/d/XjSgSAr2WKsjbw)*\
-Презентация нашего проекта *[тык](https://disk.yandex.ru/d/A-PjiOeT9nbeWA)*
+### Финал
+Ссылка на наш сайт (Финал) *[тык](http://45.144.177.53:5173/)*\
+Скринкаст нашего сайта (Финал) *[тык]()*\
+Презентация нашего проекта (Финал) *[тык]()*
 
----
 ## Стек
 ![](https://img.shields.io/badge/Python_3.10-darkred)
 ![](https://img.shields.io/badge/sckit-moccasin)
@@ -45,7 +54,7 @@
 ![](https://img.shields.io/badge/ReCharts-khaki)\
 ![](https://img.shields.io/badge/PostgreSQL-red)\
 ![](https://img.shields.io/badge/Docker-coral)
----
+
 ## О нас
 Мы команда энтузиастов и специалистов в области искусственного интеллекта и разработки ПО:
 | Имя | GitHub | Роль | Задачи |
@@ -56,27 +65,40 @@
 | Серикова Анастасия | [moreiwi](https://github.com/moreiwi "Серикова Анастасия") | Frontend-разработчик | 	Figma, Photoshop |
 | Ведерников Артём | [1Evgesha1](https://github.com/1Evgesha1 "Ведерников Артём") | Backend-разработчик | TG-bot, ML |
 
----
-## Telegramm-bot
-### Описание
-Нами был разработан телеграмм-бот, как еще один интерфейс 
+
+## Telegramm боты
+### Публичный бот
+#### Описание
+Нами был разработан публичный телеграмм-бот, как еще один интерфейс 
 взаимодействия с платформой для простых пользователей, 
 но с возможностью расширения и для администрирования платформой, а также редакцией раздела новостей.\
 Бот был разработан для повышения качества опыта работы с платформой простых пользователей (в планах и администраторов)\
 
-### Текущий функционал бота:
+#### Текущий функционал бота:
 - Включение\отключение оповещений о пробках
 - Просмотр прогноза пробок
 - Просмотр последних 2 новостей от ЦОДД Смоленской области
 - Сбор отзывов о платформе ЦОДД Смоленской области
 
-### Пример дизайна бота и работы с ботом:
+#### Пример дизайна бота и работы с ботом:
 [![image.png](https://i.postimg.cc/P5FhC8Yc/image.png)](https://postimg.cc/21vgJyHF)\
 [![image.png](https://i.postimg.cc/G2Cftc7J/image.png)](https://postimg.cc/LqxD0MMn)\
 [![image.png](https://i.postimg.cc/L8gQVqGC/image.png)](https://postimg.cc/4YZ1f3fV)\
 [![image.png](https://i.postimg.cc/wBd2cwXy/image.png)](https://postimg.cc/VJDXzBHm)\
 [![image.png](https://i.postimg.cc/8kFyGfP2/image.png)](https://postimg.cc/Th6jqwb0)
----
+
+### Закрытый бот
+#### Описание
+Нами был разработан закрытый телеграмм-бот, как еще один интерфейс 
+взаимодействия с платформой для операторов\
+
+#### Текущий функционал бота:
+- Авторизация
+- Получение данных
+
+#### Пример дизайна и работы с ботом:
+
+
 ## БД
 ### Ключевые таблицы
 Схема city_ops:
@@ -164,7 +186,7 @@ erDiagram
       numeric deaths_per_100_victims
     }
 ```
----
+
 ## API
 ### Описание API
 Для повышения модульности проекта и дальнейшей его 
@@ -172,7 +194,7 @@ erDiagram
 
 ### Документация
 
-Раздел /api/v1/
+Раздел `/api/v1/`
 
 `jams`
 - GET `jams`\
@@ -373,3 +395,85 @@ service = string, услуга\
 add_info = string, дополнительная информация/сопроводительное письмо (опционально)\
 ischecked = bool, проверенно ли человеком заявление (опционально, по умолчанию - False)\
 _**Возвращает**_:
+
+---
+Раздел `/api/v1/tracks_traffic`
+
+`detectors`
+- GET `detectors`\
+_**Принимает**_:\
+name - string, название детектора, пример: 'D1' (опционально)\
+_**Возвращает**_:\
+tuple(bool (True, если функция выполнена успешна, False, если с ошибкой), Exception (если False) or list[tuple(id(int), name(string), latitude(float), longitude(float))])
+
+
+- POST `detectors`\
+_**Принимает**_:\
+name - string, название детектора, пример: 'D1'\
+lat - float, географическая широта\
+lon - float, географическая долгота\
+_**Возвращает**_:\
+tuple(bool (True, если функция выполнена успешна, False, если с ошибкой), None (если True) or Exception (если False))
+
+  
+`realtime_routes`
+- GET `realtime_routes`\
+_**Принимает**_:\
+identificator - string, номер машины (грз), пример: 'А001АА' (опционально)\
+_**Возвращает**_:\
+tuple(bool (True, если функция выполнена успешна, False, если с ошибкой), Exception (если False) or list[tuple(id(int), identificator(string), route(string))])
+
+
+`detections`
+- POST `detections`\
+_**Принимает**_:\
+detector - string, название детектора, пример: 'D1'\
+identificator - string, номер машины (грз), пример: 'А001АА'\
+speedtime - float, скорость при прохождении детектора в км/ч\
+_**Возвращает**_:\
+tuple(bool (True, если функция выполнена успешна, False, если с ошибкой), None (если True) or Exception (если False))
+
+
+`coop_analytics`
+- GET `coop_analytics`\
+_**Принимает**_:\
+identificator - string, номер машины (грз), пример: 'А001АА'\
+min_nodes - integer, минимальное количество совпадающих детекторов на маршрутах (опционально, по умолчанию: 1)\
+_**Возвращает**_:\
+{'count_detectors': количество детекторов на пути,
+'matching_identificators': номера машин, пути которых совпадают с выбранной,
+'time_spent_seconds': время проезда машинами вместе, в СЕКУНДАХ}
+
+
+`clustering`
+- GET `clustering`\
+_**Принимает**_:\
+start - string, время начала периода указанное в формате 'YYYY-MM-DD-HH-MM-SS'\
+end = string, время конца периода указанное в формате 'YYYY-MM-DD-HH-MM-SS'\
+top_n = int(request.args.get("top_n", 10))\
+eps = float(request.args.get("eps", 0.0005))\
+sim = float(request.args.get("similarity_threshold", 0.65))\
+_**Возвращает**_:\
+results.append({
+                "route": route_str,
+                "vehicles_count": vehicles,
+                "intensity_per_hour": intensity,
+                "avg_speed": avg_speed,
+                "avg_travel_time_sec": avg_time,
+            })
+
+
+- GET `clustering-pair`\
+_**Принимает**_:\
+start_a - string, время начала периода1 указанное в формате 'YYYY-MM-DD-HH-MM-SS'\
+start_b - string, время начала периода2 указанное в формате 'YYYY-MM-DD-HH-MM-SS'\
+end_a = string, время конца периода1 указанное в формате 'YYYY-MM-DD-HH-MM-SS'\
+end_b = string, время конца периода2 указанное в формате 'YYYY-MM-DD-HH-MM-SS'\
+top_n = int(request.args.get("top_n", 10))\
+eps = float(request.args.get("eps", 0.0005))\
+sim = float(request.args.get("similarity_threshold", 0.65))\
+_**Возвращает**_:\
+return {
+    "A": {"start": start_a.isoformat(), "end": end_a.isoformat(), "top": top_a},
+    "B": {"start": start_b.isoformat(), "end": end_b.isoformat(), "top": top_b},
+}
