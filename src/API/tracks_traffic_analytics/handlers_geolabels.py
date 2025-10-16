@@ -2,9 +2,9 @@ from src.API.app import app
 from flask import  request, jsonify
 import datetime
 
-from src.Database.trucks_traffic.DB_trucks_traffic import get_detectors, post_detector
+from src.Database.trucks_traffic.DB_tracks_traffic import get_detectors, post_detector
 
-@app.route('/api/v1/trucks_traffic/detectors')
+@app.route('/api/v1/tracks_traffic/detectors', methods=['GET'])
 def get_detectors_api():
     try:
         name = str(request.args.get('name')) if request.args.get('name') is not None else None
