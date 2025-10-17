@@ -11,6 +11,8 @@ from src.API.private_info_handlers.handlers_reviews import *
 from src.API.private_info_handlers.handlers_authorize import *
 from src.API.private_info_handlers.handlers_responses import *
 
+from src.API.private_tg.handlers_private_tg import *
+
 from src.API.tracks_traffic_analytics.handlers_tracks_traffic import *
 from src.API.tracks_traffic_analytics.handlers_detections import *
 from src.API.tracks_traffic_analytics.handlers_realtime_routes import *
