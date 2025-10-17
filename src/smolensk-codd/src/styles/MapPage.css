@@ -1,360 +1,339 @@
 .map-page {
-  font-family: 'Montserrat', sans-serif;
-  min-height: 100vh;
-  padding: 2rem;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabs button {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.tabs button:hover {
+  color: #333;
+  background-color: #f8f9fa;
+}
+
+.tabs button.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+  background-color: #f8f9fa;
+}
+
+.scenario-content {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.controls {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.time-controls {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.vehicle-controls {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.controls input,
+.controls select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.load-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  height: fit-content;
+}
+
+.load-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.load-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+}
+
+.analysis-results {
+  margin: 20px 0;
+  padding: 20px;
   background: #f8f9fa;
+  border-radius: 8px;
 }
 
-.map-page.visible {
-  opacity: 1;
-  transform: translateY(0);
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
 }
 
-/* === Заголовок === */
-.map-stats {
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
   text-align: center;
-  margin-bottom: 3rem;
-  animation: fadeInUp 0.6s ease 0.2s both;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 5px;
 }
 
 .stat-label {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #2d5016;
-  margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-}
-
-/* === Основной контент === */
-.map-content {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
-  align-items: start;
-  animation: fadeInUp 0.6s ease 0.4s both;
-}
-
-/* === Левая часть - Карта Смоленска === */
-.map-container {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 2rem;
-  min-height: 600px;
-  box-shadow: 0 8px 30px rgba(98, 167, 68, 0.12);
-  border: 2px solid #e8f5e8;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.map-container:hover {
-  border-color: #62a744;
-  box-shadow: 0 12px 40px rgba(98, 167, 68, 0.15);
-}
-
-.smolensk-map {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.map-placeholder {
-  text-align: center;
-  padding: 2rem;
   color: #666;
-  width: 100%;
+  font-size: 14px;
 }
 
-.map-placeholder h3 {
-  font-size: 1.8rem;
-  color: #2d5016;
-  margin-bottom: 1rem;
-  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+.matching-vehicles {
+  margin-top: 20px;
 }
 
-.map-placeholder p {
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  color: #555;
+.vehicles-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.map-image {
-  width: 100%;
-  max-width: 600px;
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.map-image:hover {
-  transform: scale(1.02);
-}
-
-/* === Правая часть - Топ маршрутов === */
-.top-routes-sidebar {
+.vehicle-tag {
   background: white;
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 8px 30px rgba(98, 167, 68, 0.12);
-  border: 2px solid #e8f5e8;
-  height: fit-content;
-  position: sticky;
-  top: 2rem;
-  animation: fadeInUp 0.6s ease 0.6s both;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.top-routes-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2d5016;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #e8f5e8;
+.routes-section {
+  margin: 20px 0;
 }
 
-.top-routes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.top-route-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.2rem;
-  background: #f8f9fa;
-  border-radius: 12px;
-  border-left: 4px solid #62a744;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.top-route-item:hover {
-  background: #e8f5e8;
-  transform: translateX(5px);
-  box-shadow: 0 4px 12px rgba(98, 167, 68, 0.15);
-}
-
-.route-rank {
-  background: #62a744;
-  color: white;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  font-weight: 700;
-  min-width: 70px;
-  text-align: center;
-  font-size: 1.1rem;
-  box-shadow: 0 2px 8px rgba(98, 167, 68, 0.3);
-}
-
-.route-info {
-  flex: 1;
-}
-
-.route-title {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
+.routes-section h3 {
+  margin-bottom: 15px;
   color: #333;
-  line-height: 1.4;
 }
 
-.route-location {
-  margin: 0.3rem 0 0 0;
-  color: #666;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
+.table-container {
+  overflow-x: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.no-routes {
-  text-align: center;
-  color: #666;
-  padding: 3rem 1rem;
-  font-style: italic;
+.routes-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 14px;
 }
 
-/* === Анимации === */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.routes-table th,
+.routes-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.routes-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
 }
 
-/* === Адаптивность === */
-@media (max-width: 1024px) {
-  .map-content {
-    grid-template-columns: 1.5fr 1fr;
-    gap: 1.5rem;
-  }
-  
-  .stat-label {
-    font-size: 2.2rem;
-  }
+.routes-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.color-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+
+.map-container {
+  height: 600px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Leaflet popup styles */
+.leaflet-popup-content {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+}
+
+.leaflet-popup-content strong {
+  color: #333;
+}
+
+.leaflet-popup-content h4 {
+  margin: 0 0 10px 0;
+  color: #007bff;
 }
 
 @media (max-width: 768px) {
   .map-page {
-    padding: 1rem;
+    padding: 10px;
   }
   
-  .map-content {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .stat-label {
-    font-size: 1.8rem;
-  }
-  
-  .map-container {
-    padding: 1.5rem;
-    min-height: 400px;
-  }
-  
-  .top-routes-sidebar {
-    position: static;
-    padding: 1.5rem;
-  }
-  
-  .map-placeholder h3 {
-    font-size: 1.5rem;
-  }
-  
-  .map-placeholder p {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .map-page {
-    padding: 0.5rem;
-  }
-  
-  .stat-label {
-    font-size: 1.5rem;
-  }
-  
-  .map-container {
-    padding: 1rem;
-    min-height: 300px;
-  }
-  
-  .top-routes-sidebar {
-    padding: 1rem;
-  }
-  
-  .top-route-item {
-    padding: 1rem;
+  .tabs {
     flex-direction: column;
+  }
+  
+  .tabs button {
+    width: 100%;
     text-align: center;
-    gap: 0.8rem;
   }
   
-  .route-rank {
-    min-width: 60px;
-    font-size: 1rem;
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
   }
   
-  .map-placeholder {
-    padding: 1rem;
+  .time-controls,
+  .vehicle-controls {
+    flex-direction: column;
   }
   
-  .map-placeholder h3 {
-    font-size: 1.3rem;
+  .controls input,
+  .controls select {
+    min-width: auto;
   }
   
-  .map-placeholder p {
-    font-size: 0.9rem;
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .map-container {
+    height: 400px;
+  }
+  
+  .routes-table {
+    font-size: 12px;
+  }
+  
+  .routes-table th,
+  .routes-table td {
+    padding: 8px;
   }
 }
 
-/* === Стили для состояния загрузки === */
-.loading-map {
+.vehicle-item {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 3rem;
+  padding: 8px 12px;
+  margin: 4px 0;
+  background: white;
+  border-radius: 4px;
+  border-left: 4px solid #007bff;
+}
+
+.vehicle-tag {
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.vehicle-stats {
+  font-size: 12px;
   color: #666;
 }
 
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e8f5e8;
-  border-top: 3px solid #62a744;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* === Стили для ошибки === */
-.map-error {
+.vehicle-more {
   text-align: center;
-  padding: 3rem 2rem;
+  padding: 8px;
   color: #666;
+  font-style: italic;
 }
 
-.retry-button {
-  background: #62a744;
-  color: white;
+.matching-vehicles {
+  margin-top: 20px;
+}
+
+.matching-vehicles h4 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.vehicles-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.custom-marker {
+  background: transparent;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.retry-button:hover {
-  background: #8B00FF;
-  transform: translateY(-2px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .map-page,
-  .top-route-item,
-  .map-image {
-    transition: none;
-    animation: none;
-  }
-  
-  .map-page.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  font-size: 20px;
 }
