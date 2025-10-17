@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Montserrat:wght@300;400;500;600;700&display=swap');
-
 html, body {
   margin: 0;
   padding: 0;
@@ -15,7 +13,7 @@ body.modal-open {
 
 .news-section {
   padding: 60px 0;
-  background: linear-gradient(135deg, #f8fff8 0%, #ffffff 100%);
+  background:  #ffffff 100%;
   min-height: 100vh;
   font-family: 'Montserrat', sans-serif;
   margin-top: 90px;
@@ -39,11 +37,12 @@ body.modal-open {
 .news-title {
   font-size: 64px;
   font-weight: 400;
-  font-family: 'Tenor Sans', sans-serif;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
   color: #62a744;
   margin-bottom: 20px;
   text-align: center;
   line-height: 1.2;
+  font-weight: 800;
 }
 
 .news-subtitle {
@@ -169,7 +168,6 @@ body.modal-open {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -179,14 +177,12 @@ body.modal-open {
 }
 
 .news-modal {
-  background: white;
   border-radius: 20px;
   max-width: 800px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: modalAppear 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -195,7 +191,6 @@ body.modal-open {
   top: 20px;
   right: 20px;
   background: #62a744;
-  color: white;
   border: none;
   width: 40px;
   height: 40px;
@@ -231,7 +226,6 @@ body.modal-open {
 }
 
 .modal-image-placeholder {
-  color: white;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -254,7 +248,7 @@ body.modal-open {
   color: #333;
   margin-bottom: 20px;
   line-height: 1.3;
-  font-family: 'Tenor Sans', sans-serif;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
 .modal-meta {
@@ -262,7 +256,6 @@ body.modal-open {
   gap: 20px;
   margin-bottom: 25px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #f0f0f0;
   flex-wrap: wrap;
 }
 
@@ -456,8 +449,8 @@ body.modal-open {
 }
 
 .editor-open-button {
-  background: #8B00FF;
-  color: white;
+  background: #62A744;
+  color: #ffffff;
   border: none;
   padding: 12px 20px;
   border-radius: 8px;
@@ -468,7 +461,7 @@ body.modal-open {
 }
 
 .editor-open-button:hover {
-  background: #62a744;
+  background: #8B00FF;
   transform: translateY(-2px);
 }
 

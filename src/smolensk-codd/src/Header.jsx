@@ -1,57 +1,56 @@
-// src/components/Header.jsx
-import React, { useState } from 'react'
-import './Header.css'
+/* Хэдер/Навигация */
+/* ! За сами переходы отвечает App.jsx ! */
 
-/**
- * Компонент шапки сайта ЦОДД
- * @param {Function} setCurrentPage - Функция для изменения текущей страницы
- */
-const Header = ({ setCurrentPage }) => {
-  // Состояние для управления мобильным меню
+import { useState } from 'react'
+import './styles/Header.css'
+
+const Header = ({ setCurrentPage, isAdmin, onLoginClick, onLogoutClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  /**
-   * Переключение состояния мобильного меню
-   */
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
 
-  /**
-   * Обработчик навигации по страницам
-   * @param {string} page - Ключ целевой страницы
-   */
   const handleNavigation = (page) => {
-    // Особый случай для страницы "Сервис" - плавный скролл к секции
     if (page === 'services') {
-      setCurrentPage('home');
-      
-      // Задержка для гарантированной загрузки домашней страницы
+      setCurrentPage('home')
       setTimeout(() => {
-        const servicesSection = document.getElementById('services-section');
+        const servicesSection = document.getElementById('services-section')
         if (servicesSection) {
-          servicesSection.scrollIntoView({ 
+          servicesSection.scrollIntoView({
             behavior: 'smooth',
             block: 'center'
-          });
+          })
         }
-      }, 100);
+      }, 100)
     } else {
-      // Стандартная навигация для других страниц
-      setCurrentPage(page);
+      setCurrentPage(page)
     }
-    // Закрываем меню после навигации
-    setIsMenuOpen(false);
+    setIsMenuOpen(false)
   }
 
-  // Основные пункты меню для десктопной версии
+  // Функция для выхода с автоматическим перенаправлением
+  const handleLogout = () => {
+    // Получаем текущую страницу
+    const currentPage = window.location.pathname || 'home'
+    
+    // Если находимся на страницах, доступных только админу, перенаправляем на главную
+    const adminOnlyPages = ['monitoring', 'news-editor', 'banners-editor', 'services-editor'] // добавьте сюда все страницы редактора
+    
+    if (adminOnlyPages.some(page => currentPage.includes(page))) {
+      setCurrentPage('home')
+    }
+    
+    // Вызываем оригинальную функцию выхода
+    onLogoutClick()
+    setIsMenuOpen(false)
+  }
+
   const mainMenuItems = [
     { name: 'Главная', page: 'home' },
-    { name: 'Мониторинг и аналитика', page: 'monitoring' },
     { name: 'Сервис', page: 'services' }
   ]
 
-  // Дополнительные пункты меню для мобильной версии
   const additionalMenuItems = [
     { name: 'О ЦОДД', page: 'about' },
     { name: 'Команда', page: 'team' },
@@ -64,20 +63,19 @@ const Header = ({ setCurrentPage }) => {
     { name: 'Услуги', page: 'services-list' }
   ]
 
+  if (isAdmin) {
+    mainMenuItems.push({name: 'Мониторинг и аналитика', page: 'monitoring'})
+    additionalMenuItems.push({ name: 'Карта', page: 'map' })
+  }
+
   return (
     <header className="header">
       <nav className="nav">
         <div className="nav-content">
-          {/* Логотип */}
           <div className="logo">
-            <img 
-              src="./public/logo.png" 
-              alt="Логотип ЦОДД" 
-              className="logo-img" 
-            /> 
+            <img src="public/logo.svg" alt="логотип ЦОДД" className="logo-img" /> 
           </div>
           
-          {/* Десктопное меню */}
           <div className="nav-buttons">
             {mainMenuItems.map((item, index) => (
               <button 
@@ -88,11 +86,22 @@ const Header = ({ setCurrentPage }) => {
                 {item.name}
               </button>
             ))}
+
+            {/* ✅ Кнопки доступа администратора */}
+            <div className="admin-buttons">
+              {isAdmin ? (
+                <button className="logout-button" onClick={handleLogout}>
+                  Выйти
+                </button>
+              ) : (
+                <button className="login-button" onClick={onLoginClick}>
+                  Вход
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Мобильное меню (бургер) */}
           <div className="burger-menu">
-            {/* Кнопка бургер-меню */}
             <button 
               className={`burger-button ${isMenuOpen ? 'active' : ''}`}
               onClick={toggleMenu}
@@ -103,9 +112,7 @@ const Header = ({ setCurrentPage }) => {
               <span></span>
             </button>
             
-            {/* Выпадающее меню */}
             <div className={`dropdown-menu ${isMenuOpen ? 'active' : ''}`}>
-              {/* Основные пункты для мобильной версии */}
               <div className="mobile-nav-buttons">
                 {mainMenuItems.map((item, index) => (
                   <button 
@@ -116,9 +123,20 @@ const Header = ({ setCurrentPage }) => {
                     {item.name}
                   </button>
                 ))}
+
+                <div className="mobile-admin-buttons">
+                  {isAdmin ? (
+                    <button className="dropdown-item logout-item" onClick={handleLogout}>
+                      Выйти из редактора
+                    </button>
+                  ) : (
+                    <button className="dropdown-item login-item" onClick={onLoginClick}>
+                      Вход для редактора
+                    </button>
+                  )}
+                </div>
               </div>
-    
-              {/* Дополнительные пункты меню */}
+
               {additionalMenuItems.map((item, index) => (
                 <button 
                   key={index} 

@@ -1,63 +1,75 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './../styles/ProjectsPage.css';
+import Exception from '../Exception';
 
 const ProjectsPage = () => {
   const [isVisible, setIsVisible] = useState(false);
-  
-  const projectsData = [
-    {
-      id: 1,
-      title: 'Национальный проект "Безопасные качественные дороги"',
-      description: 'Участие Смоленской области в федеральной программе ремонта дорог',
-      link: 'https://bkdrf.ru/region/smolenskaya-oblast',
-      icon: '🛣️'
-    },
-    {
-      id: 2,
-      title: 'Система фотовидеофиксации нарушений ПДД',
-      description: 'Развитие комплекса автоматической фиксации нарушений правил дорожного движения',
-      link: 'https://гибдд.рф/r/67/news',
-      icon: '📹'
-    },
-    {
-      id: 3,
-      title: 'Электронная парковка',
-      description: 'Внедрение системы платной парковки в центральной части города',
-      link: 'https://xn--90adear.xn--p1ai/parking',
-      icon: '🅿️'
-    },
-    {
-      id: 4,
-      title: 'Паспорта дорожной безопасности',
-      description: 'Разработка паспортов безопасности дорожного движения для образовательных учреждений',
-      link: 'https://гибдд.рф/social/passport',
-      icon: '🏫'
-    },
-    {
-      id: 5,
-      title: 'Программа "Детство без опасности"',
-      description: 'Обучение детей правилам безопасного поведения на дорогах',
-      link: 'https://xn--90adear.xn--p1ai/social/childhood',
-      icon: '👶'
-    },
-    {
-      id: 6,
-      title: 'Интеллектуальная транспортная система',
-      description: 'Внедрение умных светофоров и системы управления дорожным движением',
-      link: 'https://www.mintrans.ru/documents/4/153',
-      icon: '🚦'
-    }
-  ];
+  const [projectsData, setProjectsData] = useState([]);
+  const [hasError, setHasError] = useState(false);
+  const [ProjectComponent, setProjectComponent] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProjectSafely = async () => {
+      try {
+        const module = await import("../objects/Project.jsx");
+        if (isMounted) setProjectComponent(() => module.default);
+      } catch (error) {
+        console.error("Не удалось импортировать Project.jsx, используется Exception.jsx:", error);
+        try {
+          const fallbackModule = await import("../Exception.jsx");
+          if (isMounted) setProjectComponent(() => fallbackModule.default);
+        } catch (fallbackError) {
+          console.error("Ошибка при загрузке Exception.jsx как fallback:", fallbackError);
+          if (isMounted)
+            setProjectComponent(() => ({ message }) => (
+              <div style={{ padding: "2rem", textAlign: "center", color: "red" }}>
+                <h2>{message || "Ошибка: компонент Job недоступен"}</h2>
+              </div>
+            ));
+        }
+      }
+    };
+
+    loadProjectSafely();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setTimeout(() => setIsVisible(true), 100);
+
+    fetch('/src/assets/projectsData.json')
+      .then((res) => {
+        if (!res.ok) throw new Error('Файл не найден');
+        return res.json();
+      })
+      .then((data) => {
+        if (!data || !Array.isArray(data)) throw new Error('Некорректный формат JSON');
+        setProjectsData(data);
+      })
+      .catch((err) => {
+        console.warn('Ошибка загрузки проектов:', err.message);
+        setHasError(true);
+      });
   }, []);
 
   const handleProjectClick = (url) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
+  const hasProjects = projectsData && Array.isArray(projectsData) && projectsData.length > 0;
+
+  if (!ProjectComponent) {
+    return (
+      <div className="banners-container" style={{ textAlign: 'center', padding: '2rem' }}>
+        <p>Загрузка баннеров...</p>
+      </div>
+    );
+  }
   return (
     <div className={`projects-container ${isVisible ? 'visible' : ''}`}>
       <section className="projects-section">
@@ -67,31 +79,20 @@ const ProjectsPage = () => {
             Активные программы и инициативы по улучшению дорожной ситуации в Смоленске. 
             Мы работаем для вашего комфорта и безопасности на дорогах.
           </p>
-          
-          <div className="projects-grid">
-            {projectsData.map((project) => (
-              <div 
-                key={project.id} 
-                className="project-card"
-                onClick={() => handleProjectClick(project.link)}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => e.key === 'Enter' && handleProjectClick(project.link)}
-              >
-                <div className="project-icon-container">
-                  <span className="project-icon">{project.icon}</span>
-                </div>
-                <div className="project-card-content">
-                  <h3 className="project-card-title">{project.title}</h3>
-                  <p className="project-card-description">{project.description}</p>
-                  <div className="project-link">
-                    Перейти к проекту <span className="link-arrow">→</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
 
+          {hasError || !hasProjects ? (
+            <Exception message="Проекты временно недоступны. Попробуйте позже." />
+          ) : (
+            <div className="projects-grid">
+              {projectsData.map((project) => (
+                <ProjectComponent
+                  key={project.id}
+                  project={project}
+                  onClick={handleProjectClick}
+                />
+              ))}
+            </div>
+          )}
           <div className="projects-info">
             <p>Все проекты реализуются в рамках государственных программ и федерального законодательства</p>
           </div>
