@@ -19,3 +19,4 @@ def post_reviews(date:datetime.datetime,
     conn.close()
 
     return True
+print()

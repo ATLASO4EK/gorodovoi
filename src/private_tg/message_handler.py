@@ -12,6 +12,7 @@ async def welcome_page(message, state: StateContext):
     await bot.set_state(user_id=message.from_user.id, chat_id=message.chat.id, state=MyStates.user_id)
     await state.add_data(userid=message.from_user.id)
     await state.add_data(chatid=message.chat.id)
+    await state.add_data(min_nodes=3)
     await bot.send_message(message.chat.id,
                            text="Привет, это закрытый бот для анализа трафика, который пока что находится в публичном бета-тестировании,"
                                 " сейчас доступна регистрация по кнопке ниже", reply_markup=markup)

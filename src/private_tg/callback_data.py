@@ -81,6 +81,7 @@ async def infoaboutcar_plate(message: types.Message, state: StateContext):
         try:
             userid = int(data.get('userid'))
             chatid = int(data.get('chatid'))
+            min_nodes = int(data.get('min_nodes'))
         except Exception as e:
             print(e)
             await bot.send_message(text='Произошла непредвиденная ошибка,\n'
@@ -91,6 +92,28 @@ async def infoaboutcar_plate(message: types.Message, state: StateContext):
 
     url = f'{get_api()}tracks_traffic/coop_analytics'
 
-    await bot.send_message(chat_id=chatid, text='Арбуз')
+    try:
+        data = json.loads(requests.get(url, params={'identificator':plate, 'min_nodes':min_nodes}).content.decode('utf-8'))
+    except Exception as e:
+            print(e)
+            await bot.send_message(text='Не получилось отправить запрос на базу данных,\n'
+                                        'Попробуйте еще раз или чуть позже',
+                                   chat_id=message.chat.id)
+    try:
+        text = 'Номера машин с совпадающими путями:\n'+str(data['matching_identificators'])[:4096-len('Номера машин с совпадающими путями:\n')]
+
+        mkup = types.InlineKeyboardMarkup(row_width=3)
+        button_minus = types.InlineKeyboardButton(text='<', callback_data='123')
+        button_plus = types.InlineKeyboardButton(text='>', callback_data='123')
+        button_num = types.InlineKeyboardButton(text=str(min_nodes), callback_data='123')
+
+        mkup.add(button_minus, button_num, button_plus)
+        await bot.send_message(chat_id=chatid, text=text, reply_markup=mkup)
+    except Exception as e:
+        print(e)
+        await bot.send_message(text='Произошла непредвиденная ошибка,\n'
+                                    'Попробуйте использовать /start еще раз или чуть позже',
+                               chat_id=message.chat.id)
+        return
 
 
