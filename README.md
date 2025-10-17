@@ -404,7 +404,7 @@ _**Возвращает**_:
 _**Принимает**_:\
 name - string, название детектора, пример: 'D1' (опционально)\
 _**Возвращает**_:\
-tuple(bool (True, если функция выполнена успешна, False, если с ошибкой), Exception (если False) or list[tuple(id(int), name(string), latitude(float), longitude(float))])
+Exception (если False) or list[tuple(id(int), name(string), latitude(float), longitude(float))]
 
 
 - POST `detectors`\
@@ -413,7 +413,7 @@ name - string, название детектора, пример: 'D1'\
 lat - float, географическая широта\
 lon - float, географическая долгота\
 _**Возвращает**_:\
-tuple(bool (True, если функция выполнена успешна, False, если с ошибкой), None (если True) or Exception (если False))
+None or Exception
 
   
 `realtime_routes`
@@ -421,7 +421,7 @@ tuple(bool (True, если функция выполнена успешна, Fal
 _**Принимает**_:\
 identificator - string, номер машины (грз), пример: 'А001АА' (опционально)\
 _**Возвращает**_:\
-tuple(bool (True, если функция выполнена успешна, False, если с ошибкой), Exception (если False) or list[tuple(id(int), identificator(string), route(string))])
+Exception or list[tuple(id(int), identificator(string), route(string))]
 
 
 `detections`
@@ -431,8 +431,6 @@ detector - string, название детектора, пример: 'D1'\
 identificator - string, номер машины (грз), пример: 'А001АА'\
 speedtime - float, скорость при прохождении детектора в км/ч\
 _**Возвращает**_:\
-tuple(bool (True, если функция выполнена успешна, False, если с ошибкой), None (если True) or Exception (если False))
-
 
 `coop_analytics`
 - GET `coop_analytics`\
