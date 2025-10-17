@@ -106,6 +106,7 @@ async def infoaboutcar_plate(message: types.Message, state: StateContext):
         button_minus = types.InlineKeyboardButton(text='<', callback_data='123')
         button_plus = types.InlineKeyboardButton(text='>', callback_data='123')
         button_num = types.InlineKeyboardButton(text=str(min_nodes), callback_data='123')
+        buton_back = types.InlineKeyboardButton(text='Назад', callback_data='back')
 
         mkup.add(button_minus, button_num, button_plus)
         await bot.send_message(chat_id=chatid, text=text, reply_markup=mkup)
@@ -116,4 +117,6 @@ async def infoaboutcar_plate(message: types.Message, state: StateContext):
                                chat_id=message.chat.id)
         return
 
-
+@bot.callback_query_handler(func=lambda call: call.data == 'back')
+async def back(callback, state: StateContext):
+    pass
