@@ -665,3 +665,111 @@ input {
 .leaflet-routing-alt {
   display: none !important;
 }
+
+/* Стили для Сценария 4 - Сравнение периодов */
+.comparison-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.period-group {
+  background: #f8fbf8;
+  border: 2px solid #e8f5e8;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.period-group h4 {
+  margin: 0 0 15px 0;
+  color: #2d5016;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.comparison-results {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #e8f5e8;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 20px rgba(98, 167, 68, 0.08);
+}
+
+.comparison-legend {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #f8fbf8;
+  border-radius: 8px;
+  border: 1px solid #e8f5e8;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid #e8e8e8;
+}
+
+.comparison-tables {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.period-table h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2d5016;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+/* Адаптивность для сравнения периодов */
+@media (max-width: 1024px) {
+  .comparison-tables {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .comparison-controls {
+    gap: 20px;
+  }
+  
+  .period-group {
+    padding: 15px;
+  }
+  
+  .comparison-results {
+    padding: 20px;
+  }
+  
+  .comparison-legend {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .comparison-tables {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .comparison-results {
+    padding: 15px;
+  }
+  
+  .period-group {
+    padding: 12px;
+  }
+}
