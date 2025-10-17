@@ -1,252 +1,362 @@
+/* MapPage.css */
+
 .map-page {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  font-family: 'Montserrat', sans-serif;
+  padding-top: 80px; /* Отступ для навигации */
+  min-height: 100vh;
+  background: #f8fbf8;
 }
 
+/* Стили для табов */
 .tabs {
   display: flex;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #ddd;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+  padding: 0 20px;
 }
 
 .tabs button {
-  padding: 12px 24px;
-  background: none;
-  border: none;
-  border-bottom: 3px solid transparent;
-  cursor: pointer;
+  background: #ffffff;
+  border: 2px solid #e8f5e8;
+  padding: 16px 32px;
+  border-radius: 12px;
   font-size: 16px;
-  font-weight: 500;
-  color: #666;
-  transition: all 0.3s;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+  box-shadow: 0 4px 15px rgba(98, 167, 68, 0.08);
 }
 
 .tabs button:hover {
-  color: #333;
-  background-color: #f8f9fa;
+  border-color: #62a744;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(98, 167, 68, 0.15);
 }
 
 .tabs button.active {
-  color: #007bff;
-  border-bottom-color: #007bff;
-  background-color: #f8f9fa;
+  background: #62a744;
+  color: white;
+  border-color: #62a744;
+  box-shadow: 0 6px 20px rgba(98, 167, 68, 0.25);
 }
 
+/* Контент сценария */
 .scenario-content {
-  animation: fadeIn 0.3s ease-in;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px 40px 20px;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.scenario-content h2 {
+  font-size: 36px;
+  font-weight: 600;
+  color: #62a744;
+  margin: 0 0 30px 0;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+  text-align: center;
 }
 
+/* Контролы */
 .controls {
-  display: flex;
-  gap: 20px;
-  align-items: flex-end;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  padding: 20px;
-  background: #f5f5f5;
-  border-radius: 8px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #e8f5e8;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 20px rgba(98, 167, 68, 0.08);
 }
 
+.vehicle-controls,
 .time-controls {
   display: flex;
-  gap: 15px;
   flex-wrap: wrap;
-}
-
-.vehicle-controls {
-  display: flex;
-  gap: 15px;
-  align-items: flex-end;
-  flex-wrap: wrap;
+  gap: 25px;
+  align-items: end;
 }
 
 .controls label {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
   font-weight: 500;
-  font-size: 14px;
-}
-
-.controls input,
-.controls select {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  color: #333;
+  flex: 1;
   min-width: 200px;
 }
 
+.controls select,
+.controls input {
+  padding: 12px 16px;
+  border: 2px solid #e8f5e8;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.3s ease;
+  background: #ffffff;
+}
+
+.controls select:focus,
+.controls input:focus {
+  outline: none;
+  border-color: #62a744;
+  box-shadow: 0 0 0 3px rgba(98, 167, 68, 0.1);
+}
+
+.controls select:disabled,
+.controls input:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Кнопка загрузки */
 .load-button {
-  padding: 10px 20px;
-  background-color: #007bff;
+  background: #62a744;
   color: white;
   border: none;
-  border-radius: 4px;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+  min-width: 200px;
   height: fit-content;
 }
 
 .load-button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background: #8B00FF;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 0, 255, 0.3);
 }
 
 .load-button:disabled {
-  background-color: #6c757d;
+  background: #cccccc;
   cursor: not-allowed;
+  transform: none;
 }
 
+/* Сообщения об ошибках */
 .error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 12px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-  border: 1px solid #f5c6cb;
-}
-
-.analysis-results {
-  margin: 20px 0;
-  padding: 20px;
-  background: #f8f9fa;
+  background: #ffe6e6;
+  border: 2px solid #ffcccc;
+  color: #d63031;
+  padding: 16px 20px;
   border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 500;
 }
 
+/* Результаты анализа */
+.analysis-results {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #e8f5e8;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 20px rgba(98, 167, 68, 0.08);
+}
+
+.analysis-results h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2d5016;
+  margin: 0 0 25px 0;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+}
+
+/* Статистика */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin: 20px 0;
+  gap: 20px;
+  margin-bottom: 30px;
 }
 
 .stat-card {
-  background: white;
+  background: #f8fbf8;
+  border: 2px solid #e8f5e8;
+  border-radius: 12px;
   padding: 20px;
-  border-radius: 8px;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  border-color: #62a744;
+  transform: translateY(-2px);
 }
 
 .stat-value {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #007bff;
-  margin-bottom: 5px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #62a744;
+  margin-bottom: 8px;
 }
 
 .stat-label {
-  color: #666;
   font-size: 14px;
+  color: #666;
+  font-weight: 500;
 }
 
+/* Совпавшие автомобили */
 .matching-vehicles {
-  margin-top: 20px;
+  margin-top: 25px;
+}
+
+.matching-vehicles h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 15px 0;
 }
 
 .vehicles-list {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
-  margin-top: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.vehicle-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8fbf8;
+  border-radius: 8px;
+  border: 1px solid #e8f5e8;
+  transition: all 0.3s ease;
+}
+
+.vehicle-item:hover {
+  border-color: #62a744;
+  transform: translateX(5px);
 }
 
 .vehicle-tag {
-  background: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-weight: 500;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-weight: 600;
+  color: #333;
+  padding-left: 12px;
 }
 
+.vehicle-stats {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.vehicle-more {
+  text-align: center;
+  padding: 12px;
+  color: #62a744;
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* Таблица маршрутов */
 .routes-section {
-  margin: 20px 0;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #e8f5e8;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 20px rgba(98, 167, 68, 0.08);
 }
 
 .routes-section h3 {
-  margin-bottom: 15px;
-  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+  color: #2d5016;
+  margin: 0 0 25px 0;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
 .table-container {
   overflow-x: auto;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  border: 1px solid #e8f5e8;
 }
 
 .routes-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  font-size: 14px;
-}
-
-.routes-table th,
-.routes-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+  min-width: 600px;
 }
 
 .routes-table th {
-  background-color: #f8f9fa;
+  background: #f8fbf8;
+  padding: 16px 12px;
+  text-align: left;
   font-weight: 600;
-  position: sticky;
-  top: 0;
+  color: #2d5016;
+  border-bottom: 2px solid #e8f5e8;
+  font-size: 14px;
+}
+
+.routes-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e8f5e8;
+  color: #555;
 }
 
 .routes-table tr:hover {
-  background-color: #f8f9fa;
+  background: #f8fbf8;
 }
 
 .color-indicator {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 0 2px rgba(0,0,0,0.3);
+  border-radius: 4px;
+  border: 2px solid #e8f5e8;
 }
 
+/* Контейнер карты */
 .map-container {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #e8f5e8;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(98, 167, 68, 0.08);
   height: 600px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
   overflow: hidden;
-  margin-top: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Leaflet popup styles */
-.leaflet-popup-content {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 14px;
-}
-
-.leaflet-popup-content strong {
-  color: #333;
-}
-
-.leaflet-popup-content h4 {
-  margin: 0 0 10px 0;
-  color: #007bff;
+/* Адаптивность */
+@media (max-width: 1024px) {
+  .map-page {
+    padding-top: 70px;
+  }
+  
+  .scenario-content h2 {
+    font-size: 32px;
+  }
+  
+  .controls {
+    padding: 25px;
+  }
+  
+  .vehicle-controls,
+  .time-controls {
+    gap: 20px;
+  }
 }
 
 @media (max-width: 768px) {
   .map-page {
-    padding: 10px;
+    padding-top: 60px;
   }
   
   .tabs {
     flex-direction: column;
+    gap: 10px;
+    padding: 0 15px;
   }
   
   .tabs button {
@@ -254,27 +364,81 @@
     text-align: center;
   }
   
+  .scenario-content {
+    padding: 0 15px 30px 15px;
+  }
+  
+  .scenario-content h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
   .controls {
-    flex-direction: column;
-    align-items: stretch;
+    padding: 20px;
   }
   
-  .time-controls,
-  .vehicle-controls {
+  .vehicle-controls,
+  .time-controls {
     flex-direction: column;
+    gap: 15px;
   }
   
-  .controls input,
-  .controls select {
+  .controls label {
+    min-width: auto;
+  }
+  
+  .load-button {
+    width: 100%;
     min-width: auto;
   }
   
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .analysis-results,
+  .routes-section {
+    padding: 20px;
   }
   
   .map-container {
     height: 400px;
+    padding: 15px;
+  }
+  
+  .vehicle-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-page {
+    padding-top: 50px;
+  }
+  
+  .scenario-content h2 {
+    font-size: 24px;
+  }
+  
+  .controls {
+    padding: 15px;
+  }
+  
+  .analysis-results h3,
+  .routes-section h3 {
+    font-size: 20px;
+  }
+  
+  .stat-value {
+    font-size: 28px;
+  }
+  
+  .map-container {
+    height: 350px;
+    padding: 10px;
   }
   
   .routes-table {
@@ -283,57 +447,162 @@
   
   .routes-table th,
   .routes-table td {
-    padding: 8px;
+    padding: 10px 8px;
   }
 }
 
-.vehicle-item {
+/* Анимации */
+.scenario-content {
+  animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+.controls {
+  animation: fadeInUp 0.6s ease 0.3s both;
+}
+
+.analysis-results,
+.routes-section {
+  animation: fadeInUp 0.6s ease 0.4s both;
+}
+
+.map-container {
+  animation: fadeInUp 0.6s ease 0.5s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Стили для выпадающего списка автомобилей */
+.vehicle-dropdown {
+  position: relative;
+}
+
+.vehicle-dropdown select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2362a744' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+/* Стили для состояния загрузки */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
-  margin: 4px 0;
-  background: white;
-  border-radius: 4px;
-  border-left: 4px solid #007bff;
+  justify-content: center;
+  border-radius: 16px;
+  z-index: 10;
 }
 
-.vehicle-tag {
-  font-weight: bold;
-  font-family: monospace;
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e8f5e8;
+  border-left: 4px solid #62a744;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.vehicle-stats {
-  font-size: 12px;
-  color: #666;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.vehicle-more {
-  text-align: center;
-  padding: 8px;
-  color: #666;
-  font-style: italic;
+/* Улучшение скроллбара */
+.vehicles-list::-webkit-scrollbar {
+  width: 6px;
 }
 
-.matching-vehicles {
-  margin-top: 20px;
+.vehicles-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
 }
 
-.matching-vehicles h4 {
-  margin-bottom: 10px;
-  color: #333;
+.vehicles-list::-webkit-scrollbar-thumb {
+  background: #62a744;
+  border-radius: 3px;
 }
 
-.vehicles-list {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 10px;
+.vehicles-list::-webkit-scrollbar-thumb:hover {
+  background: #8B00FF;
+}
+/* Убираем черную обводку при фокусе и нажатии на всех элементах */
+button:focus,
+select:focus,
+input:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-.custom-marker {
-  background: transparent;
-  border: none;
-  font-size: 20px;
+/* Специфично для кнопок табов */
+.tabs button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Специфично для кнопки загрузки */
+.load-button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Специфично для выпадающих списков */
+.controls select:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(98, 167, 68, 0.1) !important;
+  border-color: #62a744 !important;
+}
+
+/* Специфично для инпутов */
+.controls input:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(98, 167, 68, 0.1) !important;
+  border-color: #62a744 !important;
+}
+
+/* Для кнопки "Найти совместные движения" при фокусе */
+.load-button:focus:not(:disabled) {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(98, 167, 68, 0.3) !important;
+}
+
+/* Для активной кнопки таба при фокусе */
+.tabs button.active:focus {
+  outline: none !important;
+  box-shadow: 0 6px 20px rgba(98, 167, 68, 0.25) !important;
+}
+
+/* Убираем стандартное браузерное выделение для всех интерактивных элементов */
+button,
+select,
+input {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Для мобильных устройств - убираем синее выделение при тапе */
+@media (max-width: 768px) {
+  button:active,
+  select:active,
+  input:active {
+    outline: none !important;
+    box-shadow: none !important;ы
+  }
 }
