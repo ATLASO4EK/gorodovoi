@@ -1,5 +1,3 @@
-/*Объект-Шаблон Статьи*/
-
 import './../styles/NewsPage.css'
 
 function NewsTemp({ id, author, title, time, onOpen, image, imageAlt, fullText }) {
@@ -12,27 +10,26 @@ function NewsTemp({ id, author, title, time, onOpen, image, imageAlt, fullText }
       onKeyPress={(e) => e.key === 'Enter' && onOpen()} 
     >
       <div className="news-image-container">
-        {image && image !== '#' ? (
+        {image && image !== '#' && image !== '' ? (
           <img 
             src={image} 
-            alt={imageAlt} 
+            alt={imageAlt || title} 
             className="news-image"
             onError={(e) => {
-            
               e.target.style.display = 'none';
-             
               e.target.nextSibling.style.display = 'flex';
             }}
           />
         ) : null}
 
-        <div className="news-image-placeholder" style={{ display: image && image !== '#' ? 'none' : 'flex' }}>
+        <div className="news-image-placeholder" style={{ 
+          display: (image && image !== '#' && image !== '') ? 'none' : 'flex' 
+        }}>
           <span className="news-emoji">📰</span>
           <span className="news-category">Новость ЦОДД</span>
         </div>
       </div>
       
-    
       <div className="news-card-content">
         <h3 className="news-card-title">{title}</h3> 
         <div className="news-meta">
@@ -50,7 +47,7 @@ function NewsTemp({ id, author, title, time, onOpen, image, imageAlt, fullText }
     </div>
   )
 }
-/*Объект-Шаблон Категории*/
+
 function NewsCategory({ category, NewsTemps, onNewsOpen }) {
   return (
     <div className="news-category">
@@ -58,13 +55,14 @@ function NewsCategory({ category, NewsTemps, onNewsOpen }) {
       <div className="news-grid">
         {NewsTemps.map((news) => (
           <NewsTemp 
-            key={news.id} // кникальный ключ (id)
-            id={news.id} // ID новости
-            title={news.title} // заголовочек новости
-            author={news.author} // авторыыыы новостеееее
-            time={news.time} // время публикации
-            image={news.image} // URL изображения
-            fullText={news.fullText} // полни текст новости
+            key={news.id}
+            id={news.id}
+            title={news.title}
+            author={news.author}
+            time={news.time}
+            image={news.image}
+            imageAlt={news.imageAlt || news.title}
+            fullText={news.fullText}
             onOpen={() => onNewsOpen(news)} 
           />
         ))}
@@ -73,4 +71,4 @@ function NewsCategory({ category, NewsTemps, onNewsOpen }) {
   )
 }
 
-export default NewsCategory
+export default NewsCategory;

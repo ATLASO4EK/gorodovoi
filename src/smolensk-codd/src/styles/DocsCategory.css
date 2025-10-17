@@ -10,7 +10,7 @@
 
 .docs-row {
   display: flex;
-  justify-content: center;  
-  gap: 2vw;               
-  flex-wrap: wrap;         
+  justify-content: center;  /* center horizontally */
+  gap: 2vw;                /* spacing between squares */
+  flex-wrap: wrap;          /* wrap if screen is too small */
 }

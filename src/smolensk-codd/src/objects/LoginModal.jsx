@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import '../styles/LoginModal.css';
+import React, { useState } from 'react';
+import './../styles/LoginModal.css';
 
 function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [key, setKey] = useState('');

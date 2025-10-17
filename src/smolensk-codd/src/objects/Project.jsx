@@ -1,15 +1,5 @@
-/*Объект-Шаблон Проекта*/
+import React from 'react';
 import './../styles/ProjectsPage.css';
-
-  /*
-  Принимает:          Пример:
-  title: str;         "title": "Национальный проект \"Безопасные качественные дороги\"",
-  description: str;   "description": "Участие Смоленской области в федеральной программе ремонта дорог",
-  link: str;          "link": "https://bkdrf.ru/region/smolenskaya-oblast",
-  icon: str;          "icon": "🛣️"
-
-  Использование: pages/ProjectsPage.jsx => projectsData (assets/projectsData.json)
-  */
 
 function Project({ project, onClick }) {
   return (
@@ -18,7 +8,7 @@ function Project({ project, onClick }) {
       onClick={() => onClick(project.link)}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onClick(project.link)}
+      onKeyPress={(e) => e.key === 'Enter' && onClick(project.link)}
     >
       <div className="project-icon-container">
         <span className="project-icon">{project.icon}</span>
