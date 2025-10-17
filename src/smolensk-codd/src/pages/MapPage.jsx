@@ -31,10 +31,12 @@ const MapPage = () => {
   const [error, setError] = useState(null);
   const [detectorsData, setDetectorsData] = useState({});
 
+  // Сценарий 3 - Топ маршрутов
   const [period, setPeriod] = useState({ start: '2025-10-15T10:00', end: '2025-10-15T12:00' });
   const [routePoints, setRoutePoints] = useState([]);
   const [topRoutes, setTopRoutes] = useState([]);
 
+  // Сценарий 1 - Совместное движение
   const [vehicles, setVehicles] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState('');
   const [jointAnalysis, setJointAnalysis] = useState(null);
@@ -42,9 +44,29 @@ const MapPage = () => {
   const [minNodes, setMinNodes] = useState(3);
   const [filteredMatchingVehicles, setFilteredMatchingVehicles] = useState([]);
 
+  // Сценарий 4 - Сравнение периодов
+  const [comparisonPeriods, setComparisonPeriods] = useState({
+    periodA: { start: '2025-10-15T08:00', end: '2025-10-15T10:00' },
+    periodB: { start: '2025-10-15T17:00', end: '2025-10-15T19:00' }
+  });
+  const [comparisonRoutes, setComparisonRoutes] = useState({ routesA: [], routesB: [] });
+  const [comparisonData, setComparisonData] = useState({ dataA: [], dataB: [] });
+  const [comparisonLoading, setComparisonLoading] = useState(false);
+
   const colors = [
     '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231',
     '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe'
+  ];
+
+  // Цвета для сравнения периодов (Период A - теплые тона, Период B - холодные тона)
+  const comparisonColorsA = [
+    '#ff6b6b', '#ff8e8e', '#ffaaaa', '#ff5252', '#ff3838',
+    '#ff1c1c', '#ff0000', '#e60000', '#cc0000', '#b30000'
+  ];
+
+  const comparisonColorsB = [
+    '#4d94ff', '#66a3ff', '#80b3ff', '#3385ff', '#1a75ff',
+    '#0066ff', '#0052cc', '#0047b3', '#003d99', '#003380'
   ];
 
   useEffect(() => {
@@ -89,6 +111,7 @@ const MapPage = () => {
     }
   };
 
+  // СЦЕНАРИЙ 3 - Топ маршрутов
   const loadTopRoutes = async () => {
     setLoading(true);
     setError(null);
@@ -135,7 +158,7 @@ const MapPage = () => {
     }
   };
 
-  // СЦЕНАРИЙ 1 - Совместное движение (ПЕРЕПИСАННЫЙ)
+  // СЦЕНАРИЙ 1 - Совместное движение
   const loadJointAnalysis = async () => {
     if (!selectedVehicle) {
       setError('Выберите автомобиль для анализа');
@@ -146,7 +169,6 @@ const MapPage = () => {
     setError(null);
 
     try {
-      // 1. Получаем анализ совместного движения
       const url = `/api/v1/tracks_traffic/coop_analytics?identificator=${encodeURIComponent(selectedVehicle)}&min_nodes=${minNodes}`;
       console.log('Request URL:', url);
 
@@ -159,14 +181,12 @@ const MapPage = () => {
       const analysisData = await res.json();
       console.log('Joint analysis data:', analysisData);
 
-      // Проверяем, что получили данные в ожидаемом формате
       if (!analysisData.matching_identificators || !analysisData.count_detectors || !analysisData.time_spent_seconds) {
         throw new Error('Неверный формат данных от сервера');
       }
 
       setJointAnalysis(analysisData);
 
-      // 2. Фильтруем автомобили по минимальному количеству узлов
       const matchingVehicles = analysisData.matching_identificators || [];
       const filteredVehicles = matchingVehicles.filter(vehicle => {
         const nodeCount = analysisData.count_detectors[vehicle];
@@ -176,7 +196,6 @@ const MapPage = () => {
       console.log('Filtered vehicles:', filteredVehicles);
       setFilteredMatchingVehicles(filteredVehicles);
 
-      // 3. Загружаем маршруты для выбранного и отфильтрованных автомобилей
       const allVehicles = [selectedVehicle, ...filteredVehicles];
       const routes = [];
 
@@ -196,12 +215,9 @@ const MapPage = () => {
 
           let routeStr = '';
           
-          // Обрабатываем разные форматы ответа
           if (Array.isArray(vehicleData) && vehicleData.length > 0) {
-            // Формат: [[id, identificator, route]]
             routeStr = vehicleData[0][2] || '';
           } else if (vehicleData.data && Array.isArray(vehicleData.data) && vehicleData.data.length > 0) {
-            // Формат: {data: [[id, identificator, route]]}
             routeStr = vehicleData.data[0][2] || '';
           }
 
@@ -252,6 +268,88 @@ const MapPage = () => {
     }
   };
 
+  // СЦЕНАРИЙ 4 - Сравнение периодов
+  const loadComparison = async () => {
+    setComparisonLoading(true);
+    setError(null);
+
+    try {
+      // Загружаем данные для периода A
+      const startA = comparisonPeriods.periodA.start.replace('T', ' ');
+      const endA = comparisonPeriods.periodA.end.replace('T', ' ');
+      
+      const resA = await fetch(`/api/v1/tracks_traffic/clustering?start_ts=${startA}&end_ts=${endA}&top_n=10`);
+      if (!resA.ok) throw new Error(`HTTP ${resA.status} для периода A`);
+      
+      const jsonA = await resA.json();
+      if (!jsonA.ok) throw new Error(jsonA.error || 'Ошибка от сервера для периода A');
+
+      // Загружаем данные для периода B
+      const startB = comparisonPeriods.periodB.start.replace('T', ' ');
+      const endB = comparisonPeriods.periodB.end.replace('T', ' ');
+      
+      const resB = await fetch(`/api/v1/tracks_traffic/clustering?start_ts=${startB}&end_ts=${endB}&top_n=10`);
+      if (!resB.ok) throw new Error(`HTTP ${resB.status} для периода B`);
+      
+      const jsonB = await resB.json();
+      if (!jsonB.ok) throw new Error(jsonB.error || 'Ошибка от сервера для периода B');
+
+      const dataA = jsonA.data || [];
+      const dataB = jsonB.data || [];
+
+      setComparisonData({ dataA, dataB });
+
+      // Создаем маршруты для отображения на карте
+      const routesA = dataA
+        .map((route, index) => {
+          const points = route.route
+            .split(',')
+            .map(name => detectorsData[name.trim().toUpperCase()])
+            .filter(Boolean);
+
+          return points.length >= 2 ? {
+            route: `[Утро] ${route.route}`,
+            stats: route,
+            points,
+            color: comparisonColorsA[index % comparisonColorsA.length],
+            period: 'A'
+          } : null;
+        })
+        .filter(Boolean);
+
+      const routesB = dataB
+        .map((route, index) => {
+          const points = route.route
+            .split(',')
+            .map(name => detectorsData[name.trim().toUpperCase()])
+            .filter(Boolean);
+
+          return points.length >= 2 ? {
+            route: `[Вечер] ${route.route}`,
+            stats: route,
+            points,
+            color: comparisonColorsB[index % comparisonColorsB.length],
+            period: 'B'
+          } : null;
+        })
+        .filter(Boolean);
+
+      setComparisonRoutes({ routesA, routesB });
+
+      if (routesA.length === 0 && routesB.length === 0) {
+        setError('Не найдено маршрутов для сравнения в выбранные периоды');
+      }
+
+    } catch (err) {
+      console.error('Error loading comparison:', err);
+      setError(`Ошибка загрузки сравнения: ${err.message}`);
+      setComparisonRoutes({ routesA: [], routesB: [] });
+      setComparisonData({ dataA: [], dataB: [] });
+    } finally {
+      setComparisonLoading(false);
+    }
+  };
+
   // Преобразование jointRoutes в формат для карты
   const getJointRoutePoints = () => {
     return jointRoutes.map(route => ({
@@ -270,18 +368,9 @@ const MapPage = () => {
     }));
   };
 
-  // Функция для фильтрации результатов (Сценарий 2)
-  const filterResults = (durationFilter, nodesFilter) => {
-    const filtered = jointRoutes.filter(route => {
-      const matchesDuration = !durationFilter || route.timeSpent >= durationFilter;
-      const matchesNodes = !nodesFilter || route.nodeCount >= nodesFilter;
-      return matchesDuration && matchesNodes;
-    });
-    
-    // Здесь можно обновить отображаемые маршруты
-    // В реальной реализации нужно будет управлять состоянием отфильтрованных маршрутов
-    console.log('Filtered results:', filtered);
-    return filtered;
+  // Получение всех маршрутов для сравнения
+  const getComparisonRoutePoints = () => {
+    return [...comparisonRoutes.routesA, ...comparisonRoutes.routesB];
   };
 
   return (
@@ -292,6 +381,9 @@ const MapPage = () => {
         </button>
         <button className={activeTab === 'scenario3' ? 'active' : ''} onClick={() => setActiveTab('scenario3')}>
           Топ маршрутов
+        </button>
+        <button className={activeTab === 'scenario4' ? 'active' : ''} onClick={() => setActiveTab('scenario4')}>
+          Сравнение периодов
         </button>
       </div>
 
@@ -450,6 +542,171 @@ const MapPage = () => {
 
           <div className="map-container">
             <Map routePoints={routePoints} />
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'scenario4' && (
+        <div className="scenario-content">
+          <h2>Сравнение транспортных потоков в разное время</h2>
+
+          <div className="controls">
+            <div className="comparison-controls">
+              <div className="period-group">
+                <h4>Период A (Утренние часы)</h4>
+                <div className="time-controls">
+                  <label>
+                    Начало:
+                    <input 
+                      type="datetime-local" 
+                      value={comparisonPeriods.periodA.start} 
+                      onChange={e => setComparisonPeriods({
+                        ...comparisonPeriods,
+                        periodA: { ...comparisonPeriods.periodA, start: e.target.value }
+                      })} 
+                      disabled={comparisonLoading} 
+                    />
+                  </label>
+                  <label>
+                    Конец:
+                    <input 
+                      type="datetime-local" 
+                      value={comparisonPeriods.periodA.end} 
+                      onChange={e => setComparisonPeriods({
+                        ...comparisonPeriods,
+                        periodA: { ...comparisonPeriods.periodA, end: e.target.value }
+                      })} 
+                      disabled={comparisonLoading} 
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="period-group">
+                <h4>Период B (Вечерние часы)</h4>
+                <div className="time-controls">
+                  <label>
+                    Начало:
+                    <input 
+                      type="datetime-local" 
+                      value={comparisonPeriods.periodB.start} 
+                      onChange={e => setComparisonPeriods({
+                        ...comparisonPeriods,
+                        periodB: { ...comparisonPeriods.periodB, start: e.target.value }
+                      })} 
+                      disabled={comparisonLoading} 
+                    />
+                  </label>
+                  <label>
+                    Конец:
+                    <input 
+                      type="datetime-local" 
+                      value={comparisonPeriods.periodB.end} 
+                      onChange={e => setComparisonPeriods({
+                        ...comparisonPeriods,
+                        periodB: { ...comparisonPeriods.periodB, end: e.target.value }
+                      })} 
+                      disabled={comparisonLoading} 
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <button onClick={loadComparison} disabled={comparisonLoading} className="load-button">
+                {comparisonLoading ? 'Сравнение...' : 'Сравнить периоды'}
+              </button>
+            </div>
+          </div>
+
+          {error && <div className="error-message">{error}</div>}
+
+          {(comparisonData.dataA.length > 0 || comparisonData.dataB.length > 0) && (
+            <div className="comparison-results">
+              <div className="comparison-legend">
+                <div className="legend-item">
+                  <div className="legend-color" style={{ backgroundColor: '#ff6b6b' }}></div>
+                  <span>Период A (Утро) - Теплые тона</span>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-color" style={{ backgroundColor: '#4d94ff' }}></div>
+                  <span>Период B (Вечер) - Холодные тона</span>
+                </div>
+              </div>
+
+              <div className="comparison-tables">
+                {comparisonData.dataA.length > 0 && (
+                  <div className="period-table">
+                    <h3>Топ маршрутов - Период A</h3>
+                    <div className="table-container">
+                      <table className="routes-table">
+                        <thead>
+                          <tr>
+                            <th>Цвет</th>
+                            <th>Маршрут</th>
+                            <th>ТС</th>
+                            <th>Интенсивность</th>
+                            <th>Скорость (км/ч)</th>
+                            <th>Время (сек)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {comparisonData.dataA.map((route, index) => (
+                            <tr key={index}>
+                              <td>
+                                <div className="color-indicator" style={{ backgroundColor: comparisonColorsA[index % comparisonColorsA.length] }} />
+                              </td>
+                              <td>{route.route}</td>
+                              <td>{route.vehicles_count}</td>
+                              <td>{route.intensity_per_hour.toFixed(2)}</td>
+                              <td>{route.avg_speed.toFixed(2)}</td>
+                              <td>{route.avg_travel_time_sec}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {comparisonData.dataB.length > 0 && (
+                  <div className="period-table">
+                    <h3>Топ маршрутов - Период B</h3>
+                    <div className="table-container">
+                      <table className="routes-table">
+                        <thead>
+                          <tr>
+                            <th>Цвет</th>
+                            <th>Маршрут</th>
+                            <th>ТС</th>
+                            <th>Интенсивность</th>
+                            <th>Скорость (км/ч)</th>
+                            <th>Время (сек)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {comparisonData.dataB.map((route, index) => (
+                            <tr key={index}>
+                              <td>
+                                <div className="color-indicator" style={{ backgroundColor: comparisonColorsB[index % comparisonColorsB.length] }} />
+                              </td>
+                              <td>{route.route}</td>
+                              <td>{route.vehicles_count}</td>
+                              <td>{route.intensity_per_hour.toFixed(2)}</td>
+                              <td>{route.avg_speed.toFixed(2)}</td>
+                              <td>{route.avg_travel_time_sec}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="map-container">
+            <Map routePoints={getComparisonRoutePoints()} />
           </div>
         </div>
       )}
