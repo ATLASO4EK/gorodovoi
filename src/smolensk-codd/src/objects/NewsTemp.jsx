@@ -2,7 +2,7 @@
 
 import './../styles/NewsPage.css'
 
-function NewsTemp({ id, author, title, time, onOpen, image, imageAlt, fullText }) {
+export function NewsTemp({ id, author, title, time, onOpen, image, imageAlt, fullText }) {
   return (
     <div 
       className="news-card"
@@ -50,8 +50,9 @@ function NewsTemp({ id, author, title, time, onOpen, image, imageAlt, fullText }
     </div>
   )
 }
+
 /*Объект-Шаблон Категории*/
-function NewsCategory({ category, NewsTemps, onNewsOpen }) {
+export default function NewsCategory({ category, NewsTemps, onNewsOpen }) {
   return (
     <div className="news-category">
       <h2 className="category-title">{category}</h2> 
@@ -72,5 +73,3 @@ function NewsCategory({ category, NewsTemps, onNewsOpen }) {
     </div>
   )
 }
-
-export default NewsCategory

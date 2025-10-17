@@ -35,7 +35,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         
         <div className="login-content">
           <h2 className="login-title">Вход для редактора</h2>
-          <p className="login-subtitle">Введите ключ доступа для редактирования новостей</p>
+          <p className="login-subtitle">Введите ключ доступа</p>
           
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">

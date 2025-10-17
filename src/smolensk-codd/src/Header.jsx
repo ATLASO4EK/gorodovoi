@@ -4,7 +4,7 @@
 import { useState } from 'react'
 import './styles/Header.css'
 
-const Header = ({ setCurrentPage }) => {
+const Header = ({ setCurrentPage, isAdmin, onLoginClick, onLogoutClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const toggleMenu = () => {
@@ -13,27 +13,41 @@ const Header = ({ setCurrentPage }) => {
 
   const handleNavigation = (page) => {
     if (page === 'services') {
-      
-      setCurrentPage('home');
-      
+      setCurrentPage('home')
       setTimeout(() => {
-        const servicesSection = document.getElementById('services-section');
+        const servicesSection = document.getElementById('services-section')
         if (servicesSection) {
-          servicesSection.scrollIntoView({ 
+          servicesSection.scrollIntoView({
             behavior: 'smooth',
             block: 'center'
-          });
+          })
         }
-      }, 100);
+      }, 100)
     } else {
-      setCurrentPage(page);
+      setCurrentPage(page)
     }
-    setIsMenuOpen(false);
+    setIsMenuOpen(false)
+  }
+
+  // Функция для выхода с автоматическим перенаправлением
+  const handleLogout = () => {
+    // Получаем текущую страницу
+    const currentPage = window.location.pathname || 'home'
+    
+    // Если находимся на страницах, доступных только админу, перенаправляем на главную
+    const adminOnlyPages = ['monitoring', 'news-editor', 'banners-editor', 'services-editor'] // добавьте сюда все страницы редактора
+    
+    if (adminOnlyPages.some(page => currentPage.includes(page))) {
+      setCurrentPage('home')
+    }
+    
+    // Вызываем оригинальную функцию выхода
+    onLogoutClick()
+    setIsMenuOpen(false)
   }
 
   const mainMenuItems = [
     { name: 'Главная', page: 'home' },
-    { name: 'Мониторинг и аналитика', page: 'monitoring' },
     { name: 'Сервис', page: 'services' }
   ]
 
@@ -48,6 +62,11 @@ const Header = ({ setCurrentPage }) => {
     { name: 'Баннеры', page: 'banners' },
     { name: 'Услуги', page: 'services-list' }
   ]
+
+  if (isAdmin) {
+    mainMenuItems.push({name: 'Мониторинг и аналитика', page: 'monitoring'})
+    additionalMenuItems.push({ name: 'Карта', page: 'map' })
+  }
 
   return (
     <header className="header">
@@ -67,6 +86,19 @@ const Header = ({ setCurrentPage }) => {
                 {item.name}
               </button>
             ))}
+
+            {/* ✅ Кнопки доступа администратора */}
+            <div className="admin-buttons">
+              {isAdmin ? (
+                <button className="logout-button" onClick={handleLogout}>
+                  Выйти
+                </button>
+              ) : (
+                <button className="login-button" onClick={onLoginClick}>
+                  Вход
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="burger-menu">
@@ -91,8 +123,20 @@ const Header = ({ setCurrentPage }) => {
                     {item.name}
                   </button>
                 ))}
+
+                <div className="mobile-admin-buttons">
+                  {isAdmin ? (
+                    <button className="dropdown-item logout-item" onClick={handleLogout}>
+                      Выйти из редактора
+                    </button>
+                  ) : (
+                    <button className="dropdown-item login-item" onClick={onLoginClick}>
+                      Вход для редактора
+                    </button>
+                  )}
+                </div>
               </div>
-    
+
               {additionalMenuItems.map((item, index) => (
                 <button 
                   key={index} 

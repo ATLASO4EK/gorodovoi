@@ -1,5 +1,5 @@
 // objects/TrafficJams.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './../styles/TrafficJams.css';
 
 const TrafficJams = () => {

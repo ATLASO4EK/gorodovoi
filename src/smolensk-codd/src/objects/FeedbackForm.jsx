@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './FeedbackForm.css';
 
 const FeedbackForm = ({ isOpen, onClose }) => {
+  // Состояния компонента
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -9,6 +10,7 @@ const FeedbackForm = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Валидация пустого отзыва
     if (!feedback.trim()) {
       alert('Пожалуйста, введите ваш отзыв');
       return;
@@ -17,8 +19,7 @@ const FeedbackForm = ({ isOpen, onClose }) => {
     setIsSubmitting(true);
 
     try {
-      console.log('Отправка отзыва:', feedback.trim());
-      
+      // Отправка данных на сервер
       const response = await fetch('http://127.0.0.1:8000/api/v1/reviews', {
         method: 'POST',
         headers: {
@@ -29,27 +30,25 @@ const FeedbackForm = ({ isOpen, onClose }) => {
           text: feedback.trim()
         })
       });
-
-      console.log('Статус ответа:', response.status);
       
+      // Обработка успешного ответа
       if (response.ok) {
         const result = await response.json();
-        console.log('Успешный ответ:', result);
         setIsSubmitted(true);
         setFeedback('');
+        // Автоматическое закрытие после успешной отправки
         setTimeout(() => {
           setIsSubmitted(false);
           onClose();
         }, 2000);
       } else {
+        // Обработка ошибок сервера
         let errorMessage = 'Ошибка при отправке отзыва';
         
         try {
           const errorData = await response.json();
-          console.error('Данные ошибки:', errorData);
           errorMessage = errorData.detail || errorData.message || errorData.error || errorMessage;
         } catch (parseError) {
-          console.error('Ошибка парсинга ошибки:', parseError);
           errorMessage = `HTTP ошибка: ${response.status} ${response.statusText}`;
         }
         
@@ -63,12 +62,14 @@ const FeedbackForm = ({ isOpen, onClose }) => {
     }
   };
 
+  // Закрытие модального окна при клике на оверлей
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget && !isSubmitting) {
       onClose();
     }
   };
 
+  // Сброс состояния при закрытии модалки
   const handleModalClose = () => {
     if (!isSubmitting) {
       setFeedback('');
@@ -77,6 +78,7 @@ const FeedbackForm = ({ isOpen, onClose }) => {
     }
   };
 
+  // Рендер компонента только если isOpen = true
   if (!isOpen) return null;
 
   return (
@@ -92,12 +94,14 @@ const FeedbackForm = ({ isOpen, onClose }) => {
         
         <h2 className="feedback-title">Обратная связь</h2>
         
+        {/*==СОСТОЯНИЕ УСПЕШНОЙ ОТПРАВКИ==*/}
         {isSubmitted ? (
           <div className="feedback-success">
             <p>Спасибо за ваш отзыв!</p>
             <p>Ваше мнение очень важно для нас.</p>
           </div>
         ) : (
+          /*==ФОРМА ВВОДА ОТЗЫВА== */
           <form onSubmit={handleSubmit} className="feedback-form">
             <div className="feedback-field">
               <label htmlFor="feedback-text" className="feedback-label">

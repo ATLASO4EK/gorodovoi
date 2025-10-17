@@ -148,7 +148,7 @@ function JobPage() {
     <div className={`jobs-section ${isVisible ? "visible" : ""}`} ref={jobsRef}>
       <div className="jobs-container">
         <div className="jobs-header">
-          <h1>Работа в ЦОДД Смоленска</h1>
+          <h1 className="jobs-title">Работа в ЦОДД Смоленска</h1>
           <p className="jobs-subtitle">
             Присоединяйтесь к нашей команде — создавайте безопасный и удобный город!
           </p>
@@ -197,17 +197,21 @@ function JobPage() {
       {isResumeModalOpen && (
         <div className="modal-overlay" onClick={handleCloseResumeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            {/* Добавлена кнопка закрытия */}
+            <button 
+              className="modal-close-home" 
+              onClick={handleCloseResumeModal}
+              disabled={isSubmitting}
+              aria-label="Закрыть окно отправки резюме"
+            >
+              ×
+            </button>
+
             {!isSuccess ? (
               <>
                 <div className="modal-header">
                   <h2>Отправка резюме</h2>
-                  <button
-                    className="modal-close"
-                    onClick={handleCloseResumeModal}
-                    disabled={isSubmitting}
-                  >
-                    ×
-                  </button>
+                  {/* Удалена старая кнопка закрытия */}
                 </div>
 
                 <form className="application-form" onSubmit={handleResumeSubmit}>

@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
+import "./../styles/MonitoringPage.css";
 
 /**
  * Если используешь Vite proxy — оставь API_BASE пустым.
@@ -38,6 +39,7 @@ function fmt(kind, v) {
   if (kind === "pct") return `${n.toFixed(1)}%`;
   return numCompact.format(n);
 }
+
 function asDate(s) {
   try {
     if (!s) return null;
@@ -50,10 +52,12 @@ function asDate(s) {
     return null;
   }
 }
+
 function fmtISO(d) {
   if (!d) return "";
   return d.toISOString().slice(0, 10);
 }
+
 function asNumber(x) {
   if (x === null || x === undefined) return 0;
   if (typeof x === "number") return x;
@@ -61,6 +65,7 @@ function asNumber(x) {
   const n = Number(s);
   return Number.isFinite(n) ? n : 0;
 }
+
 async function fetchJson(url) {
   const res = await fetch(url);
   const ct = res.headers.get("content-type") || "";
@@ -69,6 +74,7 @@ async function fetchJson(url) {
   if (!ct.includes("application/json")) throw new Error(`Expected JSON, got ${ct || "unknown"}: ${text.slice(0, 200)}`);
   return JSON.parse(text);
 }
+
 function movingAvg(arr, window = 7) {
   const out = [];
   for (let i = 0; i < arr.length; i++) {
@@ -91,7 +97,6 @@ const COLORS = {
 };
 
 function getPieColor(name) {
-  // ФИНЕС: Взыскано/Осталось; ЭВАК: Эвакуации/Прочие выезды
   const map = {
     "Взыскано": COLORS.green,
     "Осталось": COLORS.orange,
@@ -102,7 +107,6 @@ function getPieColor(name) {
 }
 
 function getBarColor(name, tab, kind) {
-  // kind: "counts" | "money"
   if (tab === "fines") {
     if (kind === "counts") {
       if (name === "Нарушения") return COLORS.red;
@@ -116,7 +120,6 @@ function getBarColor(name, tab, kind) {
       if (name === "Выезды") return COLORS.blue;
       if (name === "Эвакуации") return COLORS.orange;
     } else {
-      // money (Эвак)
       if (name === "Поступления") return COLORS.green;
     }
   }
@@ -124,13 +127,12 @@ function getBarColor(name, tab, kind) {
 }
 
 function LegendBullets({ items }) {
-  // items: [{name, color}]
   return (
-    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+    <div className="legend-bullets">
       {items.map((it, i) => (
-        <div key={i} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 10, height: 10, borderRadius: 2, background: it.color, display: "inline-block" }} />
-          <span style={{ fontSize: 12, color: "#111827" }}>{it.name}</span>
+        <div key={i} className="legend-item">
+          <span className="legend-bullet" style={{ background: it.color }} />
+          <span className="legend-text">{it.name}</span>
         </div>
       ))}
     </div>
@@ -146,7 +148,6 @@ async function fetchFines(dateStart, dateEnd) {
   if (dateEnd) p.set("date_end", fmtISO(dateEnd));
   const url = `${API_BASE}/api/v1/FinesStats${p.toString() ? `?${p.toString()}` : ""}`;
   const raw = await fetchJson(url);
-  // [id, report_date, cams_violations_cum, decisions_cum, fines_sum_cum, collected_sum_cum]
   return raw
     .map((row) => {
       const hasId = row.length >= 6;
@@ -165,13 +166,13 @@ async function fetchFines(dateStart, dateEnd) {
     })
     .filter((r) => r.date);
 }
+
 async function fetchEvac(dateStart, dateEnd) {
   const p = new URLSearchParams();
   if (dateStart) p.set("date", fmtISO(dateStart));
   if (dateEnd) p.set("date_end", fmtISO(dateEnd));
   const url = `${API_BASE}/api/v1/EvacuationStats${p.toString() ? `?${p.toString()}` : ""}`;
   const raw = await fetchJson(url);
-  // [id, event_date, tow_trucks_on_line, trips_count, evacuations_count, impound_revenue_rub]
   return raw
     .map((row) => {
       const hasId = row.length >= 6;
@@ -212,6 +213,7 @@ function escapeCSV(v) {
   if (/[",;]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }
+
 function exportCSV(rows, filename = "data.csv") {
   if (!rows || rows.length === 0) return;
   let csv = "";
@@ -231,6 +233,7 @@ function exportCSV(rows, filename = "data.csv") {
   a.click();
   URL.revokeObjectURL(url);
 }
+
 function exportXLSX(rows, sheetName = "Sheet1", filename = "data.xlsx") {
   if (!rows || rows.length === 0) return;
   const wb = XLSX.utils.book_new();
@@ -253,6 +256,7 @@ async function importDB(file, { allowCustomIds = false } = {}) {
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
   return JSON.parse(text);
 }
+
 async function exportDB({ sheets } = {}) {
   const qs = new URLSearchParams();
   if (sheets && sheets.length > 0) qs.set("sheets", sheets.join(","));
@@ -315,6 +319,7 @@ function aggregateFines(rows) {
     ],
   };
 }
+
 function aggregateEvac(rows) {
   const byDay = rows
     .slice()
@@ -378,32 +383,16 @@ function AnalyticsSummaryTable({ table, analytics }) {
         ];
 
   return (
-    <div
-      style={{
-        background: "#fff",
-        borderRadius: 12,
-        padding: 16,
-        boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }} data-export-ignore>
-        <h3 style={{ margin: 0, color: "#0f172a" }}>Сводка аналитики ({table === "fines" ? "Штрафы" : "Эвакуация"})</h3>
+    <div className="analytics-table">
+      <div className="analytics-header" data-export-ignore>
+        <h3 className="chart-title">Сводка аналитики ({table === "fines" ? "Штрафы" : "Эвакуация"})</h3>
       </div>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <tbody>
           {rows.map(([label, { v, kind }], i) => (
             <tr key={i}>
-              <td style={{ padding: "8px 10px", borderBottom: "1px solid #eee", color: "#374151" }}>{label}</td>
-              <td
-                style={{
-                  padding: "8px 10px",
-                  borderBottom: "1px solid #eee",
-                  textAlign: "right",
-                  fontWeight: 600,
-                  color: "#0f172a",
-                  whiteSpace: "nowrap",
-                }}
-              >
+              <td className="table-row table-label">{label}</td>
+              <td className="table-row table-value">
                 {fmt(kind, v)}
               </td>
             </tr>
@@ -413,6 +402,7 @@ function AnalyticsSummaryTable({ table, analytics }) {
     </div>
   );
 }
+
 function KPIFromAnalytics({ table, analytics }) {
   if (!analytics) return null;
   const items =
@@ -430,29 +420,11 @@ function KPIFromAnalytics({ table, analytics }) {
           { k: "Доля эвакуаций", v: analytics.per_evac, kind: "pct" },
         ];
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-        gap: 12,
-      }}
-    >
+    <div className="kpi-grid">
       {items.map((it, i) => (
-        <div
-          key={i}
-          style={{
-            backgroundColor: "#ffffff",
-            color: "#111827",
-            borderRadius: 12,
-            padding: 12,
-            boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-            minWidth: 0,
-          }}
-        >
-          <div style={{ fontSize: 12, color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {it.k}
-          </div>
-          <div style={{ fontSize: 22, fontWeight: 700, marginTop: 6, color: "#0f172a" }}>{fmt(it.kind, it.v)}</div>
+        <div key={i} className="kpi-item">
+          <div className="kpi-label">{it.k}</div>
+          <div className="kpi-value">{fmt(it.kind, it.v)}</div>
         </div>
       ))}
     </div>
@@ -480,7 +452,6 @@ async function exportPNGConsistent(renderChart, filename = "chart.png", { width 
   const root = ReactDOM.createRoot(host);
   root.render(renderChart({ width, height }));
 
-  // ждём появления и стабилизации SVG
   const waitFor = async (cond, timeout = 3000) => {
     const t0 = Date.now();
     while (!cond()) {
@@ -518,7 +489,7 @@ async function exportPNGConsistent(renderChart, filename = "chart.png", { width 
    ========================= */
 // ==== TREND (Штрафы) — суммы (₽): Штрафы + Взыскано ====
 function renderTrendFinesMoney({ data }) {
-  const C = { s: "#9333ea", c: "#10b981" }; // штрафы=фиолет, взыскано=зелёный
+  const C = { s: "#9333ea", c: "#10b981" };
   return ({ width, height }) => (
     <div style={{ width, height, background: "#fff" }}>
       <LineChart width={width} height={height} data={data} margin={{ top: 44, right: 24, bottom: 52, left: 16 }}>
@@ -536,7 +507,7 @@ function renderTrendFinesMoney({ data }) {
 
 // ==== TREND (Штрафы) — количества (шт.): Нарушения + Постановления ====
 function renderTrendFinesCounts({ data }) {
-  const C = { n: "#ef4444", p: "#3b82f6" }; // нарушения=красный, постановления=синий
+  const C = { n: "#ef4444", p: "#3b82f6" };
   return ({ width, height }) => (
     <div style={{ width, height, background: "#fff" }}>
       <LineChart width={width} height={height} data={data} margin={{ top: 44, right: 24, bottom: 52, left: 16 }}>
@@ -554,7 +525,7 @@ function renderTrendFinesCounts({ data }) {
 
 // ==== TREND (Эвакуация) — количества (шт.): Выезды + Эвакуации ====
 function renderTrendEvacCounts({ data }) {
-  const C = { v: "#3b82f6", e: "#f59e0b" }; // выезды=синий, эвакуации=оранж
+  const C = { v: "#3b82f6", e: "#f59e0b" };
   return ({ width, height }) => (
     <div style={{ width, height, background: "#fff" }}>
       <LineChart width={width} height={height} data={data} margin={{ top: 44, right: 24, bottom: 52, left: 16 }}>
@@ -572,7 +543,7 @@ function renderTrendEvacCounts({ data }) {
 
 // ==== TREND (Эвакуация) — деньги (₽): Поступления ====
 function renderTrendEvacMoney({ data }) {
-  const C = { r: "#10b981" }; // поступления=зелёный
+  const C = { r: "#10b981" };
   return ({ width, height }) => (
     <div style={{ width, height, background: "#fff" }}>
       <LineChart width={width} height={height} data={data} margin={{ top: 44, right: 24, bottom: 52, left: 16 }}>
@@ -586,7 +557,6 @@ function renderTrendEvacMoney({ data }) {
     </div>
   );
 }
-
 
 function renderStructurePie({ data }) {
   const COLORS = ["#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#8b5cf6"];
@@ -628,7 +598,7 @@ function renderStructurePie({ data }) {
 }
 
 function renderBarCounts({ data }) {
-  const COLOR = "#2563eb"; // синий
+  const COLOR = "#2563eb";
   return ({ width, height }) => (
     <div style={{ width, height, background: "#fff" }}>
       <BarChart width={width} height={height} data={data} margin={{ top: 36, right: 16, bottom: 16, left: 12 }}>
@@ -649,7 +619,7 @@ function renderBarCounts({ data }) {
 }
 
 function renderBarMoney({ data }) {
-  const COLOR = "#10b981"; // зелёный
+  const COLOR = "#10b981";
   return ({ width, height }) => (
     <div style={{ width, height, background: "#fff" }}>
       <BarChart width={width} height={height} data={data} margin={{ top: 36, right: 16, bottom: 16, left: 12 }}>
@@ -669,12 +639,11 @@ function renderBarMoney({ data }) {
   );
 }
 
-
 /* =========================
    Основной компонент
    ========================= */
 export default function App() {
-  const [tab, setTab] = useState("fines"); // fines | evac
+  const [tab, setTab] = useState("fines");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
   const [loading, setLoading] = useState(false);
@@ -684,7 +653,6 @@ export default function App() {
   const [analytics, setAnalytics] = useState(null);
   const [anError, setAnError] = useState("");
 
-  // адаптив
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
@@ -694,14 +662,12 @@ export default function App() {
     return () => mq.removeEventListener?.("change", update);
   }, []);
 
-  // refs
   const lineRef = useRef(null);
   const donutRef = useRef(null);
   const countsRef = useRef(null);
   const moneyRef = useRef(null);
   const analyticsRef = useRef(null);
 
-  // Импорт/Экспорт панель
   const [impExpBusy, setImpExpBusy] = useState(false);
   const [impFile, setImpFile] = useState(null);
   const [allowIds, setAllowIds] = useState(false);
@@ -756,6 +722,7 @@ export default function App() {
       setImpExpBusy(false);
     }
   }
+
   async function handleExport() {
     setImpExpMsg("");
     setImpExpBusy(true);
@@ -777,44 +744,20 @@ export default function App() {
   });
 
   return (
-    <div
-      style={{
-        padding: isMobile ? 12 : 20,
-        maxWidth: 1280,
-        margin: "0 auto",
-        fontFamily: "Inter, system-ui, sans-serif",
-        color: "#111827",
-        backgroundColor: "#f9fafb",
-      }}
-    >
-      <h1 style={{ fontSize: isMobile ? 22 : 28, marginBottom: 12 }}>
+    <div className={`app-container ${isMobile ? "app-mobile" : ""}`}>
+      <h1 className={`app-title ${isMobile ? "app-title-mobile" : ""}`}>
         ЦОДД — диаграммы (build v12){" "}
-        <span style={{ color: "#62a744", fontSize: isMobile ? 12 : 14, fontWeight: 600 }}>KPI из /api/v1/analytics</span>
+        <span className={`version-badge ${isMobile ? "version-badge-mobile" : ""}`}>KPI из /api/v1/analytics</span>
       </h1>
 
-      {/* Фильтры (ровные контролы) */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(160px, max-content))",
-          alignItems: "end",
-          gap: 12,
-          marginBottom: 8,
-        }}
-      >
+      {/* Фильтры */}
+      <div className="filters-container">
         <div style={{ minWidth: 180 }}>
-          <label style={{ display: "block", fontSize: 12, color: "#374151", marginBottom: 6 }}>Таблица</label>
+          <label className="filter-label">Таблица</label>
           <select
             value={tab}
             onChange={(e) => setTab(e.target.value)}
-            style={{
-              height: 40,
-              padding: "8px 10px",
-              borderRadius: 8,
-              border: "1px solid #d1d5db",
-              minWidth: 180,
-              boxSizing: "border-box",
-            }}
+            className="filter-select"
           >
             <option value="fines">Штрафы</option>
             <option value="evac">Эвакуация</option>
@@ -822,503 +765,322 @@ export default function App() {
         </div>
 
         <div style={{ minWidth: 160 }}>
-          <label style={{ display: "block", fontSize: 12, color: "#374151", marginBottom: 6 }}>Дата с</label>
+          <label className="filter-label">Дата с</label>
           <input
             type="date"
             value={dateStart}
             onChange={(e) => setDateStart(e.target.value)}
-            style={{
-              height: 40,
-              padding: "8px 10px",
-              borderRadius: 8,
-              border: "1px solid #d1d5db",
-              width: "100%",
-              boxSizing: "border-box",
-            }}
+            className="filter-input"
           />
         </div>
 
         <div style={{ minWidth: 160 }}>
-          <label style={{ display: "block", fontSize: 12, color: "#374151", marginBottom: 6 }}>Дата по</label>
+          <label className="filter-label">Дата по</label>
           <input
             type="date"
             value={dateEnd}
             onChange={(e) => setDateEnd(e.target.value)}
-            style={{
-              height: 40,
-              padding: "8px 10px",
-              borderRadius: 8,
-              border: "1px solid #d1d5db",
-              width: "100%",
-              boxSizing: "border-box",
-            }}
+            className="filter-input"
           />
         </div>
 
         <div>
-          <label style={{ display: "block", visibility: "hidden", marginBottom: 6 }}>.</label>
+          <label className="filter-label" style={{ visibility: "hidden" }}>.</label>
           <button
             onClick={reload}
             disabled={loading}
-            style={{
-              height: 40,
-              padding: "0 16px",
-              borderRadius: 10,
-              border: "1px solid #111827",
-              background: loading ? "#9ca3af" : "#111827",
-              color: "white",
-              cursor: loading ? "not-allowed" : "pointer",
-              whiteSpace: "nowrap",
-            }}
+            className="reload-button"
           >
             {loading ? "Загрузка…" : "Применить"}
           </button>
         </div>
       </div>
 
-      {(error || anError) && <div style={{ color: "#b91c1c", marginTop: 12 }}>Ошибка: {error || anError}</div>}
+      {(error || anError) && <div className="error-message">Ошибка: {error || anError}</div>}
 
       {!loading && rows.length === 0 && (
-        <div style={{ marginTop: 24, opacity: 0.7 }}>Нет данных. Измените фильтры и нажмите «Применить».</div>
+        <div className="no-data">Нет данных. Измените фильтры и нажмите «Применить».</div>
       )}
 
       {rows.length > 0 && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(12, 1fr)",
-            gap: 16,
-            marginTop: 20,
-          }}
-        >
+        <div className="grid-container">
           {/* KPI */}
           <div style={span(12)}>
             <KPIFromAnalytics table={tab} analytics={analytics} />
           </div>
 
-{tab === "fines" && (
-  <>
-    {/* Суммы (₽): Штрафы + Взыскано */}
-    <div
-      style={{
-        gridColumn: "span 12",
-        minHeight: isMobile ? 320 : 380,
-        background: "#fff",
-        borderRadius: 12,
-        padding: 16,
-        boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        <h3 style={{ margin: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>Динамика: суммы (₽)</h3>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
-          <button
-            onClick={() =>
-              exportPNGConsistent(
-                renderTrendFinesMoney({ data: agg.byDay }),
-                `trend_fines_money.png`,
-                { width: 1280, height: 720 }
-              )
-            }
-          >PNG</button>
-          <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Штрафы: d["Штрафы"], Взыскано: d["Взыскано"] })), `trend_fines_money.csv`)}>CSV</button>
-          <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Штрафы: d["Штрафы"], Взыскано: d["Взыскано"] })), "Trend (₽)", `trend_fines_money.xlsx`)}>XLSX</button>
-        </div>
-      </div>
-      <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
-        <LineChart
-          data={agg.byDay}
-          margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
-          <YAxis width={isMobile ? 70 : 90} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => rubCompact.format(Number(v) || 0)} />
-          <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
-          <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
-          <Line type="monotone" dataKey="Штрафы"   dot={false} stroke="#9333ea" strokeWidth={2} />
-          <Line type="monotone" dataKey="Взыскано" dot={false} stroke="#10b981" strokeWidth={2} />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-
-    {/* Количества (шт.): Нарушения + Постановления */}
-    <div
-      style={{
-        gridColumn: "span 12",
-        minHeight: isMobile ? 320 : 380,
-        background: "#fff",
-        borderRadius: 12,
-        padding: 16,
-        boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        <h3 style={{ margin: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>Динамика: количества (шт.)</h3>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
-          <button
-            onClick={() =>
-              exportPNGConsistent(
-                renderTrendFinesCounts({ data: agg.byDay }),
-                `trend_fines_counts.png`,
-                { width: 1280, height: 720 }
-              )
-            }
-          >PNG</button>
-          <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Нарушения: d["Нарушения"], Постановления: d["Постановления"] })), `trend_fines_counts.csv`)}>CSV</button>
-          <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Нарушения: d["Нарушения"], Постановления: d["Постановления"] })), "Trend (шт.)", `trend_fines_counts.xlsx`)}>XLSX</button>
-        </div>
-      </div>
-      <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
-        <LineChart
-          data={agg.byDay}
-          margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
-          <YAxis width={isMobile ? 60 : 80} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
-          <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
-          <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
-          <Line type="monotone" dataKey="Нарушения"     dot={false} stroke="#ef4444" strokeWidth={2} />
-          <Line type="monotone" dataKey="Постановления" dot={false} stroke="#3b82f6" strokeWidth={2} />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  </>
-)}
-
-        {/* === Тренды: для ЭВАКУАЦИИ две карточки === */}
-        {tab === "evac" && (
-          <>
-            {/* Количества (шт.): Выезды + Эвакуации */}
-            <div
-              style={{
-                gridColumn: "span 12",
-                minHeight: isMobile ? 320 : 380,
-                background: "#fff",
-                borderRadius: 12,
-                padding: 16,
-                boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                <h3 style={{ margin: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>Динамика: выезды и эвакуации (шт.)</h3>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
-                  <button
-                    onClick={() =>
-                      exportPNGConsistent(
-                        renderTrendEvacCounts({ data: agg.byDay }),
-                        `trend_evac_counts.png`,
-                        { width: 1280, height: 720 }
-                      )
-                    }
-                  >PNG</button>
-                  <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Выезды: d["Выезды"], Эвакуации: d["Эвакуации"] })), `trend_evac_counts.csv`)}>CSV</button>
-                  <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Выезды: d["Выезды"], Эвакуации: d["Эвакуации"] })), "Trend (шт.)", `trend_evac_counts.xlsx`)}>XLSX</button>
+          {tab === "fines" && (
+            <>
+              {/* Суммы (₽): Штрафы + Взыскано */}
+              <div className={`chart-card ${isMobile ? "chart-card-mobile" : ""}`} style={span(12)}>
+                <div className="chart-header">
+                  <h3 className={`chart-title ${isMobile ? "chart-title-mobile" : ""}`}>Динамика: суммы (₽)</h3>
+                  <div className="export-buttons" data-export-ignore>
+                    <button
+                      onClick={() =>
+                        exportPNGConsistent(
+                          renderTrendFinesMoney({ data: agg.byDay }),
+                          `trend_fines_money.png`,
+                          { width: 1280, height: 720 }
+                        )
+                      }
+                    >PNG</button>
+                    <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Штрафы: d["Штрафы"], Взыскано: d["Взыскано"] })), `trend_fines_money.csv`)}>CSV</button>
+                    <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Штрафы: d["Штрафы"], Взыскано: d["Взыскано"] })), "Trend (₽)", `trend_fines_money.xlsx`)}>XLSX</button>
+                  </div>
                 </div>
+                <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
+                  <LineChart
+                    data={agg.byDay}
+                    margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
+                    <YAxis width={isMobile ? 70 : 90} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => rubCompact.format(Number(v) || 0)} />
+                    <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
+                    <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
+                    <Line type="monotone" dataKey="Штрафы"   dot={false} stroke="#9333ea" strokeWidth={2} />
+                    <Line type="monotone" dataKey="Взыскано" dot={false} stroke="#10b981" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-              <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
-                <LineChart
-                  data={agg.byDay}
-                  margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
-                  <YAxis width={isMobile ? 60 : 80} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
-                  <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
-                  <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
-                  <Line type="monotone" dataKey="Выезды"    dot={false} stroke="#3b82f6" strokeWidth={2} />
-                  <Line type="monotone" dataKey="Эвакуации" dot={false} stroke="#f59e0b" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
+
+              {/* Количества (шт.): Нарушения + Постановления */}
+              <div className={`chart-card ${isMobile ? "chart-card-mobile" : ""}`} style={span(12)}>
+                <div className="chart-header">
+                  <h3 className={`chart-title ${isMobile ? "chart-title-mobile" : ""}`}>Динамика: количества (шт.)</h3>
+                  <div className="export-buttons" data-export-ignore>
+                    <button
+                      onClick={() =>
+                        exportPNGConsistent(
+                          renderTrendFinesCounts({ data: agg.byDay }),
+                          `trend_fines_counts.png`,
+                          { width: 1280, height: 720 }
+                        )
+                      }
+                    >PNG</button>
+                    <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Нарушения: d["Нарушения"], Постановления: d["Постановления"] })), `trend_fines_counts.csv`)}>CSV</button>
+                    <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Нарушения: d["Нарушения"], Постановления: d["Постановления"] })), "Trend (шт.)", `trend_fines_counts.xlsx`)}>XLSX</button>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
+                  <LineChart
+                    data={agg.byDay}
+                    margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
+                    <YAxis width={isMobile ? 60 : 80} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
+                    <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
+                    <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
+                    <Line type="monotone" dataKey="Нарушения"     dot={false} stroke="#ef4444" strokeWidth={2} />
+                    <Line type="monotone" dataKey="Постановления" dot={false} stroke="#3b82f6" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </>
+          )}
+
+          {/* === Тренды: для ЭВАКУАЦИИ две карточки === */}
+          {tab === "evac" && (
+            <>
+              {/* Количества (шт.): Выезды + Эвакуации */}
+              <div className={`chart-card ${isMobile ? "chart-card-mobile" : ""}`} style={span(12)}>
+                <div className="chart-header">
+                  <h3 className={`chart-title ${isMobile ? "chart-title-mobile" : ""}`}>Динамика: выезды и эвакуации (шт.)</h3>
+                  <div className="export-buttons" data-export-ignore>
+                    <button
+                      onClick={() =>
+                        exportPNGConsistent(
+                          renderTrendEvacCounts({ data: agg.byDay }),
+                          `trend_evac_counts.png`,
+                          { width: 1280, height: 720 }
+                        )
+                      }
+                    >PNG</button>
+                    <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Выезды: d["Выезды"], Эвакуации: d["Эвакуации"] })), `trend_evac_counts.csv`)}>CSV</button>
+                    <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Выезды: d["Выезды"], Эвакуации: d["Эвакуации"] })), "Trend (шт.)", `trend_evac_counts.xlsx`)}>XLSX</button>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
+                  <LineChart
+                    data={agg.byDay}
+                    margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
+                    <YAxis width={isMobile ? 60 : 80} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
+                    <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
+                    <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
+                    <Line type="monotone" dataKey="Выезды"    dot={false} stroke="#3b82f6" strokeWidth={2} />
+                    <Line type="monotone" dataKey="Эвакуации" dot={false} stroke="#f59e0b" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Деньги (₽): Поступления */}
+              <div className={`chart-card ${isMobile ? "chart-card-mobile" : ""}`} style={span(12)}>
+                <div className="chart-header">
+                  <h3 className={`chart-title ${isMobile ? "chart-title-mobile" : ""}`}>Динамика: поступления (₽)</h3>
+                  <div className="export-buttons" data-export-ignore>
+                    <button
+                      onClick={() =>
+                        exportPNGConsistent(
+                          renderTrendEvacMoney({ data: agg.byDay }),
+                          `trend_evac_money.png`,
+                          { width: 1280, height: 720 }
+                        )
+                      }
+                    >PNG</button>
+                    <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Поступления: d["Поступления"] })), `trend_evac_money.csv`)}>CSV</button>
+                    <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Поступления: d["Поступления"] })), "Trend (₽)", `trend_evac_money.xlsx`)}>XLSX</button>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
+                  <LineChart
+                    data={agg.byDay}
+                    margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
+                    <YAxis width={isMobile ? 70 : 90} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => rubCompact.format(Number(v) || 0)} />
+                    <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
+                    <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
+                    <Line type="monotone" dataKey="Поступления" dot={false} stroke="#10b981" strokeWidth={2} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </>
+          )}
+
+          {/* Структура (пирог) + экспорт */}
+          <div className="chart-card" style={span(isMobile ? 12 : 6)} ref={donutRef}>
+            <div className="chart-header">
+              <h3 className="chart-title">
+                {tab === "fines" ? "Структура взысканий" : "Структура выездов"}
+              </h3>
+              <div className="export-buttons" data-export-ignore>
+                <button onClick={() => exportPNGConsistent(renderStructurePie({ data: agg.pie }), `structure_${tab}.png`, { width: 1200, height: 800 })}>PNG</button>
+                <button onClick={() => exportCSV(agg.pie.map((x) => ({ Показатель: x.name, Значение: x.value })), `structure_${tab}.csv`)}>CSV</button>
+                <button onClick={() => exportXLSX(agg.pie.map((x) => ({ name: x.name, value: x.value })), "Structure", `structure_${tab}.xlsx`)}>XLSX</button>
+              </div>
             </div>
 
-            {/* Деньги (₽): Поступления */}
-            <div
-              style={{
-                gridColumn: "span 12",
-                minHeight: isMobile ? 320 : 380,
-                background: "#fff",
-                borderRadius: 12,
-                padding: 16,
-                boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                <h3 style={{ margin: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>Динамика: поступления (₽)</h3>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
-                  <button
-                    onClick={() =>
-                      exportPNGConsistent(
-                        renderTrendEvacMoney({ data: agg.byDay }),
-                        `trend_evac_money.png`,
-                        { width: 1280, height: 720 }
-                      )
-                    }
-                  >PNG</button>
-                  <button onClick={() => exportCSV(agg.byDay.map(d => ({ date: d.date, Поступления: d["Поступления"] })), `trend_evac_money.csv`)}>CSV</button>
-                  <button onClick={() => exportXLSX(agg.byDay.map(d => ({ date: d.date, Поступления: d["Поступления"] })), "Trend (₽)", `trend_evac_money.xlsx`)}>XLSX</button>
-                </div>
-              </div>
-              <ResponsiveContainer width="100%" height={isMobile ? 270 : 400}>
-                <LineChart
-                  data={agg.byDay}
-                  margin={{ top: isMobile ? 36 : 44, right: 20, bottom: isMobile ? 36 : 48, left: 12 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} interval="preserveEnd" angle={-30} textAnchor="end" height={isMobile ? 40 : 52} />
-                  <YAxis width={isMobile ? 70 : 90} tick={{ fontSize: isMobile ? 10 : 12, fill: "#0f172a" }} tickFormatter={(v) => rubCompact.format(Number(v) || 0)} />
-                  <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
-                  <Legend verticalAlign="top" height={isMobile ? 28 : 36} wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
-                  <Line type="monotone" dataKey="Поступления" dot={false} stroke="#10b981" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
+            <div style={{ marginTop: 8 }} data-export-ignore>
+              <LegendBullets items={agg.pie.map(p => ({ name: p.name, color: getPieColor(p.name) }))} />
             </div>
-          </>
-        )}
 
-{/* Структура (пирог) + экспорт */}
-<div
-  style={{
-    gridColumn: isMobile ? "span 12" : "span 6",
-    minHeight: 340,
-    background: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-  }}
-  ref={donutRef}
->
-  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-    <h3 style={{ margin: 0, color: "#0f172a" }}>
-      {tab === "fines" ? "Структура взысканий" : "Структура выездов"}
-    </h3>
-    <div style={{ display: "flex", gap: 8 }} data-export-ignore>
-      <button onClick={() => exportPNGConsistent(renderStructurePie({ data: agg.pie }), `structure_${tab}.png`, { width: 1200, height: 800 })}>PNG</button>
-      <button onClick={() => exportCSV(agg.pie.map((x) => ({ Показатель: x.name, Значение: x.value })), `structure_${tab}.csv`)}>CSV</button>
-      <button onClick={() => exportXLSX(agg.pie.map((x) => ({ name: x.name, value: x.value })), "Structure", `structure_${tab}.xlsx`)}>XLSX</button>
-    </div>
-  </div>
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie
+                  data={agg.pie}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={100}
+                  labelLine={false}
+                  label={({ name, value }) => `${name}: ${numCompact.format(Number(value) || 0)}`}
+                  isAnimationActive={false}
+                >
+                  {agg.pie.map((slice, i) => (
+                    <Cell key={i} fill={getPieColor(slice.name)} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(v, n) => {
+                    const total = agg.pie.reduce((s, x) => s + Number(x.value || 0), 0) || 1;
+                    const precise = numFmt.format(Number(v) || 0);
+                    const perc = ((Number(v) || 0) / total) * 100;
+                    return [`${precise} (${perc.toFixed(1)}%)`, n];
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
 
-  {/* “ручная” легенда с цветами, чтобы в онлайне совпадало с PNG */}
-  <div style={{ marginTop: 8 }} data-export-ignore>
-    <LegendBullets items={agg.pie.map(p => ({ name: p.name, color: getPieColor(p.name) }))} />
-  </div>
+            <ul className="pie-list">
+              {agg.pie.map((s, i) => {
+                const total = agg.pie.reduce((sum, x) => sum + Number(x.value || 0), 0) || 1;
+                const perc = ((Number(s.value) || 0) / total) * 100;
+                const precise = s.kind === "rub" ? moneyFmt.format(Number(s.value) || 0) : numFmt.format(Number(s.value) || 0);
+                return (
+                  <li key={i}>
+                    {s.name}: <b>{precise}</b> ({perc.toFixed(1)}%)
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
 
-  <ResponsiveContainer width="100%" height={260}>
-    <PieChart>
-      <Pie
-        data={agg.pie}
-        dataKey="value"
-        nameKey="name"
-        cx="50%"
-        cy="50%"
-        innerRadius={55}
-        outerRadius={100}
-        labelLine={false}
-        label={({ name, value }) => `${name}: ${numCompact.format(Number(value) || 0)}`}
-        isAnimationActive={false}
-      >
-        {agg.pie.map((slice, i) => (
-          <Cell key={i} fill={getPieColor(slice.name)} />
-        ))}
-      </Pie>
-      <Tooltip
-        formatter={(v, n) => {
-          const total = agg.pie.reduce((s, x) => s + Number(x.value || 0), 0) || 1;
-          const precise = numFmt.format(Number(v) || 0);
-          const perc = ((Number(v) || 0) / total) * 100;
-          return [`${precise} (${perc.toFixed(1)}%)`, n];
-        }}
-      />
-    </PieChart>
-  </ResponsiveContainer>
+          {/* Бар: количества (шт.) + экспорт */}
+          <div className="chart-card" style={span(isMobile ? 12 : 3)} ref={countsRef}>
+            <div className="chart-header">
+              <h3 className="chart-title">Показатели (шт.)</h3>
+              <div className="export-buttons" data-export-ignore>
+                <button onClick={() => exportPNGConsistent(renderBarCounts({ data: agg.barCounts }), `counts_${tab}.png`, { width: 900, height: 700 })}>PNG</button>
+                <button onClick={() => exportCSV(agg.barCounts, `counts_${tab}.csv`)}>CSV</button>
+                <button onClick={() => exportXLSX(agg.barCounts, "Counts", `counts_${tab}.xlsx`)}>XLSX</button>
+              </div>
+            </div>
 
-  <ul style={{ marginTop: 8, fontSize: 12, color: "#374151", listStyle: "disc", paddingLeft: 20 }}>
-    {agg.pie.map((s, i) => {
-      const total = agg.pie.reduce((sum, x) => sum + Number(x.value || 0), 0) || 1;
-      const perc = ((Number(s.value) || 0) / total) * 100;
-      const precise = s.kind === "rub" ? moneyFmt.format(Number(s.value) || 0) : numFmt.format(Number(s.value) || 0);
-      return (
-        <li key={i}>
-          {s.name}: <b>{precise}</b> ({perc.toFixed(1)}%)
-        </li>
-      );
-    })}
-  </ul>
-</div>
+            <div style={{ marginTop: 8 }} data-export-ignore>
+              <LegendBullets items={agg.barCounts.map(b => ({ name: b.name, color: getBarColor(b.name, tab, "counts") }))} />
+            </div>
 
-<div
-  style={{
-    gridColumn: isMobile ? "span 12" : "span 3",
-    minHeight: 340,
-    background: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-    overflow: "hidden",
-  }}
-  ref={countsRef}
->
-      {/* Шапка: разрешаем переносы, заголовок не обрезаем */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          minWidth: 0,
-          flexWrap: "wrap",          // ← ключ: можно переносить на следующую строку
-        }}
-      >
-        <h3
-          style={{
-            margin: 0,
-            color: "#0f172a",
-            fontSize: isMobile ? 16 : 18,
-            lineHeight: 1.25,
-            flex: "1 1 auto",
-            // убрали overflow/nowrap, чтобы текст не исчезал
-            whiteSpace: "normal",     // ← позволяет переносить строку
-            wordBreak: "break-word",  // ← если слово длинное
-            marginRight: 8,
-          }}
-        >
-          Показатели (шт.)
-        </h3>
-        <div
-          style={{
-            display: "flex",
-            flex: "0 0 auto",
-            gap: 8,
-            rowGap: 8,
-            flexWrap: "wrap",
-            justifyContent: "flex-end",
-            marginLeft: "auto",       // ← при широкой шапке уводит кнопки вправо
-          }}
-          data-export-ignore
-        >
-          <button onClick={() => exportPNGConsistent(renderBarCounts({ data: agg.barCounts }), `counts_${tab}.png`, { width: 900, height: 700 })}>PNG</button>
-          <button onClick={() => exportCSV(agg.barCounts, `counts_${tab}.csv`)}>CSV</button>
-          <button onClick={() => exportXLSX(agg.barCounts, "Counts", `counts_${tab}.xlsx`)}>XLSX</button>
-        </div>
-      </div>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={agg.barCounts} margin={{ top: 10, right: 12, bottom: 10, left: 8 }} barCategoryGap={24}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0f172a" }} />
+                <YAxis width={70} tick={{ fontSize: 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
+                <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
+                <Bar dataKey="value" name="Значение" isAnimationActive={false}>
+                  {agg.barCounts.map((entry, idx) => (
+                    <Cell key={`c-${idx}`} fill={getBarColor(entry.name, tab, "counts")} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
 
+          {/* Бар: деньги (₽) + экспорт */}
+          <div className="chart-card" style={span(isMobile ? 12 : 3)} ref={moneyRef}>
+            <div className="chart-header">
+              <h3 className="chart-title">Денежные показатели (₽)</h3>
+              <div className="export-buttons" data-export-ignore>
+                <button onClick={() => exportPNGConsistent(renderBarMoney({ data: agg.barMoney }), `money_${tab}.png`, { width: 900, height: 700 })}>PNG</button>
+                <button onClick={() => exportCSV(agg.barMoney, `money_${tab}.csv`)}>CSV</button>
+                <button onClick={() => exportXLSX(agg.barMoney, "Money", `money_${tab}.xlsx`)}>XLSX</button>
+              </div>
+            </div>
 
+            <div style={{ marginTop: 8 }} data-export-ignore>
+              <LegendBullets items={agg.barMoney.map(b => ({ name: b.name, color: getBarColor(b.name, tab, "money") }))} />
+            </div>
 
-      {/* ручная легенда с цветами */}
-      <div style={{ marginTop: 8 }} data-export-ignore>
-        <LegendBullets items={agg.barCounts.map(b => ({ name: b.name, color: getBarColor(b.name, tab, "counts") }))} />
-      </div>
-
-      <ResponsiveContainer width="100%" height={260}>
-        <BarChart data={agg.barCounts} margin={{ top: 10, right: 12, bottom: 10, left: 8 }} barCategoryGap={24}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0f172a" }} />
-          <YAxis width={70} tick={{ fontSize: 12, fill: "#0f172a" }} tickFormatter={(v) => numCompact.format(Number(v) || 0)} />
-          <Tooltip formatter={(v, n) => [numFmt.format(Number(v) || 0), n]} />
-          <Bar dataKey="value" name="Значение" isAnimationActive={false}>
-            {agg.barCounts.map((entry, idx) => (
-              <Cell key={`c-${idx}`} fill={getBarColor(entry.name, tab, "counts")} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-
-    {/* Бар: деньги (₽) + экспорт */}
-    <div
-      style={{
-        gridColumn: isMobile ? "span 12" : "span 3",
-        minHeight: 340,
-        background: "#fff",
-        borderRadius: 12,
-        padding: 16,
-        boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-        overflow: "hidden",
-      }}
-      ref={moneyRef}
-    >
-      {/* Шапка: разрешаем переносы, заголовок не обрезаем */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          minWidth: 0,
-          flexWrap: "wrap",          // ← ключ: можно переносить на следующую строку
-        }}
-      >
-        <h3
-          style={{
-            margin: 0,
-            color: "#0f172a",
-            fontSize: isMobile ? 16 : 18,
-            lineHeight: 1.25,
-            flex: "1 1 auto",
-            whiteSpace: "normal",     // ← позволяет переносить строку
-            wordBreak: "break-word",
-            marginRight: 8,
-          }}
-        >
-          Денежные показатели (₽)
-        </h3>
-        <div
-          style={{
-            display: "flex",
-            flex: "0 0 auto",
-            gap: 8,
-            rowGap: 8,
-            flexWrap: "wrap",
-            justifyContent: "flex-end",
-            marginLeft: "auto",       // ← при широкой шапке уводит кнопки вправо
-          }}
-          data-export-ignore
-        >
-          <button onClick={() => exportPNGConsistent(renderBarMoney({ data: agg.barMoney }), `money_${tab}.png`, { width: 900, height: 700 })}>PNG</button>
-          <button onClick={() => exportCSV(agg.barMoney, `money_${tab}.csv`)}>CSV</button>
-          <button onClick={() => exportXLSX(agg.barMoney, "Money", `money_${tab}.xlsx`)}>XLSX</button>
-        </div>
-      </div>
-
-      {/* ручная легенда с цветами */}
-      <div style={{ marginTop: 8 }} data-export-ignore>
-        <LegendBullets items={agg.barMoney.map(b => ({ name: b.name, color: getBarColor(b.name, tab, "money") }))} />
-      </div>
-
-      <ResponsiveContainer width="100%" height={260}>
-        <BarChart data={agg.barMoney} margin={{ top: 10, right: 12, bottom: 10, left: 8 }} barCategoryGap={24}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0f172a" }} />
-          <YAxis width={80} tick={{ fontSize: 12, fill: "#0f172a" }} tickFormatter={(v) => rubCompact.format(Number(v) || 0)} />
-          <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
-          <Bar dataKey="value" name="Сумма" isAnimationActive={false}>
-            {agg.barMoney.map((entry, idx) => (
-              <Cell key={`m-${idx}`} fill={getBarColor(entry.name, tab, "money")} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={agg.barMoney} margin={{ top: 10, right: 12, bottom: 10, left: 8 }} barCategoryGap={24}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#0f172a" }} />
+                <YAxis width={80} tick={{ fontSize: 12, fill: "#0f172a" }} tickFormatter={(v) => rubCompact.format(Number(v) || 0)} />
+                <Tooltip formatter={(v, n) => [moneyFmt.format(Number(v) || 0), n]} />
+                <Bar dataKey="value" name="Сумма" isAnimationActive={false}>
+                  {agg.barMoney.map((entry, idx) => (
+                    <Cell key={`m-${idx}`} fill={getBarColor(entry.name, tab, "money")} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
 
           {/* Таблица аналитики */}
-          <div style={{ ...span(12) }} ref={analyticsRef}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space_between",
-                alignItems: "center",
-                gap: 8,
-                flexWrap: "wrap",
-                rowGap: 8,
-                paddingRight: 4,
-                marginBottom: 8,
-              }}
-            >
-              <h3 style={{ margin: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>
+          <div style={span(12)} ref={analyticsRef}>
+            <div className="analytics-header">
+              <h3 className={`chart-title ${isMobile ? "chart-title-mobile" : ""}`}>
                 Сводка аналитики ({tab === "fines" ? "Штрафы" : "Эвакуация"})
               </h3>
               {analytics && (
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} data-export-ignore>
+                <div className="export-buttons" data-export-ignore>
                   <button
                     onClick={() =>
                       exportPNGConsistent(
@@ -1394,19 +1156,11 @@ export default function App() {
           </div>
 
           {/* Импорт / Экспорт */}
-          <div style={{ ...span(12) }}>
-            <div
-              style={{
-                background: "#fff",
-                borderRadius: 12,
-                padding: 16,
-                boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-                marginTop: 4,
-              }}
-            >
-              <h3 style={{ marginTop: 0, color: "#0f172a", fontSize: isMobile ? 16 : 18 }}>Импорт / Экспорт базы</h3>
+          <div style={span(12)}>
+            <div className="import-export-panel">
+              <h3 className={`chart-title ${isMobile ? "chart-title-mobile" : ""}`}>Импорт / Экспорт базы</h3>
 
-              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+              <div className="sheet-selection">
                 <label>
                   <input
                     type="checkbox"
@@ -1441,7 +1195,7 @@ export default function App() {
                 </label>
               </div>
 
-              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 12 }}>
+              <div className="import-controls">
                 <input type="file" accept=".xlsx,.xls" onChange={(e) => setImpFile(e.target.files?.[0] || null)} />
                 <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="checkbox" checked={allowIds} onChange={(e) => setAllowIds(e.target.checked)} />
@@ -1450,31 +1204,17 @@ export default function App() {
                 <button
                   onClick={handleImport}
                   disabled={impExpBusy || !impFile}
-                  style={{
-                    padding: "8px 12px",
-                    borderRadius: 8,
-                    border: "1px solid #111827",
-                    background: "#111827",
-                    color: "#fff",
-                    width: isMobile ? "100%" : undefined,
-                  }}
+                  className="import-button"
                 >
                   Загрузить в БД
                 </button>
               </div>
 
-              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+              <div className="export-controls">
                 <button
                   onClick={handleExport}
                   disabled={impExpBusy}
-                  style={{
-                    padding: "8px 12px",
-                    borderRadius: 8,
-                    border: "1px solid #0f766e",
-                    background: "#0f766e",
-                    color: "#fff",
-                    width: isMobile ? "100%" : undefined,
-                  }}
+                  className="export-button"
                 >
                   Выгрузить в XLSX
                 </button>
@@ -1482,18 +1222,8 @@ export default function App() {
               </div>
 
               {impExpMsg && (
-                <pre
-                  style={{
-                    marginTop: 12,
-                    padding: 12,
-                    background: "#f3f4f6",
-                    borderRadius: 8,
-                    maxHeight: 260,
-                    overflow: "auto",
-                    fontSize: isMobile ? 12 : 13,
-                  }}
-                >
-{impExpMsg}
+                <pre className={`import-message ${isMobile ? "import-message-mobile" : ""}`}>
+                  {impExpMsg}
                 </pre>
               )}
             </div>

@@ -1,45 +1,6 @@
-
 import { useState } from 'react';
 import './../styles/UslugiPage.css';
-
-const ProjectIcon = () => (
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#62a744">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-    <polyline points="14 2 14 8 20 8"/>
-    <path d="M16 13H8"/>
-    <path d="M16 17H8"/>
-    <path d="M10 9H9H8"/>
-  </svg>
-);
-
-const CraneIcon = () => (
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#62a744">
-    <path d="M6 21V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v18"/>
-    <path d="M6 15H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/>
-    <circle cx="12" cy="12" r="1"/>
-    <circle cx="12" cy="16" r="1"/>
-    <circle cx="12" cy="8" r="1"/>
-  </svg>
-);
-
-const TowTruckIcon = () => (
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#62a744">
-    <path d="M10 17V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v13"/>
-    <path d="M10 17H2v-4h8"/>
-    <circle cx="16" cy="17" r="2"/>
-    <circle cx="6" cy="17" r="2"/>
-    <path d="M14 7h4"/>
-    <path d="M14 11h4"/>
-    <path d="M14 15h4"/>
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <line x1="18" y1="6" x2="6" y2="18"/>
-    <line x1="6" y1="6" x2="18" y2="18"/>
-  </svg>
-);
+import { CloseIcon } from '../assets/Icons';
 
 function Usluga({ title, description, price, features, icon, onOrder, index }) {
   const [showModal, setShowModal] = useState(false);
@@ -144,6 +105,16 @@ function Usluga({ title, description, price, features, icon, onOrder, index }) {
             aria-labelledby="modal-title"
             aria-modal="true"
           >
+            {/* ОДНА кнопка закрытия - используем новую стилизованную */}
+            <button 
+              className="modal-close-home" 
+              onClick={handleCloseModal}
+              disabled={isSubmitting}
+              aria-label="Закрыть окно заказа"
+            >
+              ×
+            </button>
+
             {!isSuccess ? (
               <>
                 <div className="modal-header">
@@ -151,14 +122,7 @@ function Usluga({ title, description, price, features, icon, onOrder, index }) {
                     <h2 id="modal-title">Заказ услуги</h2>
                     <p className="modal-subtitle">{title}</p>
                   </div>
-                  <button 
-                    className="modal-close" 
-                    onClick={handleCloseModal}
-                    disabled={isSubmitting}
-                    aria-label="Закрыть окно заказа"
-                  >
-                    <CloseIcon />
-                  </button>
+                  {/* УДАЛЕНО: старая кнопка закрытия */}
                 </div>
 
                 <form className="order-form" onSubmit={handleSubmit}>

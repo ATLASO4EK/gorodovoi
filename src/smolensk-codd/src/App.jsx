@@ -1,10 +1,10 @@
-/* Основная логика - САМЫЙ ВАЖНЫЙ ОБЪЕКТ */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
 import './index.css';
 import './styles/App.css';
 import Exception from './Exception';
+import LoginModal from './objects/LoginModal.jsx';
 
 function App() {
   const [components, setComponents] = useState({});
@@ -13,6 +13,41 @@ function App() {
   const [newsUpdateTrigger, setNewsUpdateTrigger] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
+
+  // ✅ управление доступом редактора
+  const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem('isAdmin') === 'true');
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  const handleLoginSuccess = () => {
+    setIsLoginModalOpen(false);
+    setIsAdmin(true);
+    localStorage.setItem('isAdmin', 'true');
+  };
+
+  const handleLogout = () => {
+    // Определяем страницы, доступные только администраторам
+    const adminOnlyPages = ['monitoring', 'news-editor', 'banners-editor', 'services-editor'];
+    
+    // Если текущая страница доступна только админу, перенаправляем на главную
+    if (adminOnlyPages.includes(currentPage)) {
+      setCurrentPage('home');
+    }
+    
+    // Выполняем выход
+    setIsAdmin(false);
+    localStorage.setItem('isAdmin', 'false');
+  };
+
+  // Дополнительно: защита при прямом изменении currentPage
+  useEffect(() => {
+    // Если пользователь не админ и пытается перейти на админскую страницу - перенаправляем
+    if (!isAdmin) {
+      const adminOnlyPages = ['monitoring', 'news-editor', 'banners-editor', 'services-editor'];
+      if (adminOnlyPages.includes(currentPage)) {
+        setCurrentPage('home');
+      }
+    }
+  }, [isAdmin, currentPage]);
 
   const safeImport = async (path) => {
     try {
@@ -24,28 +59,16 @@ function App() {
     }
   };
 
-  /* Импорты с ограничением времени и контролем плавности */
   useEffect(() => {
     const loadComponents = async () => {
       const startTime = Date.now();
-      const MAX_LOAD_TIME = 1500; // макс. время загрузки 1.5с
+      const MAX_LOAD_TIME = 1500;
 
       const componentsList = [
-        'Header', 
-        'Footer', 
-        'HomePage', 
-        'InfoPage', 
-        'TeamPage', 
-        'MonitoringPage', 
-        'ServicesPage', 
-        'ProjectsPage', 
-        'NewsPage',
-        'DocsPage', 
-        'JobPage', 
-        'ContactsPage', 
-        'BannerPage', 
-        'UslugiPage',
-        'TrafficJams'
+        'Header', 'Footer', 'HomePage', 'InfoPage', 'TeamPage', 'MonitoringPage',
+        'ServicesPage', 'ProjectsPage', 'NewsPage', 'DocsPage', 'JobPage',
+        'ContactsPage', 'BannerPage', 'UslugiPage', 'TrafficJams',
+        'MapPage'
       ];
       
       const comps = {};
@@ -58,11 +81,16 @@ function App() {
       };
 
       const loadPromises = componentsList.map(async (compName) => {
-        const path = compName === 'Header' || compName === 'Footer' 
-          ? `./${compName}.jsx` 
-          : compName === 'TrafficJams'
-            ? `./objects/${compName}.jsx`
-            : `./pages/${compName}.jsx`;
+        const path =
+          compName === 'Header' || compName === 'Footer'
+            ? `./${compName}.jsx`
+            : compName === 'TrafficJams'
+              ? `./objects/${compName}.jsx`
+              : compName === 'ServicesPage'
+                ? `./objects/Service.jsx`
+                : compName === 'MapPage'
+                  ? `./pages/MapPage.jsx`
+                  : `./pages/${compName}.jsx`;
 
         try {
           const component = await Promise.race([
@@ -84,12 +112,9 @@ function App() {
 
       await Promise.allSettled(loadPromises);
 
-      // Минимальное время загрузки для плавности
       const elapsedTime = Date.now() - startTime;
       const remainingTime = Math.max(800 - elapsedTime, 0);
-      if (remainingTime > 0) {
-        await new Promise(resolve => setTimeout(resolve, remainingTime));
-      }
+      if (remainingTime > 0) await new Promise(resolve => setTimeout(resolve, remainingTime));
 
       setComponents(comps);
       setIsLoading(false);
@@ -125,26 +150,21 @@ function App() {
     }
   }, [newsUpdateTrigger, isLoading]);
 
-  const handleNewsUpdate = () => {
-    setNewsUpdateTrigger(prev => prev + 1);
-  };
+  const handleNewsUpdate = () => setNewsUpdateTrigger(prev => prev + 1);
 
   if (isLoading) {
     return (
       <div className="loading-screen">
         <div className="loading-container">
           <div className="loading-logo">
-            <img src='public/logogreen.svg' alt="Логотип" className="logo-image" />
+            <img src="public/logogreen.svg" alt="Логотип" className="logo-image" />
           </div>
           <div className="loading-content">
             <h1 className="loading-title">ЦОДД Смоленской области</h1>
             <p className="loading-subtitle">Центр организации дорожного движения</p>
             <div className="loading-progress">
               <div className="loading-progress-bar">
-                <div 
-                  className="loading-progress-fill"
-                  style={{ width: `${loadingProgress}%` }}
-                ></div>
+                <div className="loading-progress-fill" style={{ width: `${loadingProgress}%` }}></div>
               </div>
               <span className="loading-text">Загрузка компонентов... {loadingProgress}%</span>
             </div>
@@ -155,53 +175,60 @@ function App() {
   }
 
   if (!Object.keys(components).length) {
-    return (
-      <Exception message="Не удалось загрузить необходимые компоненты приложения. Пожалуйста, проверьте подключение к интернету и попробуйте снова." />
-    );
+    return <Exception message="Не удалось загрузить компоненты приложения." />;
   }
 
   const {
-    Header,
-    Footer,
-    HomePage,
-    InfoPage,
-    TeamPage,
-    MonitoringPage,
-    ServicesPage,
-    ProjectsPage,
-    NewsPage,
-    DocsPage,
-    JobPage,
-    ContactsPage,
-    BannerPage, 
-    UslugiPage,
-    TrafficJams
+    Header, Footer, HomePage, InfoPage, TeamPage,
+    MonitoringPage, ServicesPage, ProjectsPage, NewsPage,
+    DocsPage, JobPage, ContactsPage, BannerPage,
+    UslugiPage, TrafficJams, MapPage
   } = components;
 
   const renderPage = () => {
+    // Дополнительная проверка при рендеринге страницы
+    if (!isAdmin) {
+      const adminOnlyPages = ['monitoring', 'news-editor', 'banners-editor', 'services-editor'];
+      if (adminOnlyPages.includes(currentPage)) {
+        return <HomePage setCurrentPage={setCurrentPage} news={news} />;
+      }
+    }
+
     switch (currentPage) {
       case 'home': return <HomePage setCurrentPage={setCurrentPage} news={news} />;
-      case 'monitoring': return <MonitoringPage />;
+      case 'monitoring': return isAdmin ? <MonitoringPage /> : <HomePage setCurrentPage={setCurrentPage} news={news} />;
       case 'services': return <ServicesPage />;
       case 'about': return <InfoPage />;
       case 'team': return <TeamPage />;
       case 'projects': return <ProjectsPage />;
-      case 'news': return <NewsPage onNewsUpdate={handleNewsUpdate} news={news} />;
+      case 'news': return <NewsPage onNewsUpdate={handleNewsUpdate} news={news} isAdmin={isAdmin} />;
       case 'documents': return <DocsPage />;
       case 'vacancies': return <JobPage />;
       case 'contacts': return <ContactsPage />;
-      case 'banners': return <BannerPage />; 
+      case 'banners': return <BannerPage />;
       case 'services-list': return <UslugiPage />;
+      case 'map': return <MapPage />;
       default: return <HomePage setCurrentPage={setCurrentPage} news={news} />;
     }
   };
 
   return (
     <div className="app">
-      <Header setCurrentPage={setCurrentPage} news={news} />
+      <Header
+        setCurrentPage={setCurrentPage}
+        news={news}
+        isAdmin={isAdmin}
+        onLoginClick={() => setIsLoginModalOpen(true)}
+        onLogoutClick={handleLogout}
+      />
       <main className="app-content">{renderPage()}</main>
       <TrafficJams />
       <Footer />
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </div>
   );
 }

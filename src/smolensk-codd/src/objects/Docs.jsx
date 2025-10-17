@@ -14,7 +14,7 @@
 
 import { useState } from 'react';
 import './../styles/Docs.css';
-import { DocumentIcon, EyeIcon, DownloadIcon, CloseIcon } from '../assets/DocsIcons';
+import { DocumentIcon, EyeIcon, DownloadIcon, CloseIcon } from '../assets/Icons';
 
 function Docs({ title, description, type, size, date, file }) {
   const [showModal, setShowModal] = useState(false);
@@ -53,9 +53,10 @@ function Docs({ title, description, type, size, date, file }) {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3 className="modal-title">{title}</h3>
-              <button className="modal-close" onClick={() => setShowModal(false)}>
-                <CloseIcon />
+              <button className="modal-close-home" onClick={() => setShowModal(false)}>
+               ×
               </button>
+
             </div>
             <div className="modal-body">
               <iframe 
