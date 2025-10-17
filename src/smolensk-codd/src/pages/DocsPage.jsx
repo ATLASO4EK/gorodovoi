@@ -57,10 +57,10 @@ function DocsPage() {
     let isMounted = true;
     const loadIconsSafely = async () => {
       try {
-        const iconsModule = await import('../assets/DocsIcons.jsx');
+        const iconsModule = await import('../assets/Icons.jsx');
         if (isMounted) setIcons(iconsModule);
       } catch (error) {
-        console.error('Ошибка импорта DocsIcons.jsx:', error);
+        console.error('Ошибка импорта Icons.jsx:', error);
         setIcons({});
       }
     };
@@ -149,7 +149,7 @@ function DocsPage() {
   return (
     <div className={`docs-container ${isVisible ? 'visible' : ''}`}>
       <div className="docs-header">
-        <h1>Документы ЦОДД Смоленск</h1>
+        <h1>Документы ЦОДД Смоленска</h1>
         <p className="docs-subtitle">
           Официальные документы и материалы Центра организации дорожного движения.
           Вся информация актуальна и регулярно обновляется для вашего удобства и прозрачности работы.

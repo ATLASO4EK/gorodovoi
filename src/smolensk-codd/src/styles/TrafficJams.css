@@ -90,10 +90,11 @@
   transform: rotate(90deg);
 }
 
-.traffic-jams-close:active {
-  background: #8B00FF
-  transform scale(0.95) rotate(90deg);
+.traffic-jams-button:active {
+  background: linear-gradient(135deg, #8B00FF 0% 100%);
+  transform: translateY(-1px) scale(0.98);
 }
+
 
 .traffic-jams-header {
   padding: 40px 40px 20px 40px;
@@ -106,7 +107,7 @@
   font-weight: 700;
   color: #2d5016;
   margin: 0 0 8px 0;
-  font-family: 'Tenor Sans', sans-serif;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
 .traffic-jams-subtitle {
@@ -145,7 +146,7 @@
   font-weight: 600;
   color: #2d5016;
   margin-bottom: 12px;
-  font-family: 'Tenor Sans', sans-serif;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
 .jam-indicator {
@@ -404,4 +405,12 @@
     background: linear-gradient(135deg, #8B00FF 0% 100%);
     transform: translateY(-1px) scale(0.98);
   }
+}
+.traffic-jams-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+.traffic-jams-close:focus {
+  outline: none;
+  box-shadow: none;
 }

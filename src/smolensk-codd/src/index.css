@@ -89,7 +89,7 @@ button:focus-visible {
   position: absolute;
   bottom: 60px;
   left: 60px;
-  font-family: 'Tenor Sans', sans-serif;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
   font-size: 64px;
   color: white;
   line-height: 1.1;
@@ -108,7 +108,7 @@ button:focus-visible {
 }
 
 .section-title {
-  font-family: 'Tenor Sans', sans-serif;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
   font-size: 48px;
   color: #62A744;
   margin-bottom: 30px;

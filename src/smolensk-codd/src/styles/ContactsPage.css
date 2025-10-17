@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Montserrat:wght@300;400;500;600;700&display=swap');
-
 .contacts-section {
   padding: 60px 0;
   background: transparent;
@@ -25,8 +23,8 @@
 
 .contacts-title {
   font-size: 64px;
-  font-weight: 400;
-  font-family: 'Tenor Sans', sans-serif;
+  font-weight: 600;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
   color: #62a744;
   margin-bottom: 20px;
   text-align: center;

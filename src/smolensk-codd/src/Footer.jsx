@@ -10,7 +10,7 @@ const Footer = () => {
       <div className="footer-content">
         <div className="footer-main">
           <div className="footer-logo">
-            <img src="public/logo.svg" alt="ЦОДД Смоленской области" className="footer-logo-img" />
+            <img src="public/logofuter.svg" alt="ЦОДД Смоленской области" className="footer-logo-img" />
           </div>
           
           <div className="footer-info">

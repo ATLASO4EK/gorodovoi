@@ -1,0 +1,28 @@
+{
+  "mission": {
+    "title": "Наша миссия",
+    "text": "Обеспечивать безопасность на дорогах"
+  },
+  "members": [
+    {
+      "id": 1,
+      "name": "Иван Иванов",
+      "position": "Руководитель",
+      "description": "Опытный инструктор с 10-летним стажем",
+      "achievements": ["10 лет опыта", "Категория A,B"],
+      "photo": "/images/team/director.webp",
+      "fallbackPhoto": "/images/team/director.jpg",
+      "badge": "Руководитель"
+    },
+    {
+      "id": 2,
+      "name": "Мария Петрова",
+      "position": "Инструктор",
+      "description": "Профессиональный водитель и педагог",
+      "achievements": ["5 лет опыта", "Безаварийная работа"],
+      "photo": "/images/team/maria.webp",
+      "fallbackPhoto": "/images/team/maria.jpg",
+      "badge": "Инструктор"
+    }
+  ]
+}

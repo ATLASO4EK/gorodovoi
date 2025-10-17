@@ -1,8 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Montserrat:wght@300;400;500;600;700&display=swap');
-
 .projects-section {
   padding: 60px 0;
-  background: linear-gradient(135deg, #f8fff8 0%, #ffffff 100%);
+  background: #ffffff 100%;
   min-height: 100vh;
   font-family: 'Montserrat', sans-serif;
   margin-top: 90px;
@@ -25,11 +23,12 @@
 .projects-title {
   font-size: 48px;
   font-weight: 400;
-  font-family: 'Tenor Sans', sans-serif;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
   color: #62a744;
   margin-bottom: 20px;
   text-align: center;
   line-height: 1.2;
+  font-weight: 550;
 }
 
 .projects-subtitle {
@@ -86,11 +85,11 @@
 
 .project-card-title {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 550;
   color: #333;
   margin-bottom: 12px;
   line-height: 1.4;
-  font-family: 'Tenor Sans', sans-serif;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
 .project-card-description {
