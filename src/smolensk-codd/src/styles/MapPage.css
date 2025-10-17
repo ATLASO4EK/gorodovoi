@@ -603,6 +603,6 @@ input {
   select:active,
   input:active {
     outline: none !important;
-    box-shadow: none !important;ы
+    box-shadow: none !important;
   }
 }
